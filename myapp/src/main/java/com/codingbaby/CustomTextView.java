@@ -200,22 +200,24 @@ public class CustomTextView extends View {
 
         paint.setColor(Color.BLACK);
 
-        float first = 0;
-        float end = 0;
-        float width = 0;
+        float firstY = 0;
+        float endY = 0;
+        float maxWidth = 0;
 
         for (int i = 0; i < textLines; i++) {
             float baseY = centerBaselineY + (i - (textLines - 1) / 2.0f) * textHeight;
 
             if (i == 0) {
-                first = baseY;
+                firstY = baseY;
             }
 
             float textWidth = paint.measureText(rows.get(i));
+            if (textWidth > maxWidth) {
+                maxWidth = textWidth;
+            }
 
             if (i == rows.size() - 1) {
-                end = baseY;
-                width = textWidth;
+                endY = baseY;
             }
 
             canvas.drawText(rows.get(i), -textWidth / 2, baseY, paint);
@@ -228,11 +230,15 @@ public class CustomTextView extends View {
 
         float textWidth = paint.measureText(title);
 
-        canvas.drawText(title, -textWidth / 2, first - textHeight, paint);
+        canvas.drawText(title, -textWidth / 2, firstY - textHeight, paint);
 
         paint.setColor(Color.RED);
 
-        canvas.drawText(time + "【" + author + "】", width / 5, end + textHeight, paint);
+        String endText = time + " · " + author;
+        float endTextWidth = paint.measureText(endText);
+
+
+        canvas.drawText(endText, maxWidth/2 - endTextWidth, endY + textHeight, paint);
 
     }
 
