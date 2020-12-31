@@ -75,7 +75,7 @@ public class CustomTextView extends View {
         // 画笔
         paint = new Paint();
         paint.setAntiAlias(true);
-        paint.setColor(Color.GRAY);
+        paint.setColor(Color.BLACK);
         paint.setTextSize(sp2px(30));
         paint.setStyle(Paint.Style.STROKE);
 
@@ -147,7 +147,6 @@ public class CustomTextView extends View {
 
 
     private void reset() {
-        cache.clear();
         cursor = 0;
         firstY = 0;
         endY = 0;
@@ -190,16 +189,30 @@ public class CustomTextView extends View {
         }
 
         if (cache.size() > 0) {
+
             rows.clear();
             int end = cursor + showRow;
+
             for (int i = cursor; i < end; i++) {
                 try {
                     rows.add(cache.get(i));
                     cursor++;
                 } catch (Exception e) {
-                    cache.clear();
                     break;
                 }
+            }
+
+            //补齐
+            if (rows.size() != showRow) {
+                List<String> padding = new ArrayList<>();
+                int missCount = showRow - rows.size();
+                int from = cache.size() - rows.size() - missCount;
+                for (int j = 0; j < missCount; j++) {
+                    padding.add("w" + cache.get(from + j));
+                }
+                padding.addAll(rows);
+                rows = padding;
+                cache.clear();
             }
         }
 
@@ -216,22 +229,34 @@ public class CustomTextView extends View {
 
 
         for (int i = 0; i < textLines; i++) {
+
             float baseY = centerBaselineY + (i - (textLines - 1) / 2.0f) * textHeight;
 
             if (i == 0 && firstY == 0) {
                 firstY = baseY;
             }
 
-            float textWidth = paint.measureText(rows.get(i));
-            if (textWidth > maxWidth && maxWidth == 0) {
+            String content = rows.get(i);
+
+            if (content.startsWith("w")) {
+                content = content.replace("w", "");
+                paint.setColor(Color.WHITE);
+            } else {
+                paint.setColor(Color.BLACK);
+            }
+
+
+            float textWidth = paint.measureText(content);
+            if (textWidth > maxWidth) {
                 maxWidth = textWidth;
             }
+
 
             if (i == rows.size() - 1 && endY == 0) {
                 endY = baseY;
             }
 
-            canvas.drawText(rows.get(i), -textWidth / 2, baseY, paint);
+            canvas.drawText(content, -textWidth / 2, baseY, paint);
         }
 
 
@@ -247,6 +272,7 @@ public class CustomTextView extends View {
         String endText = time + " · " + author;
         float endTextWidth = paint.measureText(endText);
         canvas.drawText(endText, maxWidth / 2 - endTextWidth, endY + textHeight, paint);
+
 
     }
 
