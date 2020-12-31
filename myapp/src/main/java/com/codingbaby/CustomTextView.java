@@ -42,6 +42,11 @@ public class CustomTextView extends View {
     private static String title;
 
 
+    private static float firstY = 0;
+    private static float endY = 0;
+    private static float maxWidth = 0;
+
+
     private void random() {
         Random rand = new Random();
         int index = rand.nextInt(poems.size());
@@ -140,6 +145,15 @@ public class CustomTextView extends View {
         return super.onKeyDown(keyCode, event);
     }
 
+
+    private void reset() {
+        cache.clear();
+        cursor = 0;
+        firstY = 0;
+        endY = 0;
+        maxWidth = 0;
+    }
+
     private void drawPoem(Canvas canvas) {
 
         Paint.FontMetrics fontMetrics = paint.getFontMetrics();
@@ -151,6 +165,8 @@ public class CustomTextView extends View {
         List<String> rows = new ArrayList<>();
 
         if (cache.size() == 0) {
+
+            reset();
 
             String[] textsSplit = poem.split(";");
 
@@ -182,14 +198,12 @@ public class CustomTextView extends View {
                     cursor++;
                 } catch (Exception e) {
                     cache.clear();
-                    cursor = 0;
                     break;
                 }
             }
         }
 
         int textLines = rows.size();
-
 
         // 中间文本的baseline
         float ascent = paint.ascent();
@@ -200,23 +214,20 @@ public class CustomTextView extends View {
 
         paint.setColor(Color.BLACK);
 
-        float firstY = 0;
-        float endY = 0;
-        float maxWidth = 0;
 
         for (int i = 0; i < textLines; i++) {
             float baseY = centerBaselineY + (i - (textLines - 1) / 2.0f) * textHeight;
 
-            if (i == 0) {
+            if (i == 0 && firstY == 0) {
                 firstY = baseY;
             }
 
             float textWidth = paint.measureText(rows.get(i));
-            if (textWidth > maxWidth) {
+            if (textWidth > maxWidth && maxWidth == 0) {
                 maxWidth = textWidth;
             }
 
-            if (i == rows.size() - 1) {
+            if (i == rows.size() - 1 && endY == 0) {
                 endY = baseY;
             }
 
@@ -224,21 +235,18 @@ public class CustomTextView extends View {
         }
 
 
+        //draw title
         paint.setColor(Color.BLUE);
-
         paint.setTextSize(sp2px(20));
-
         float textWidth = paint.measureText(title);
-
         canvas.drawText(title, -textWidth / 2, firstY - textHeight, paint);
 
-        paint.setColor(Color.RED);
 
+        //draw author
+        paint.setColor(Color.RED);
         String endText = time + " · " + author;
         float endTextWidth = paint.measureText(endText);
-
-
-        canvas.drawText(endText, maxWidth/2 - endTextWidth, endY + textHeight, paint);
+        canvas.drawText(endText, maxWidth / 2 - endTextWidth, endY + textHeight, paint);
 
     }
 
