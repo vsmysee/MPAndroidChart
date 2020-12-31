@@ -8,7 +8,7 @@
         android:allowBackup="false"
         android:hardwareAccelerated="true"
         android:icon="@drawable/ic_launcher"
-        android:label="代码诗"
+        android:label="代码之诗"
         android:theme="@style/AppTheme">
         <activity
             android:name="com.codingbaby.MainActivity">
