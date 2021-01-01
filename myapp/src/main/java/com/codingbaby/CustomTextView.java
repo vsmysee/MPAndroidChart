@@ -27,9 +27,8 @@ public class CustomTextView extends View {
 
     private GestureDetector detector;
 
-    private Context context;
 
-    private List<String> poems = new ArrayList<>();
+    private static List<String> poems = new ArrayList<>();
 
     private String poem;
 
@@ -55,12 +54,13 @@ public class CustomTextView extends View {
         Random rand = new Random();
         int index = rand.nextInt(poems.size());
         poem = poems.get(index);
+        history.push(poem);
+
     }
 
 
     public CustomTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        this.context = context;
         detector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
             @Override
             public void onLongPress(MotionEvent e) {
@@ -71,18 +71,6 @@ public class CustomTextView extends View {
             }
 
         });
-    }
-
-
-    private void init() {
-
-        // 画笔
-        paint = new Paint();
-        paint.setAntiAlias(true);
-        paint.setColor(Color.BLACK);
-        paint.setTextSize(sp2px(30));
-        paint.setStyle(Paint.Style.STROKE);
-
 
         // load poem
         AssetManager assets = context.getAssets();
@@ -95,13 +83,23 @@ public class CustomTextView extends View {
             e.printStackTrace();
         }
 
-        //get
         random();
+
+    }
+
+
+    private void init() {
+
+        paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setColor(Color.BLACK);
+        paint.setTextSize(sp2px(30));
+        paint.setStyle(Paint.Style.STROKE);
+
     }
 
     @Override
     public void draw(Canvas canvas) {
-        super.draw(canvas);
 
         setFocusable(true);
         setFocusableInTouchMode(true);
@@ -116,6 +114,8 @@ public class CustomTextView extends View {
         canvas.translate(getWidth() / 2, getHeight() / 2);
 
         drawPoem(canvas);
+
+        super.draw(canvas);
 
     }
 
@@ -135,7 +135,13 @@ public class CustomTextView extends View {
                 reset();
 
                 try {
-                    poem = history.pop();
+                    String pop = history.pop();
+                    if (pop.equals(poem)) {
+                        poem = history.pop();
+                    } else {
+                        poem = pop;
+                    }
+
                 } catch (Exception e) {
                     random();
                 }
@@ -147,7 +153,6 @@ public class CustomTextView extends View {
             case KeyEvent.KEYCODE_VOLUME_DOWN:
                 if (cursor == 0) {
                     random();
-                    history.push(poem);
                 }
                 invalidate();
                 return true;
@@ -225,8 +230,10 @@ public class CustomTextView extends View {
                 padding.addAll(rows);
                 rows = padding;
                 cache.clear();
+                random();
             }
         }
+
 
         int textLines = rows.size();
 
