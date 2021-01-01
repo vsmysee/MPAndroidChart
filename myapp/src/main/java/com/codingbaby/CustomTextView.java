@@ -77,7 +77,9 @@ public class CustomTextView extends View {
         try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("poem.txt")))) {
             String line;
             while ((line = bf.readLine()) != null) {
-                poems.add(line);
+                if (!line.trim().equals("")) {
+                    poems.add(line);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
