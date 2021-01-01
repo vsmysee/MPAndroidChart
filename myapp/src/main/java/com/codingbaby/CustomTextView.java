@@ -17,6 +17,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Stack;
 
 
 public class CustomTextView extends View {
@@ -45,6 +46,9 @@ public class CustomTextView extends View {
     private static float firstY = 0;
     private static float endY = 0;
     private static float maxWidth = 0;
+
+
+    private Stack<String> history = new Stack<>();
 
 
     private void random() {
@@ -125,17 +129,25 @@ public class CustomTextView extends View {
 
         switch (keyCode) {
 
+            case KeyEvent.KEYCODE_VOLUME_UP:
+
+                cache.clear();
+                reset();
+
+                try {
+                    poem = history.pop();
+                } catch (Exception e) {
+                    random();
+                }
+
+                invalidate();
+                return true;
+
+
             case KeyEvent.KEYCODE_VOLUME_DOWN:
                 if (cursor == 0) {
                     random();
-                }
-                invalidate();
-
-                return true;
-
-            case KeyEvent.KEYCODE_VOLUME_UP:
-                if (cursor == 0) {
-                    random();
+                    history.push(poem);
                 }
                 invalidate();
                 return true;
