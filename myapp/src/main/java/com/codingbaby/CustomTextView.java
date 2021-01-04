@@ -5,6 +5,7 @@ import android.content.res.AssetManager;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.GestureDetector;
@@ -12,25 +13,34 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.github.promeg.pinyinhelper.Pinyin;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Stack;
 
 
 public class CustomTextView extends View {
 
+    private static int DEFAULT_COLOR = Color.BLACK;
+
     // 画笔
-    private Paint paint;
+    private Paint paint = new Paint();
 
     private GestureDetector detector;
 
 
     private static List<String> poems = new ArrayList<>();
+    private static List<Character> words = new ArrayList<>();
+    private static Map<Character, String> word = new LinkedHashMap<>();
 
     private String poem;
+    private Character chineseWord;
 
 
     private static List<String> cache = new ArrayList<>();
@@ -49,26 +59,35 @@ public class CustomTextView extends View {
 
     private Stack<String> history = new Stack<>();
 
+    private boolean longPress = false;
+
+    private boolean switchShow = false;
+
+    protected int runTime = 0;
+
+    private boolean selectPoem = true;
+    private boolean selectWord = false;
+
 
     private void random() {
         Random rand = new Random();
         int index = rand.nextInt(poems.size());
         poem = poems.get(index);
         history.push(poem);
+    }
 
+    private void randomWord() {
+        Random rand = new Random();
+        int index = rand.nextInt(words.size());
+        chineseWord = words.get(index);
     }
 
 
     public CustomTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
+
         detector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
-            @Override
-            public void onLongPress(MotionEvent e) {
-                if (cursor == 0) {
-                    random();
-                }
-                invalidate();
-            }
+
 
         });
 
@@ -85,18 +104,35 @@ public class CustomTextView extends View {
             e.printStackTrace();
         }
 
+
+        try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("word.txt")))) {
+            String line;
+            while ((line = bf.readLine()) != null) {
+                if (!line.trim().equals("")) {
+                    for (char c : line.toCharArray()) {
+                        if (Pinyin.isChinese(c)) {
+                            words.add(c);
+                            word.put(c, Pinyin.toPinyin(c));
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         random();
+        randomWord();
 
     }
 
 
     private void init() {
 
-        paint = new Paint();
         paint.setAntiAlias(true);
-        paint.setColor(Color.BLACK);
+        paint.setColor(DEFAULT_COLOR);
         paint.setTextSize(sp2px(30));
-        paint.setStyle(Paint.Style.STROKE);
+
 
     }
 
@@ -107,23 +143,142 @@ public class CustomTextView extends View {
         setFocusableInTouchMode(true);
         requestFocus();
 
-        init();
 
+        //draw background
         paint.setStyle(Paint.Style.FILL);
         paint.setColor(Color.rgb(205, 205, 205));
         canvas.drawRect(0, 0, getWidth(), getHeight(), paint);
 
+
+        //draw button
+        if (longPress) {
+
+            if (selectPoem) {
+                paint.setColor(Color.BLUE);
+                canvas.drawCircle(100, 100, 50, paint);
+            } else {
+                paint.setColor(Color.GRAY);
+                canvas.drawCircle(100, 100, 50, paint);
+            }
+
+            if (selectWord) {
+                paint.setColor(Color.BLUE);
+                canvas.drawCircle(220, 100, 50, paint);
+            } else {
+                paint.setColor(Color.GRAY);
+                canvas.drawCircle(220, 100, 50, paint);
+            }
+
+        }
+
+        if (switchShow) {
+
+            if (runTime > 2) {
+                switchShow = false;
+            } else {
+
+                if (selectPoem) {
+                    paint.setColor(Color.BLUE);
+                    canvas.drawCircle(100, 100, 50, paint);
+                } else {
+                    paint.setColor(Color.GRAY);
+                    canvas.drawCircle(100, 100, 50, paint);
+                }
+
+                if (selectWord) {
+                    paint.setColor(Color.BLUE);
+                    canvas.drawCircle(220, 100, 50, paint);
+                } else {
+                    paint.setColor(Color.GRAY);
+                    canvas.drawCircle(220, 100, 50, paint);
+                }
+
+            }
+
+
+        }
+
+
+        init();
+
+
         canvas.translate(getWidth() / 2, getHeight() / 2);
 
-        drawPoem(canvas);
+        if (selectPoem) {
+            drawPoem(canvas);
+        }
+
+        if (selectWord) {
+            drawWord(canvas);
+        }
 
         super.draw(canvas);
 
     }
 
+    final Handler handler = new Handler();
+    Runnable mLongPressed = new Runnable() {
+        public void run() {
+            longPress = true;
+            invalidate();
+        }
+    };
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        return detector.onTouchEvent(event);
+
+        if ((event.getAction() == MotionEvent.ACTION_MOVE) || (event.getAction() == MotionEvent.ACTION_UP)) {
+            handler.removeCallbacks(mLongPressed);
+        }
+
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+
+            handler.postDelayed(mLongPressed, 2000);
+
+            float y = event.getY();
+            float x = event.getX();
+            if (y >= 50 && event.getY() <= 150 && x >= 50 && x <= 150) {
+                selectPoem = true;
+                selectWord = false;
+                longPress = false;
+
+                switchShow = true;
+                runTime = 0;
+                invalidate();
+                return super.onTouchEvent(event);
+            }
+
+            if (y >= 50 && event.getY() <= 150 && x >= 170 && x <= 270) {
+                selectWord = true;
+                selectPoem = false;
+                longPress = false;
+
+                switchShow = true;
+                runTime = 0;
+
+                invalidate();
+                return super.onTouchEvent(event);
+
+            }
+
+            if (selectWord) {
+                randomWord();
+                invalidate();
+            }
+
+            if (selectPoem) {
+
+                if (cursor == 0) {
+                    random();
+                }
+
+                invalidate();
+            }
+
+
+        }
+
+        return super.onTouchEvent(event);
     }
 
     @Override
@@ -156,6 +311,9 @@ public class CustomTextView extends View {
                 if (cursor == 0) {
                     random();
                 }
+
+                randomWord();
+
                 invalidate();
                 return true;
 
@@ -171,6 +329,49 @@ public class CustomTextView extends View {
         endY = 0;
         maxWidth = 0;
     }
+
+    private void drawWord(Canvas canvas) {
+
+
+        paint.setTextSize(sp2px(60));
+
+        Paint.FontMetrics fontMetrics = paint.getFontMetrics();
+
+        // 文本高度
+        float textHeight = fontMetrics.bottom - fontMetrics.top;
+
+        List<String> rows = new ArrayList<>();
+
+        rows.add(Pinyin.toPinyin(chineseWord).toLowerCase());
+        rows.add(String.valueOf(chineseWord));
+
+        int textLines = rows.size();
+
+        // 中间文本的baseline
+        float ascent = paint.ascent();
+        float descent = paint.descent();
+
+        float abs = Math.abs(ascent + descent);
+        float centerBaselineY = abs / 2;
+
+
+        for (int i = 0; i < textLines; i++) {
+
+            float baseY = centerBaselineY + (i - (textLines - 1) / 2.0f) * textHeight;
+
+            String content = rows.get(i);
+
+            float textWidth = paint.measureText(content);
+
+            canvas.drawText(content, -textWidth / 2, baseY, paint);
+        }
+
+
+        runTime++;
+
+
+    }
+
 
     private void drawPoem(Canvas canvas) {
 
@@ -246,8 +447,6 @@ public class CustomTextView extends View {
         float abs = Math.abs(ascent + descent);
         float centerBaselineY = abs / 2;
 
-        paint.setColor(Color.BLACK);
-
 
         for (int i = 0; i < textLines; i++) {
 
@@ -263,7 +462,7 @@ public class CustomTextView extends View {
                 content = content.replace("w", "");
                 paint.setColor(Color.WHITE);
             } else {
-                paint.setColor(Color.BLACK);
+                paint.setColor(DEFAULT_COLOR);
             }
 
 
@@ -293,6 +492,9 @@ public class CustomTextView extends View {
         String endText = time + " · " + author;
         float endTextWidth = paint.measureText(endText);
         canvas.drawText(endText, maxWidth / 2 - endTextWidth, endY + textHeight, paint);
+
+
+        runTime++;
 
 
     }
