@@ -104,7 +104,7 @@ public class CustomTextView extends View {
         }
 
 
-        try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("word.txt")))) {
+        try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("chinese.txt")))) {
             String line;
             while ((line = bf.readLine()) != null) {
                 if (!line.trim().equals("")) {
