@@ -14,9 +14,13 @@ import android.view.View;
 
 import com.github.promeg.pinyinhelper.Pinyin;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +44,7 @@ public class CustomTextView extends View {
 
     private String poem;
     private Character chineseWord;
+    private String idiom;
 
 
     private static List<String> cache = new ArrayList<>();
@@ -81,6 +86,12 @@ public class CustomTextView extends View {
         chineseWord = words.get(index);
     }
 
+    private void randIdiom() {
+        Random rand = new Random();
+        int index = rand.nextInt(idioms.size());
+        idiom = idioms.get(index);
+    }
+
 
     public CustomTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -104,6 +115,26 @@ public class CustomTextView extends View {
         }
 
 
+
+
+
+        try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("word.json")))) {
+            StringBuffer sb = new StringBuffer();
+            String line;
+            while ((line = bf.readLine()) != null) {
+                sb.append(line);
+            }
+
+            JSONArray jsonArray = new JSONArray(sb.toString());
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                pinyin.put(jsonObject.getString("word"), jsonObject.getString("pinyin"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
         try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("chinese.txt")))) {
             String line;
             while ((line = bf.readLine()) != null) {
@@ -111,7 +142,8 @@ public class CustomTextView extends View {
                     for (char c : line.toCharArray()) {
                         if (Pinyin.isChinese(c)) {
                             words.add(c);
-                            word.put(c, Pinyin.toPinyin(c));
+                            //word.put(c, Pinyin.toPinyin(c));
+                            word.put(c, pinyin.get(String.valueOf(c)));
                         }
                     }
                 }
@@ -120,8 +152,28 @@ public class CustomTextView extends View {
             e.printStackTrace();
         }
 
+
+        try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("idiom.json")))) {
+            StringBuffer sb = new StringBuffer();
+            String line;
+            while ((line = bf.readLine()) != null) {
+                sb.append(line);
+            }
+
+            JSONArray jsonArray = new JSONArray(sb.toString());
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                idioms.add(jsonObject.getString("word"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+
         random();
         randomWord();
+        randIdiom();
 
         setOnLongClickListener(new OnLongClickListener() {
             @Override
@@ -135,6 +187,9 @@ public class CustomTextView extends View {
 
     }
 
+    private List<String> idioms = new ArrayList<>();
+
+    private Map<String, String> pinyin = new HashMap<>();
 
     private void init() {
 
@@ -349,7 +404,7 @@ public class CustomTextView extends View {
 
         List<String> rows = new ArrayList<>();
 
-        rows.add(Pinyin.toPinyin(chineseWord).toLowerCase());
+        rows.add(word.get(chineseWord));
         rows.add(String.valueOf(chineseWord));
 
         int textLines = rows.size();
