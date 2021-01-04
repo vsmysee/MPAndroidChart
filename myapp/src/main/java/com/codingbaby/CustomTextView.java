@@ -5,7 +5,6 @@ import android.content.res.AssetManager;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.GestureDetector;
@@ -124,6 +123,16 @@ public class CustomTextView extends View {
         random();
         randomWord();
 
+        setOnLongClickListener(new OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                longPress = true;
+                runTime = 0;
+                invalidate();
+                return true;
+            }
+        });
+
     }
 
 
@@ -153,45 +162,20 @@ public class CustomTextView extends View {
         //draw button
         if (longPress) {
 
-            if (selectPoem) {
-                paint.setColor(Color.BLUE);
-                canvas.drawCircle(100, 100, 50, paint);
-            } else {
-                paint.setColor(Color.GRAY);
-                canvas.drawCircle(100, 100, 50, paint);
-            }
+            drawButton(canvas);
 
-            if (selectWord) {
-                paint.setColor(Color.BLUE);
-                canvas.drawCircle(220, 100, 50, paint);
-            } else {
-                paint.setColor(Color.GRAY);
-                canvas.drawCircle(220, 100, 50, paint);
-            }
+            switchShow = true;
 
         }
 
         if (switchShow) {
 
-            if (runTime > 2) {
+            if (runTime > 5) {
                 switchShow = false;
+                longPress = false;
             } else {
 
-                if (selectPoem) {
-                    paint.setColor(Color.BLUE);
-                    canvas.drawCircle(100, 100, 50, paint);
-                } else {
-                    paint.setColor(Color.GRAY);
-                    canvas.drawCircle(100, 100, 50, paint);
-                }
-
-                if (selectWord) {
-                    paint.setColor(Color.BLUE);
-                    canvas.drawCircle(220, 100, 50, paint);
-                } else {
-                    paint.setColor(Color.GRAY);
-                    canvas.drawCircle(220, 100, 50, paint);
-                }
+                drawButton(canvas);
 
             }
 
@@ -216,33 +200,55 @@ public class CustomTextView extends View {
 
     }
 
-    final Handler handler = new Handler();
-    Runnable mLongPressed = new Runnable() {
-        public void run() {
-            longPress = true;
-            invalidate();
+
+    private void drawButton(Canvas canvas) {
+        if (selectPoem) {
+            paint.setColor(Color.BLUE);
+            canvas.drawCircle(100, 100, 50, paint);
+            paint.setColor(Color.WHITE);
+            paint.setTextSize(50);
+            canvas.drawText("诗", 75, 120, paint);
+        } else {
+            paint.setColor(Color.GRAY);
+            canvas.drawCircle(100, 100, 50, paint);
+            paint.setColor(Color.WHITE);
+            paint.setTextSize(50);
+            canvas.drawText("诗", 75, 120, paint);
         }
-    };
+
+        if (selectWord) {
+            paint.setColor(Color.BLUE);
+            canvas.drawCircle(220, 100, 50, paint);
+            paint.setColor(Color.WHITE);
+            paint.setTextSize(50);
+            canvas.drawText("字", 195, 120, paint);
+        } else {
+            paint.setColor(Color.GRAY);
+            canvas.drawCircle(220, 100, 50, paint);
+            paint.setColor(Color.WHITE);
+            paint.setTextSize(50);
+            canvas.drawText("字", 195, 120, paint);
+        }
+    }
+
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
 
-        if ((event.getAction() == MotionEvent.ACTION_MOVE) || (event.getAction() == MotionEvent.ACTION_UP)) {
-            handler.removeCallbacks(mLongPressed);
-        }
 
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
 
-            handler.postDelayed(mLongPressed, 2000);
 
             float y = event.getY();
             float x = event.getX();
+
             if (y >= 50 && event.getY() <= 150 && x >= 50 && x <= 150) {
                 selectPoem = true;
                 selectWord = false;
-                longPress = false;
 
+                longPress = false;
                 switchShow = true;
+
                 runTime = 0;
                 invalidate();
                 return super.onTouchEvent(event);
@@ -250,6 +256,7 @@ public class CustomTextView extends View {
 
             if (y >= 50 && event.getY() <= 150 && x >= 170 && x <= 270) {
                 selectWord = true;
+
                 selectPoem = false;
                 longPress = false;
 
@@ -333,7 +340,7 @@ public class CustomTextView extends View {
     private void drawWord(Canvas canvas) {
 
 
-        paint.setTextSize(sp2px(60));
+        paint.setTextSize(sp2px(80));
 
         Paint.FontMetrics fontMetrics = paint.getFontMetrics();
 
