@@ -82,10 +82,10 @@ public class CustomTextView extends View {
     protected int runTime = 0;
 
 
-    private boolean selectPoem = false;
+    private boolean selectPoem = true;
     private boolean selectWord = false;
     private boolean selectIdiom = false;
-    private boolean selectEnglishWord = true;
+    private boolean selectEnglishWord = false;
 
 
     private List<String> idioms = new ArrayList<>();
@@ -186,7 +186,7 @@ public class CustomTextView extends View {
 
 
         // load chinese idiom
-        try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("idiom.json")))) {
+        try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("idiom.txt")))) {
             String line;
             while ((line = bf.readLine()) != null) {
                 idioms.add(line);
@@ -199,7 +199,7 @@ public class CustomTextView extends View {
         // load english word
         for (char ch = 'A'; ch <= 'Z'; ch++) {
             english.put(ch, new ArrayList<String>());
-            try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("word/" + ch + ".md")))) {
+            try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("cet4/" + ch + ".md")))) {
                 String line;
                 while ((line = bf.readLine()) != null) {
                     english.get(ch).add(line);
@@ -555,20 +555,8 @@ public class CustomTextView extends View {
         float textHeight = fontMetrics.bottom - fontMetrics.top;
 
         List<String> rows = new ArrayList<>();
+        rows.add(englishWord);
 
-
-        String[] split = englishWord.split("\",\"");
-        for (String item : split) {
-            String replace = item.replace("\"", "");
-            float textWidth = paint.measureText(replace);
-            if (textWidth > getWidth()) {
-                rows.add(replace.substring(0, replace.length() / 2));
-                rows.add(replace.substring(replace.length() / 2));
-                continue;
-            }
-
-            rows.add(replace);
-        }
 
         int textLines = rows.size();
 
@@ -806,7 +794,7 @@ public class CustomTextView extends View {
         canvas.drawText(endText, maxWidth / 2 - endTextWidth, endY + textHeight, paint);
 
 
-        canvas.drawRect(-maxWidth / 2, -90, maxWidth / 2, 100,  mPaintCircle);
+        canvas.drawRect(-maxWidth / 2, -90, maxWidth / 2, 100, mPaintCircle);
 
 
         runTime++;
