@@ -791,6 +791,7 @@ public class CustomTextView extends View {
             }
 
             canvas.drawText(content, -textWidth / 2, baseY, paint);
+            canvas.drawLine(-textWidth / 2, baseY + descent, textWidth / 2, baseY + descent, mPaintCircle);
         }
 
 
