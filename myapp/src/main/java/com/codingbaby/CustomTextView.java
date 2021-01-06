@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 import java.util.Stack;
@@ -92,6 +93,7 @@ public class CustomTextView extends View {
     private List<String> idioms = new ArrayList<>();
 
     private Map<String, String> pinyin = new HashMap<>();
+    private Map<String, String> oldWord = new HashMap<>();
 
     private void randomPoem() {
         Random rand = new Random();
@@ -159,6 +161,7 @@ public class CustomTextView extends View {
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 pinyin.put(jsonObject.getString("word"), jsonObject.getString("pinyin"));
+                oldWord.put(jsonObject.getString("word"), jsonObject.getString("oldword"));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -229,7 +232,7 @@ public class CustomTextView extends View {
     }
 
 
-    private void init() {
+    private void initPint() {
 
         paint.setAntiAlias(true);
         paint.setColor(DEFAULT_COLOR);
@@ -270,7 +273,7 @@ public class CustomTextView extends View {
         }
 
 
-        init();
+        initPint();
 
         if (selectEnglishWord) {
 
@@ -289,10 +292,54 @@ public class CustomTextView extends View {
         }
 
 
+        if (selectPoem) {
+
+            int n = 0;
+
+            paint.setColor(Color.GRAY);
+            canvas.drawCircle(100 + n * 100, getHeight() - 100, 40, paint);
+            paint.setColor(Color.WHITE);
+            paint.setTextSize(40);
+            canvas.drawText("学", 80 + n * 100, getHeight() - 100 + 10, paint);
+
+            n = 1;
+
+            paint.setColor(Color.GRAY);
+            canvas.drawCircle(100 + n * 100, getHeight() - 100, 40, paint);
+            paint.setColor(Color.WHITE);
+            paint.setTextSize(40);
+            canvas.drawText("全", 80 + n * 100, getHeight() - 100 + 10, paint);
+
+            n = 2;
+
+            paint.setColor(Color.GRAY);
+            canvas.drawCircle(100 + n * 100, getHeight() - 100, 40, paint);
+            paint.setColor(Color.WHITE);
+            paint.setTextSize(40);
+            canvas.drawText("唐", 80 + n * 100, getHeight() - 100 + 10, paint);
+
+            n = 3;
+
+            paint.setColor(Color.GRAY);
+            canvas.drawCircle(100 + n * 100, getHeight() - 100, 40, paint);
+            paint.setColor(Color.WHITE);
+            paint.setTextSize(40);
+            canvas.drawText("宋", 80 + n * 100, getHeight() - 100 + 10, paint);
+
+        }
+
+
         canvas.translate(getWidth() / 2, getHeight() / 2);
 
         if (selectPoem) {
-            drawPoem(canvas);
+            if (drawLinePoint.size() > 0) {
+                for (LinePoint linePoint : drawLinePoint) {
+                    canvas.drawLine(linePoint.sx, linePoint.sy, linePoint.ex, linePoint.ey, mPaintCircle);
+                }
+                drawPoem(canvas, true);
+            } else {
+                drawPoem(canvas, false);
+            }
         }
 
         if (selectWord) {
@@ -379,6 +426,8 @@ public class CustomTextView extends View {
     }
 
 
+    private List<LinePoint> drawLinePoint = new ArrayList<>();
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
 
@@ -386,6 +435,37 @@ public class CustomTextView extends View {
 
             float y = event.getY();
             float x = event.getX();
+
+
+            int centerX = getWidth() / 2;
+            int centerY = getHeight() / 2;
+            float clickX = x - centerX;
+
+
+            boolean touchPoemItem = false;
+            for (LinePoint linePoint : linePoints) {
+                if (clickX > linePoint.sx && clickX < linePoint.ex) {
+                    if (linePoint.ey + centerY - poemWordHeight < y && y < linePoint.ey + centerY) {
+                        if (drawLinePoint.contains(linePoint)) {
+                            drawLinePoint.remove(linePoint);
+                        } else {
+                            drawLinePoint.add(linePoint);
+                        }
+                        touchPoemItem = true;
+                        break;
+                    }
+                }
+            }
+
+            if (touchPoemItem) {
+                invalidate();
+                return super.onTouchEvent(event);
+            }
+
+            if (!touchPoemItem) {
+                drawLinePoint.clear();
+            }
+
 
             if (y >= 50 && event.getY() <= 150 && x >= 50 && x <= 150) {
 
@@ -556,9 +636,11 @@ public class CustomTextView extends View {
         float textHeight = fontMetrics.bottom - fontMetrics.top;
 
         List<String> rows = new ArrayList<>();
-        int p = englishWord.indexOf("]");
-        rows.add(englishWord.substring(0, p + 1));
-        rows.add(englishWord.substring(p + 1));
+        int start = englishWord.indexOf("[");
+        rows.add(englishWord.substring(0, start));
+        int end = englishWord.indexOf("]");
+        rows.add(englishWord.substring(start, end + 1));
+        rows.add(englishWord.substring(end + 1));
 
 
         int textLines = rows.size();
@@ -626,9 +708,7 @@ public class CustomTextView extends View {
             canvas.drawText(content, -textWidth / 2, baseY, paint);
         }
 
-
         runTime++;
-
 
     }
 
@@ -645,7 +725,11 @@ public class CustomTextView extends View {
         List<String> rows = new ArrayList<>();
 
         rows.add(word.get(chineseWord));
-        rows.add(String.valueOf(chineseWord));
+        String w = String.valueOf(chineseWord);
+        rows.add(w);
+        if (!oldWord.get(w).equals(w)) {
+            rows.add(oldWord.get(w));
+        }
 
         int textLines = rows.size();
 
@@ -679,87 +763,95 @@ public class CustomTextView extends View {
             canvas.drawLine(-max, baseY + descent, max, baseY + descent, paint);
         }
 
-
         runTime++;
-
 
     }
 
 
-    private void drawPoem(Canvas canvas) {
+    private float poemWordHeight;
+    private List<String> rows = new ArrayList<>();
 
-        paint.setColor(DEFAULT_COLOR);
+    private void drawPoem(Canvas canvas, boolean reDraw) {
+
+        initPint();
+
         Paint.FontMetrics fontMetrics = paint.getFontMetrics();
 
         // 文本高度
-        float textHeight = fontMetrics.bottom - fontMetrics.top;
-        int showRow = (int) ((getHeight() / textHeight) - 5);
-
-        List<String> rows = new ArrayList<>();
-
-        if (cache.size() == 0) {
-
-            reset();
-
-            String[] textsSplit = poem.split(";");
-
-            time = textsSplit[0];
-            author = textsSplit[1];
-            title = textsSplit[2];
-
-            for (int i = 3; i < textsSplit.length; i++) {
-                rows.add(textsSplit[i]);
-            }
-
-            if (rows.size() * textHeight > getHeight() - dp2px(100)) {
-
-                cache.clear();
-
-                for (String row : rows) {
-                    cache.add(row);
-                }
-
-            }
-        }
-
-        if (cache.size() > 0) {
-
-            rows.clear();
-            int end = cursor + showRow;
-
-            for (int i = cursor; i < end; i++) {
-                try {
-                    rows.add(cache.get(i));
-                    cursor++;
-                } catch (Exception e) {
-                    break;
-                }
-            }
-
-            //补齐
-            if (rows.size() != showRow) {
-                List<String> padding = new ArrayList<>();
-                int missCount = showRow - rows.size();
-                int from = cache.size() - rows.size() - missCount;
-                for (int j = 0; j < missCount; j++) {
-                    padding.add("w" + cache.get(from + j));
-                }
-                padding.addAll(rows);
-                rows = padding;
-                cache.clear();
-                randomPoem();
-            }
-        }
-
-
-        int textLines = rows.size();
-
+        float textHeight = poemWordHeight = fontMetrics.bottom - fontMetrics.top;
         // 中间文本的baseline
         float ascent = paint.ascent();
         float descent = paint.descent();
 
         float abs = Math.abs(ascent + descent);
         float centerBaselineY = abs / 2;
+
+        int showRow = (int) ((getHeight() / textHeight) - 5);
+
+        if (!reDraw) {
+            rows = new ArrayList<>();
+        }
+        linePoints.clear();
+
+        if (!reDraw) {
+
+            if (cache.size() == 0) {
+
+                reset();
+
+                String[] textsSplit = poem.split(";");
+
+                time = textsSplit[0];
+                author = textsSplit[1];
+                title = textsSplit[2];
+
+                for (int i = 3; i < textsSplit.length; i++) {
+                    rows.add(textsSplit[i]);
+                }
+
+                if (rows.size() * textHeight > getHeight() - dp2px(200)) {
+
+                    cache.clear();
+
+                    for (String row : rows) {
+                        cache.add(row);
+                    }
+
+                }
+            }
+
+            if (cache.size() > 0) {
+
+                rows.clear();
+                int end = cursor + showRow;
+
+                for (int i = cursor; i < end; i++) {
+                    try {
+                        rows.add(cache.get(i));
+                        cursor++;
+                    } catch (Exception e) {
+                        break;
+                    }
+                }
+
+                //补齐
+                if (rows.size() != showRow) {
+                    List<String> padding = new ArrayList<>();
+                    int missCount = showRow - rows.size();
+                    int from = cache.size() - rows.size() - missCount;
+                    for (int j = 0; j < missCount; j++) {
+                        padding.add("w" + cache.get(from + j));
+                    }
+                    padding.addAll(rows);
+                    rows = padding;
+                    cache.clear();
+                    randomPoem();
+                }
+            }
+
+        }
+
+        int textLines = rows.size();
 
 
         for (int i = 0; i < textLines; i++) {
@@ -791,7 +883,9 @@ public class CustomTextView extends View {
             }
 
             canvas.drawText(content, -textWidth / 2, baseY, paint);
-            canvas.drawLine(-textWidth / 2, baseY + descent, textWidth / 2, baseY + descent, mPaintCircle);
+            if (!linePoints.contains(new LinePoint(-textWidth / 2, baseY + descent, textWidth / 2, baseY + descent))) {
+                linePoints.add(new LinePoint(-textWidth / 2, baseY + descent, textWidth / 2, baseY + descent));
+            }
         }
 
 
@@ -811,8 +905,9 @@ public class CustomTextView extends View {
 
         runTime++;
 
-
     }
+
+    private List<LinePoint> linePoints = new ArrayList<>();
 
     /**
      * dp转px
@@ -835,5 +930,35 @@ public class CustomTextView extends View {
     public int sp2px(float sp) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp,
                 getContext().getResources().getDisplayMetrics());
+    }
+
+    static class LinePoint {
+        private float sx;
+        private float sy;
+        private float ex;
+        private float ey;
+
+        public LinePoint(float sx, float sy, float ex, float ey) {
+            this.sx = sx;
+            this.sy = sy;
+            this.ex = ex;
+            this.ey = ey;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            LinePoint linePoint = (LinePoint) o;
+            return Float.compare(linePoint.sx, sx) == 0 &&
+                    Float.compare(linePoint.sy, sy) == 0 &&
+                    Float.compare(linePoint.ex, ex) == 0 &&
+                    Float.compare(linePoint.ey, ey) == 0;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(sx, sy, ex, ey);
+        }
     }
 }
