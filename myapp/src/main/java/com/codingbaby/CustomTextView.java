@@ -58,7 +58,6 @@ public class CustomTextView extends View {
 
     private String poem;
     private Character chineseWord;
-    private String idiom;
     private String englishWord;
 
 
@@ -108,10 +107,10 @@ public class CustomTextView extends View {
         chineseWord = words.get(index);
     }
 
-    private void randIdiom() {
+    private String randIdiom() {
         Random rand = new Random();
         int index = rand.nextInt(idioms.size());
-        idiom = idioms.get(index);
+        return idioms.get(index);
     }
 
     private void randEnglish() {
@@ -216,7 +215,6 @@ public class CustomTextView extends View {
 
         randomPoem();
         randomWord();
-        randIdiom();
         randEnglish();
 
         setOnLongClickListener(new OnLongClickListener() {
@@ -263,7 +261,7 @@ public class CustomTextView extends View {
 
         if (switchShow) {
 
-            if (runTime > 5) {
+            if (runTime > 4) {
                 switchShow = false;
                 longPress = false;
             } else {
@@ -275,7 +273,7 @@ public class CustomTextView extends View {
 
         initPint();
 
-        if (selectEnglishWord) {
+        if (selectEnglishWord && longPress) {
 
             paint.setColor(Color.GRAY);
             canvas.drawCircle(100, getHeight() - 100, 40, paint);
@@ -292,7 +290,7 @@ public class CustomTextView extends View {
         }
 
 
-        if (selectPoem) {
+        if (selectPoem && longPress) {
 
             int n = 0;
 
@@ -549,9 +547,6 @@ public class CustomTextView extends View {
                 randomPoem();
             }
 
-            if (selectIdiom) {
-                randIdiom();
-            }
 
             if (selectEnglishWord) {
                 randEnglish();
@@ -600,9 +595,6 @@ public class CustomTextView extends View {
                     randomWord();
                 }
 
-                if (selectIdiom) {
-                    randIdiom();
-                }
 
                 if (selectEnglishWord) {
                     randEnglish();
@@ -682,10 +674,12 @@ public class CustomTextView extends View {
 
         List<String> rows = new ArrayList<>();
 
-        String[] split = idiom.split(": ");
 
-        rows.add(split[1]);
-        rows.add(split[0]);
+        rows.add(randIdiom());
+        rows.add(randIdiom());
+        rows.add(randIdiom());
+        rows.add(randIdiom());
+        rows.add(randIdiom());
 
         int textLines = rows.size();
 
