@@ -9,7 +9,7 @@
         android:allowBackup="false"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="代码之诗"
+        android:label="诗品大千"
         tools:replace="android:label"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@style/AppTheme">

@@ -351,6 +351,14 @@ public class CustomTextView extends View {
             paint.setTextSize(40);
             canvas.drawText("学", 80 + n * 100, getHeight() - 100 + 12, paint);
 
+
+            n = 1;
+
+            paint.setColor(Color.GRAY);
+            canvas.drawCircle(100 + n * 100, getHeight() - 100, radius, paint);
+            paint.setColor(Color.WHITE);
+            paint.setTextSize(40);
+            canvas.drawText("全", 80 + n * 100, getHeight() - 100 + 12, paint);
         }
 
 
@@ -364,6 +372,13 @@ public class CustomTextView extends View {
             paint.setTextSize(40);
             canvas.drawText("学", 80 + n * 100, getHeight() - 100 + 12, paint);
 
+            n = 1;
+
+            paint.setColor(Color.GRAY);
+            canvas.drawCircle(100 + n * 100, getHeight() - 100, radius, paint);
+            paint.setColor(Color.WHITE);
+            paint.setTextSize(40);
+            canvas.drawText("全", 80 + n * 100, getHeight() - 100 + 12, paint);
         }
 
 
@@ -431,6 +446,14 @@ public class CustomTextView extends View {
         paint.setColor(Color.WHITE);
         paint.setTextSize(50);
         canvas.drawText("英", 75 + n * gap, 120, paint);
+
+
+        n = 4;
+        paint.setColor(Color.GRAY);
+        canvas.drawCircle(100 + n * gap, 100, radius, paint);
+        paint.setColor(Color.WHITE);
+        paint.setTextSize(50);
+        canvas.drawText("短", 75 + n * gap, 120, paint);
     }
 
 
@@ -651,8 +674,6 @@ public class CustomTextView extends View {
 
     private void drawEnglishWord(Canvas canvas) {
 
-        paint.setColor(DEFAULT_COLOR);
-
         paint.setTextSize(sp2px(30));
 
         Paint.FontMetrics fontMetrics = paint.getFontMetrics();
@@ -682,6 +703,12 @@ public class CustomTextView extends View {
 
         for (int i = 0; i < textLines; i++) {
 
+            if (i == 0) {
+                paint.setColor(Color.BLUE);
+            } else {
+                paint.setColor(DEFAULT_COLOR);
+            }
+
             float baseY = centerBaselineY + (i - (textLines - 1) / 2.0f) * textHeight;
 
             String content = rows.get(i);
@@ -689,6 +716,9 @@ public class CustomTextView extends View {
             float textWidth = paint.measureText(content);
 
             canvas.drawText(content, -textWidth / 2, baseY, paint);
+            if (i == 0 || i == 1) {
+                canvas.drawLine(-textWidth, baseY + descent, textWidth, baseY + descent, paint);
+            }
         }
 
 
