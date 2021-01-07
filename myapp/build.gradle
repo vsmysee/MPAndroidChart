@@ -4,7 +4,7 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.codingbaby.poem"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 28
         versionCode 57
         versionName '3.1.0'
