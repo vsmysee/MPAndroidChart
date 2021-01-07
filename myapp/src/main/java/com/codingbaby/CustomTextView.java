@@ -700,7 +700,7 @@ public class CustomTextView extends View {
     private void drawIdiom(Canvas canvas) {
         paint.setColor(DEFAULT_COLOR);
 
-        paint.setTextSize(sp2px(30));
+        paint.setTextSize(sp2px(35));
 
         Paint.FontMetrics fontMetrics = paint.getFontMetrics();
 
@@ -917,16 +917,22 @@ public class CustomTextView extends View {
 
 
         //draw title
-        paint.setColor(Color.BLUE);
         paint.setTextSize(sp2px(20));
+        Paint.FontMetrics fontMetrics2 = paint.getFontMetrics();
+        float textHeight2 = poemWordHeight = fontMetrics.bottom - fontMetrics.top;
+
+        paint.setColor(Color.BLUE);
         float textWidth = paint.measureText(title);
         canvas.drawText(title, -textWidth / 2, firstY - textHeight, paint);
 
 
         //draw author
         paint.setColor(Color.RED);
-        String endText = time + " · " + author;
+        String endText = time + "  " + author;
         float endTextWidth = paint.measureText(endText);
+        float timeWidth = paint.measureText(time);
+        canvas.drawRoundRect(maxWidth / 2 - endTextWidth - 5, endY + 2 * descent + 10, maxWidth / 2 - endTextWidth + timeWidth + 5, endY + textHeight + descent, 10, 10, paint);
+        paint.setColor(Color.WHITE);
         canvas.drawText(endText, maxWidth / 2 - endTextWidth, endY + textHeight, paint);
 
 
