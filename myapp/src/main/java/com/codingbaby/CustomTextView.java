@@ -438,7 +438,7 @@ public class CustomTextView extends View {
         canvas.drawCircle(100 + n * gap, 100, radius, paint);
         paint.setColor(Color.WHITE);
         paint.setTextSize(50);
-        canvas.drawText("语", 75 + n * gap, 120, paint);
+        canvas.drawText("成", 75 + n * gap, 120, paint);
 
         n = 3;
         paint.setColor(selectEnglishWord ? Color.BLUE : Color.GRAY);
