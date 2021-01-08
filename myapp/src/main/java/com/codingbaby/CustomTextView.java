@@ -1,14 +1,16 @@
 package com.codingbaby;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.util.TypedValue;
-import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -35,11 +37,18 @@ public class CustomTextView extends View {
 
     private static int DEFAULT_COLOR = Color.BLACK;
 
+    private Bitmap moonMap = BitmapFactory.decodeResource(getResources(), R.drawable.moon);
+    private Bitmap flowerMap = BitmapFactory.decodeResource(getResources(), R.drawable.flower);
+
+    private ValueAnimator animator = ValueAnimator.ofInt(0, 100);
+
+
     // 画笔
     private Paint paint = new Paint();
 
     //虚线笔
     Paint virtualLine = new Paint();
+    Paint virtualLineBlue = new Paint();
 
     {
         virtualLine.setStyle(Paint.Style.STROKE);
@@ -49,13 +58,29 @@ public class CustomTextView extends View {
         virtualLine.setPathEffect(new DashPathEffect(new float[]{4, 4}, 0));
     }
 
-    private GestureDetector detector;
+    {
+        virtualLineBlue.setStyle(Paint.Style.STROKE);
+        virtualLineBlue.setAntiAlias(true);
+        virtualLineBlue.setStrokeWidth(3);
+        virtualLineBlue.setColor(Color.GRAY);
+        virtualLineBlue.setPathEffect(new DashPathEffect(new float[]{4, 4}, 0));
+    }
 
-    private static List<String> poems = new ArrayList<>();
-    private static List<String> poems_students = new ArrayList<>();
-    private static List<Character> words = new ArrayList<>();
-    private static Map<Character, String> word = new LinkedHashMap<>();
+
+    private List<String> poems = new ArrayList<>();
+    private List<String> poems_students = new ArrayList<>();
+
+    private List<Character> words = new ArrayList<>();
+    private Map<Character, String> word = new LinkedHashMap<>();
+
     private static Map<Character, List<String>> english = new LinkedHashMap<>();
+    private List<String> shortEnglish = new ArrayList<>();
+
+
+    private List<String> idioms = new ArrayList<>();
+
+    private Map<String, String> pinyin = new HashMap<>();
+    private Map<String, String> oldWord = new HashMap<>();
 
 
     private String poem;
@@ -72,6 +97,7 @@ public class CustomTextView extends View {
 
     private Stack<String> history = new Stack<>();
 
+
     private boolean longPress = false;
     private boolean switchShow = false;
     protected int runTime = 0;
@@ -81,12 +107,7 @@ public class CustomTextView extends View {
     private boolean selectWord = false;
     private boolean selectIdiom = false;
     private boolean selectEnglishWord = false;
-
-
-    private List<String> idioms = new ArrayList<>();
-
-    private Map<String, String> pinyin = new HashMap<>();
-    private Map<String, String> oldWord = new HashMap<>();
+    private boolean selectShortEnglish = false;
 
 
     private void randomPoem() {
@@ -119,6 +140,12 @@ public class CustomTextView extends View {
         return idioms.get(index);
     }
 
+    private String randShortEnglish() {
+        Random rand = new Random();
+        int index = rand.nextInt(shortEnglish.size());
+        return shortEnglish.get(index);
+    }
+
     private String randEnglish() {
         Random rand = new Random();
         Set<Character> characters = english.keySet();
@@ -137,11 +164,8 @@ public class CustomTextView extends View {
     public CustomTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        detector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
-        });
-
         // load poem
-        AssetManager assets = context.getAssets();
+        final AssetManager assets = context.getAssets();
         try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("poem.txt")))) {
             String line;
             while ((line = bf.readLine()) != null) {
@@ -166,72 +190,94 @@ public class CustomTextView extends View {
             e.printStackTrace();
         }
 
+        randomPoem();
 
-        // load chinese word meta data
-        try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("word.json")))) {
-            StringBuffer sb = new StringBuffer();
-            String line;
-            while ((line = bf.readLine()) != null) {
-                sb.append(line);
-            }
 
-            JSONArray jsonArray = new JSONArray(sb.toString());
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                pinyin.put(jsonObject.getString("word"), jsonObject.getString("pinyin"));
-                oldWord.put(jsonObject.getString("word"), jsonObject.getString("oldword"));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        // load chinese word
-        try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("chinese.txt")))) {
-            String line;
-            while ((line = bf.readLine()) != null) {
-                if (!line.trim().equals("")) {
-                    for (char c : line.toCharArray()) {
-                        if (Pinyin.isChinese(c)) {
-                            words.add(c);
-                            if (pinyin.get(String.valueOf(c)) == null) {
-                                word.put(c, Pinyin.toPinyin(c));
-                            } else {
-                                word.put(c, pinyin.get(String.valueOf(c)));
+                // load chinese word meta data
+                try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("word.json")))) {
+                    StringBuffer sb = new StringBuffer();
+                    String line;
+                    while ((line = bf.readLine()) != null) {
+                        sb.append(line);
+                    }
+
+                    JSONArray jsonArray = new JSONArray(sb.toString());
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        pinyin.put(jsonObject.getString("word"), jsonObject.getString("pinyin"));
+                        oldWord.put(jsonObject.getString("word"), jsonObject.getString("oldword"));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                // load chinese word
+                try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("chinese.txt")))) {
+                    String line;
+                    while ((line = bf.readLine()) != null) {
+                        if (!line.trim().equals("")) {
+                            for (char c : line.toCharArray()) {
+                                if (Pinyin.isChinese(c)) {
+                                    words.add(c);
+                                    if (pinyin.get(String.valueOf(c)) == null) {
+                                        word.put(c, Pinyin.toPinyin(c));
+                                    } else {
+                                        word.put(c, pinyin.get(String.valueOf(c)));
+                                    }
+                                }
                             }
                         }
                     }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        }).start();
 
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        // load chinese idiom
-        try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("idiom.txt")))) {
-            String line;
-            while ((line = bf.readLine()) != null) {
-                idioms.add(line);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-
-        // load english word
-        for (char ch = 'A'; ch <= 'Z'; ch++) {
-            english.put(ch, new ArrayList<String>());
-            try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("cet4/" + ch + ".md")))) {
-                String line;
-                while ((line = bf.readLine()) != null) {
-                    english.get(ch).add(line);
+                // load chinese idiom
+                try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("idiom.txt")))) {
+                    String line;
+                    while ((line = bf.readLine()) != null) {
+                        idioms.add(line);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
 
-        randomPoem();
+
+                // load short english
+                try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("cet4/short.txt")))) {
+                    String line;
+                    while ((line = bf.readLine()) != null) {
+                        shortEnglish.add(line);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                // load english word
+                for (char ch = 'A'; ch <= 'Z'; ch++) {
+                    english.put(ch, new ArrayList<String>());
+                    try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("cet4/" + ch + ".md")))) {
+                        String line;
+                        while ((line = bf.readLine()) != null) {
+                            english.get(ch).add(line);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
+
 
         setOnLongClickListener(new OnLongClickListener() {
             @Override
@@ -407,57 +453,66 @@ public class CustomTextView extends View {
             drawEnglishWord(canvas);
         }
 
+        if (selectShortEnglish) {
+            drawShortEnglish(canvas);
+        }
+
         super.draw(canvas);
 
     }
 
 
-    int gap = 120;
+    int gap = sp2px(40);
+    int textSize = sp2px(15);
+    int wordY = sp2px(35);
 
     private void drawButton(Canvas canvas) {
 
-        int radius = 50;
+        int radius = sp2px(15);
+        int from = sp2px(30);
+        int wordFrom = sp2px(22);
 
         paint.setColor(selectPoem ? Color.BLUE : Color.GRAY);
-        canvas.drawCircle(100, 100, radius, paint);
+        canvas.drawCircle(from, from, radius, paint);
         paint.setColor(Color.WHITE);
-        paint.setTextSize(50);
-        canvas.drawText("诗", 75, 120, paint);
+        paint.setTextSize(textSize);
+        canvas.drawText("诗", wordFrom, wordY, paint);
 
         int n = 1;
 
         paint.setColor(selectWord ? Color.BLUE : Color.GRAY);
-        canvas.drawCircle(100 + n * gap, 100, radius, paint);
+        canvas.drawCircle(from + n * gap, from, radius, paint);
         paint.setColor(Color.WHITE);
-        paint.setTextSize(50);
-        canvas.drawText("字", 75 + n * gap, 120, paint);
+        paint.setTextSize(textSize);
+        canvas.drawText("字", wordFrom + n * gap, wordY, paint);
 
         n = 2;
 
         paint.setColor(selectIdiom ? Color.BLUE : Color.GRAY);
-        canvas.drawCircle(100 + n * gap, 100, radius, paint);
+        canvas.drawCircle(from + n * gap, from, radius, paint);
         paint.setColor(Color.WHITE);
-        paint.setTextSize(50);
-        canvas.drawText("成", 75 + n * gap, 120, paint);
+        paint.setTextSize(textSize);
+        canvas.drawText("成", wordFrom + n * gap, wordY, paint);
 
         n = 3;
         paint.setColor(selectEnglishWord ? Color.BLUE : Color.GRAY);
-        canvas.drawCircle(100 + n * gap, 100, radius, paint);
+        canvas.drawCircle(from + n * gap, from, radius, paint);
         paint.setColor(Color.WHITE);
-        paint.setTextSize(50);
-        canvas.drawText("英", 75 + n * gap, 120, paint);
+        paint.setTextSize(textSize);
+        canvas.drawText("英", wordFrom + n * gap, wordY, paint);
 
 
         n = 4;
-        paint.setColor(Color.GRAY);
-        canvas.drawCircle(100 + n * gap, 100, radius, paint);
+        paint.setColor(selectShortEnglish ? Color.BLUE : Color.GRAY);
+        canvas.drawCircle(from + n * gap, from, radius, paint);
         paint.setColor(Color.WHITE);
-        paint.setTextSize(50);
-        canvas.drawText("短", 75 + n * gap, 120, paint);
+        paint.setTextSize(textSize);
+        canvas.drawText("短", wordFrom + n * gap, wordY, paint);
     }
 
 
     private List<LinePoint> drawLinePoint = new ArrayList<>();
+
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -472,8 +527,8 @@ public class CustomTextView extends View {
             int centerY = getHeight() / 2;
             float clickX = x - centerX;
 
-
             boolean touchPoemItem = false;
+
             for (LinePoint linePoint : linePoints) {
                 if (clickX > linePoint.sx && clickX < linePoint.ex) {
                     if (linePoint.ey + centerY - poemWordHeight < y && y < linePoint.ey + centerY) {
@@ -503,17 +558,9 @@ public class CustomTextView extends View {
                 return super.onTouchEvent(event);
             }
 
-            if (selectWord) {
-                randomWord();
-            }
 
             if (selectPoem && cursor == 0) {
                 randomPoem();
-            }
-
-
-            if (selectEnglishWord) {
-                randEnglish();
             }
 
             invalidate();
@@ -525,10 +572,12 @@ public class CustomTextView extends View {
 
     private boolean checkTouch(float y, float x) {
 
-        if (y >= 50 && y <= 150 && x >= 50 && x <= 150) {
+        int topButtonX = textSize;
+        if (y >= topButtonX && y <= 3 * topButtonX && x >= topButtonX && x <= 3 * topButtonX) {
 
             selectPoem = true;
             selectWord = false;
+            selectShortEnglish = false;
             selectIdiom = false;
             selectEnglishWord = false;
 
@@ -541,10 +590,11 @@ public class CustomTextView extends View {
 
         int n = 1;
 
-        if (y >= 50 && y <= 150 && x >= 50 + n * gap && x <= 150 + n * gap) {
+        if (y >= topButtonX && y <= 3 * topButtonX && x >= topButtonX + n * gap && x <= 3 * topButtonX + n * gap) {
 
             selectWord = true;
             selectPoem = false;
+            selectShortEnglish = false;
             selectIdiom = false;
             selectEnglishWord = false;
 
@@ -560,10 +610,11 @@ public class CustomTextView extends View {
 
         n = 2;
 
-        if (y >= 50 && y <= 150 && x >= 50 + n * gap && x <= 150 + n * gap) {
+        if (y >= topButtonX && y <= 3 * topButtonX && x >= topButtonX + n * gap && x <= 3 * topButtonX + n * gap) {
 
             selectIdiom = true;
             selectWord = false;
+            selectShortEnglish = false;
             selectPoem = false;
             selectEnglishWord = false;
 
@@ -579,9 +630,30 @@ public class CustomTextView extends View {
 
         n = 3;
 
-        if (y >= 50 && y <= 150 && x >= 50 + n * gap && x <= 150 + n * gap) {
+        if (y >= topButtonX && y <= 3 * topButtonX && x >= topButtonX + n * gap && x <= 3 * topButtonX + n * gap) {
 
             selectEnglishWord = true;
+            selectShortEnglish = false;
+            selectIdiom = false;
+            selectWord = false;
+            selectPoem = false;
+
+            longPress = false;
+
+            switchShow = true;
+            runTime = 0;
+
+            return true;
+
+        }
+
+
+        n = 4;
+
+        if (y >= topButtonX && y <= 3 * topButtonX && x >= topButtonX + n * gap && x <= 3 * topButtonX + n * gap) {
+
+            selectShortEnglish = true;
+            selectEnglishWord = false;
             selectIdiom = false;
             selectWord = false;
             selectPoem = false;
@@ -645,15 +717,6 @@ public class CustomTextView extends View {
 
                 if (selectPoem && cursor == 0) {
                     randomPoem();
-                }
-
-                if (selectWord) {
-                    randomWord();
-                }
-
-
-                if (selectEnglishWord) {
-                    randEnglish();
                 }
 
                 invalidate();
@@ -726,6 +789,46 @@ public class CustomTextView extends View {
 
 
     }
+
+    private void drawShortEnglish(Canvas canvas) {
+        paint.setColor(DEFAULT_COLOR);
+
+        paint.setTextSize(sp2px(18));
+
+        Paint.FontMetrics fontMetrics = paint.getFontMetrics();
+
+        // 文本高度
+        float textHeight = fontMetrics.bottom - fontMetrics.top;
+
+        List<String> rows = new ArrayList<>();
+
+        for (int n = 0; n < 10; n++) {
+            rows.add(randShortEnglish());
+        }
+
+        int textLines = rows.size();
+
+        // 中间文本的baseline
+        float ascent = paint.ascent();
+        float descent = paint.descent();
+
+        float abs = Math.abs(ascent + descent);
+        float centerBaselineY = abs / 2;
+
+        for (int i = 0; i < textLines; i++) {
+
+            float baseY = centerBaselineY + (i - (textLines - 1) / 2.0f) * textHeight;
+
+            String content = rows.get(i);
+            float textWidth = paint.measureText(content);
+
+            canvas.drawText(content, -textWidth / 2, baseY, paint);
+        }
+
+        runTime++;
+
+    }
+
 
     private void drawIdiom(Canvas canvas) {
         paint.setColor(DEFAULT_COLOR);
@@ -828,9 +931,18 @@ public class CustomTextView extends View {
     private float poemWordHeight;
     private List<String> rows = new ArrayList<>();
 
-    private void drawPoem(Canvas canvas, boolean reDraw) {
+    private void drawPoem(final Canvas canvas, boolean reDraw) {
 
         initPint();
+
+        if (poem.contains("月")) {
+            canvas.drawBitmap(moonMap, getWidth() / 3 - 50, -getHeight() / 2 + 20, paint);
+        }
+
+        if (poem.contains("花")) {
+            canvas.drawBitmap(flowerMap, (-getWidth() / 3), getHeight() / 2 - flowerMap.getHeight(), paint);
+        }
+
 
         Paint.FontMetrics fontMetrics = paint.getFontMetrics();
 
@@ -940,17 +1052,29 @@ public class CustomTextView extends View {
             }
 
             canvas.drawText(content, -textWidth / 2, baseY, paint);
+
+            //触摸线
             if (!linePoints.contains(new LinePoint(-textWidth / 2, baseY + descent, textWidth / 2, baseY + descent))) {
                 linePoints.add(new LinePoint(-textWidth / 2, baseY + descent, textWidth / 2, baseY + descent));
             }
+
+
+            //分割线
+            int cut = 4;
+            if (cache.size() == 0 && rows.size() > cut && rows.size() % cut == 0 && i > 0 && ((i + 1) % cut == 0) && i + 1 != rows.size()) {
+                canvas.drawLine(-getWidth() / 2, baseY + descent + 3, getWidth() / 2, baseY + descent + 2, virtualLineBlue);
+            }
+            cut = 5;
+            if (cache.size() == 0 && rows.size() > cut && rows.size() % cut == 0 && i > 0 && ((i + 1) % cut == 0) && i + 1 != rows.size()) {
+                canvas.drawLine(-getWidth() / 2, baseY + descent + 3, getWidth() / 2, baseY + descent + 2, virtualLineBlue);
+            }
+
         }
 
 
-        //draw title
         paint.setTextSize(sp2px(20));
-        Paint.FontMetrics fontMetrics2 = paint.getFontMetrics();
-        float textHeight2 = poemWordHeight = fontMetrics.bottom - fontMetrics.top;
 
+        //draw title
         paint.setColor(Color.BLUE);
         float textWidth = paint.measureText(title);
         canvas.drawText(title, -textWidth / 2, firstY - textHeight, paint);
