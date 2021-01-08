@@ -40,8 +40,7 @@ public class CustomTextView extends View {
     private Bitmap moonMap = BitmapFactory.decodeResource(getResources(), R.drawable.moon);
     private Bitmap flowerMap = BitmapFactory.decodeResource(getResources(), R.drawable.flower);
 
-    private ValueAnimator animator = ValueAnimator.ofInt(0, 100);
-
+    private ValueAnimator animator = ValueAnimator.ofInt(0, 1000);
 
     // 画笔
     private Paint paint = new Paint();
@@ -285,6 +284,7 @@ public class CustomTextView extends View {
                 longPress = !longPress;
                 runTime = 0;
                 switchShow = false;
+                animator.end();
                 invalidate();
                 return true;
             }
@@ -322,7 +322,7 @@ public class CustomTextView extends View {
         }
 
         if (switchShow) {
-            if (runTime > 4) {
+            if (runTime == 2) {
                 switchShow = false;
                 longPress = false;
             } else {
@@ -431,6 +431,31 @@ public class CustomTextView extends View {
         canvas.translate(getWidth() / 2, getHeight() / 2);
 
         if (selectPoem) {
+
+            if (!animator.isRunning()) {
+                animator.setDuration(20 * 1000);
+                animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator animation) {
+                        if (!longPress && !switchShow && selectPoem) {
+                            invalidate();
+                        }
+                    }
+                });
+                animator.start();
+            } else {
+
+                int value = (int) animator.getAnimatedValue();
+
+                if (poem.contains("月")) {
+                    canvas.drawBitmap(moonMap, getWidth() / 2 - value, -getHeight() / 2 + 20, paint);
+                }
+
+                if (poem.contains("花")) {
+                    canvas.drawBitmap(flowerMap, -getWidth() / 2, getHeight() / 2 - value, paint);
+                }
+            }
+
             if (drawLinePoint.size() > 0) {
                 for (LinePoint linePoint : drawLinePoint) {
                     canvas.drawLine(linePoint.sx, linePoint.sy, linePoint.ex, linePoint.ey, virtualLine);
@@ -934,14 +959,6 @@ public class CustomTextView extends View {
     private void drawPoem(final Canvas canvas, boolean reDraw) {
 
         initPint();
-
-        if (poem.contains("月")) {
-            canvas.drawBitmap(moonMap, getWidth() / 3 - 50, -getHeight() / 2 + 20, paint);
-        }
-
-        if (poem.contains("花")) {
-            canvas.drawBitmap(flowerMap, (-getWidth() / 3), getHeight() / 2 - flowerMap.getHeight(), paint);
-        }
 
 
         Paint.FontMetrics fontMetrics = paint.getFontMetrics();
