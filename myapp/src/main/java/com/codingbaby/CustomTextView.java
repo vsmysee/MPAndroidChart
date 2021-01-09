@@ -1,6 +1,5 @@
 package com.codingbaby;
 
-import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.AssetManager;
@@ -78,6 +77,7 @@ public class CustomTextView extends View {
     private List<String> poems_students = new ArrayList<>();
 
     private List<Character> words = new ArrayList<>();
+    private List<Character> words_students = new ArrayList<>();
     private Map<Character, String> word = new LinkedHashMap<>();
 
     private static Map<Character, List<String>> english = new LinkedHashMap<>();
@@ -85,6 +85,7 @@ public class CustomTextView extends View {
 
 
     private List<String> idioms = new ArrayList<>();
+    private List<String> idioms_students = new ArrayList<>();
 
     private Map<String, String> pinyin = new HashMap<>();
     private Map<String, String> oldWord = new HashMap<>();
@@ -141,10 +142,17 @@ public class CustomTextView extends View {
         return words.get(index);
     }
 
-    private String randIdiom() {
+    private Character randomStudentsWord() {
         Random rand = new Random();
-        int index = rand.nextInt(idioms.size());
-        return idioms.get(index);
+        int index = rand.nextInt(words_students.size());
+        return words_students.get(index);
+    }
+
+
+    private String randIdiom(boolean students) {
+        Random rand = new Random();
+        int index = rand.nextInt(students ? idioms_students.size() : idioms.size());
+        return students ? idioms_students.get(index) : idioms.get(index);
     }
 
     private String randShortEnglish() {
@@ -242,6 +250,23 @@ public class CustomTextView extends View {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+
+
+                try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("freqChinese.txt")))) {
+                    String line;
+                    while ((line = bf.readLine()) != null) {
+                        if (!line.trim().equals("")) {
+                            for (char c : line.toCharArray()) {
+                                if (Pinyin.isChinese(c)) {
+                                    words_students.add(c);
+                                }
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
             }
         }).start();
 
@@ -254,6 +279,17 @@ public class CustomTextView extends View {
                     String line;
                     while ((line = bf.readLine()) != null) {
                         idioms.add(line);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+
+                // load chinese idiom
+                try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("idiom-students.txt")))) {
+                    String line;
+                    while ((line = bf.readLine()) != null) {
+                        idioms_students.add(line);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -401,7 +437,7 @@ public class CustomTextView extends View {
 
             int n = 0;
 
-            paint.setColor(Color.GRAY);
+            paint.setColor(selectWordForStudent ? Color.BLUE : Color.GRAY);
             canvas.drawCircle(100 + n * 100, getHeight() - 100, radius, paint);
             paint.setColor(Color.WHITE);
             paint.setTextSize(40);
@@ -410,7 +446,7 @@ public class CustomTextView extends View {
 
             n = 1;
 
-            paint.setColor(Color.GRAY);
+            paint.setColor(selectWordForAll ? Color.BLUE : Color.GRAY);
             canvas.drawCircle(100 + n * 100, getHeight() - 100, radius, paint);
             paint.setColor(Color.WHITE);
             paint.setTextSize(40);
@@ -422,7 +458,7 @@ public class CustomTextView extends View {
 
             int n = 0;
 
-            paint.setColor(Color.GRAY);
+            paint.setColor(selectIdiomStudent ? Color.BLUE : Color.GRAY);
             canvas.drawCircle(100 + n * 100, getHeight() - 100, radius, paint);
             paint.setColor(Color.WHITE);
             paint.setTextSize(40);
@@ -430,7 +466,7 @@ public class CustomTextView extends View {
 
             n = 1;
 
-            paint.setColor(Color.GRAY);
+            paint.setColor(selectIdiomForAll ? Color.BLUE : Color.GRAY);
             canvas.drawCircle(100 + n * 100, getHeight() - 100, radius, paint);
             paint.setColor(Color.WHITE);
             paint.setTextSize(40);
@@ -694,13 +730,36 @@ public class CustomTextView extends View {
 
 
         if (x > 60 && y > getHeight() - 140 && y < getHeight() - 60 && x < 140) {
-            selectPoemForStudent = true;
-            selectPoemForAll = false;
+            if (selectPoem) {
+                selectPoemForStudent = true;
+                selectPoemForAll = false;
+            }
+            if (selectWord) {
+                selectWordForStudent = true;
+                selectWordForAll = false;
+            }
+
+            if (selectIdiom) {
+                selectIdiomStudent = true;
+                selectIdiomForAll = false;
+            }
         }
 
         if (x > 60 + 100 && y > getHeight() - 140 && y < getHeight() - 60 && x < 140 + 100) {
-            selectPoemForAll = true;
-            selectPoemForStudent = false;
+            if (selectPoem) {
+                selectPoemForAll = true;
+                selectPoemForStudent = false;
+            }
+            if (selectWord) {
+                selectWordForStudent = false;
+                selectWordForAll = true;
+            }
+
+            if (selectIdiom) {
+                selectIdiomStudent = false;
+                selectIdiomForAll = true;
+            }
+
         }
 
 
@@ -710,6 +769,13 @@ public class CustomTextView extends View {
 
     private boolean selectPoemForStudent;
     private boolean selectPoemForAll = true;
+
+    private boolean selectWordForStudent;
+    private boolean selectWordForAll = true;
+
+
+    private boolean selectIdiomStudent;
+    private boolean selectIdiomForAll = true;
 
 
     @Override
@@ -869,7 +935,7 @@ public class CustomTextView extends View {
         List<String> rows = new ArrayList<>();
 
         for (int n = 0; n < 5; n++) {
-            rows.add(randIdiom());
+            rows.add(randIdiom(selectIdiomStudent));
         }
 
         int textLines = rows.size();
@@ -909,6 +975,11 @@ public class CustomTextView extends View {
         List<String> rows = new ArrayList<>();
 
         Character chineseWord = randomWord();
+
+        if (selectWordForStudent) {
+            chineseWord = randomStudentsWord();
+        }
+
 
         rows.add(word.get(chineseWord));
         String w = String.valueOf(chineseWord);
