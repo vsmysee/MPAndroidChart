@@ -39,8 +39,15 @@ public class CustomTextView extends View {
 
     private Bitmap moonMap = BitmapFactory.decodeResource(getResources(), R.drawable.moon);
     private Bitmap flowerMap = BitmapFactory.decodeResource(getResources(), R.drawable.flower);
-
-    private ValueAnimator animator = ValueAnimator.ofInt(0, 1000);
+    private Bitmap grassMap = BitmapFactory.decodeResource(getResources(), R.drawable.grass);
+    private Bitmap rainMap = BitmapFactory.decodeResource(getResources(), R.drawable.rain);
+    private Bitmap birdMap = BitmapFactory.decodeResource(getResources(), R.drawable.bird);
+    private Bitmap boatMap = BitmapFactory.decodeResource(getResources(), R.drawable.boat);
+    private Bitmap cloudMap = BitmapFactory.decodeResource(getResources(), R.drawable.cloud);
+    private Bitmap leafMap = BitmapFactory.decodeResource(getResources(), R.drawable.leaf);
+    private Bitmap starMap = BitmapFactory.decodeResource(getResources(), R.drawable.star);
+    private Bitmap sunMap = BitmapFactory.decodeResource(getResources(), R.drawable.sun);
+    private Bitmap snowMap = BitmapFactory.decodeResource(getResources(), R.drawable.snow);
 
     // 画笔
     private Paint paint = new Paint();
@@ -284,7 +291,9 @@ public class CustomTextView extends View {
                 longPress = !longPress;
                 runTime = 0;
                 switchShow = false;
-                animator.end();
+
+                AnimatorMeta.stop();
+
                 invalidate();
                 return true;
             }
@@ -432,29 +441,63 @@ public class CustomTextView extends View {
 
         if (selectPoem) {
 
-            if (!animator.isRunning()) {
-                animator.setDuration(20 * 1000);
-                animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                    @Override
-                    public void onAnimationUpdate(ValueAnimator animation) {
-                        if (!longPress && !switchShow && selectPoem) {
-                            invalidate();
-                        }
-                    }
-                });
-                animator.start();
-            } else {
+            String k = "月";
 
-                int value = (int) animator.getAnimatedValue();
-
-                if (poem.contains("月")) {
-                    canvas.drawBitmap(moonMap, getWidth() / 2 - value, -getHeight() / 2 + 20, paint);
-                }
-
-                if (poem.contains("花")) {
-                    canvas.drawBitmap(flowerMap, -getWidth() / 2, getHeight() / 2 - value, paint);
-                }
+            if (poem.contains(k) && AnimatorMeta.get(k).isRunning()) {
+                canvas.drawBitmap(moonMap, getWidth() / 2 - (int) AnimatorMeta.get(k).getAnimatedValue(), -getHeight() / 2 + 20, paint);
             }
+
+            k = "日出";
+
+            if (poem.contains(k) && AnimatorMeta.get(k).isRunning()) {
+                canvas.drawBitmap(sunMap, getWidth() / 2 - (int) AnimatorMeta.get(k).getAnimatedValue(), -getHeight() / 2 + 20, paint);
+            }
+
+            k = "雨";
+
+            if (poem.contains(k) && AnimatorMeta.get(k).isRunning()) {
+                canvas.drawBitmap(rainMap, -getWidth() / 2, -getHeight() / 2 - rainMap.getHeight() + (int) AnimatorMeta.get(k).getAnimatedValue(), paint);
+            }
+
+
+            k = "云";
+
+            if (poem.contains(k) && AnimatorMeta.get(k).isRunning()) {
+                canvas.drawBitmap(cloudMap, 0, -getHeight() / 2 - cloudMap.getHeight() + (int) AnimatorMeta.get(k).getAnimatedValue(), paint);
+            }
+
+            k = "星";
+            if (poem.contains(k) && AnimatorMeta.get(k).isRunning()) {
+                canvas.drawBitmap(starMap, -getWidth() / 3, -getHeight() / 2 - starMap.getHeight() + (int) AnimatorMeta.get(k).getAnimatedValue(), paint);
+            }
+
+            k = "雪";
+            if (poem.contains(k) && AnimatorMeta.get(k).isRunning()) {
+                canvas.drawBitmap(snowMap, -getWidth() / 3, -getHeight() / 2 + (int) AnimatorMeta.get(k).getAnimatedValue(), paint);
+            }
+
+            k = "花";
+            if (poem.contains(k) && AnimatorMeta.get(k).isRunning()) {
+                canvas.drawBitmap(flowerMap, -getWidth() / 2 - flowerMap.getWidth() + (int) AnimatorMeta.get(k).getAnimatedValue(), getHeight() / 2 - flowerMap.getHeight() - 100, paint);
+            }
+
+
+            if (poem.contains(k) && (AnimatorMeta.get("船").isRunning() || AnimatorMeta.get("舟").isRunning())) {
+                int v = (int) AnimatorMeta.get("舟").getAnimatedValue();
+                canvas.drawBitmap(boatMap, -getWidth() / 2 - boatMap.getWidth() + v, getHeight() / 2 - boatMap.getHeight(), paint);
+            }
+
+            k = "草";
+            if (poem.contains(k) && AnimatorMeta.get(k).isRunning()) {
+                canvas.drawBitmap(grassMap, -getWidth() / 2, getHeight() / 2 - (int) AnimatorMeta.get(k).getAnimatedValue(), paint);
+            }
+
+
+            k = "鸟";
+            if (poem.contains(k) && AnimatorMeta.get(k).isRunning()) {
+                canvas.drawBitmap(birdMap, -getWidth() / 2 + (int) AnimatorMeta.get(k).getAnimatedValue(), 0, paint);
+            }
+
 
             if (drawLinePoint.size() > 0) {
                 for (LinePoint linePoint : drawLinePoint) {
@@ -585,7 +628,27 @@ public class CustomTextView extends View {
 
 
             if (selectPoem && cursor == 0) {
+
                 randomPoem();
+
+                AnimatorMeta.stop();
+
+                List<ValueAnimator> valueAnimators = AnimatorMeta.checkIf(poem);
+                for (ValueAnimator valueAnimator : valueAnimators) {
+
+                    valueAnimator.removeAllUpdateListeners();
+                    valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                        @Override
+                        public void onAnimationUpdate(ValueAnimator animation) {
+                            if (!longPress && !switchShow && selectPoem) {
+                                invalidate();
+                            }
+                        }
+                    });
+
+                    valueAnimator.start();
+                }
+
             }
 
             invalidate();
@@ -594,6 +657,7 @@ public class CustomTextView extends View {
 
         return super.onTouchEvent(event);
     }
+
 
     private boolean checkTouch(float y, float x) {
 
@@ -743,6 +807,7 @@ public class CustomTextView extends View {
                 if (selectPoem && cursor == 0) {
                     randomPoem();
                 }
+
 
                 invalidate();
                 return true;
@@ -1079,11 +1144,11 @@ public class CustomTextView extends View {
             //分割线
             int cut = 4;
             if (cache.size() == 0 && rows.size() > cut && rows.size() % cut == 0 && i > 0 && ((i + 1) % cut == 0) && i + 1 != rows.size()) {
-                canvas.drawLine(-getWidth() / 2, baseY + descent + 3, getWidth() / 2, baseY + descent + 2, virtualLineBlue);
+                //canvas.drawLine(-getWidth() / 2, baseY + descent + 3, getWidth() / 2, baseY + descent + 2, virtualLineBlue);
             }
             cut = 5;
             if (cache.size() == 0 && rows.size() > cut && rows.size() % cut == 0 && i > 0 && ((i + 1) % cut == 0) && i + 1 != rows.size()) {
-                canvas.drawLine(-getWidth() / 2, baseY + descent + 3, getWidth() / 2, baseY + descent + 2, virtualLineBlue);
+                //canvas.drawLine(-getWidth() / 2, baseY + descent + 3, getWidth() / 2, baseY + descent + 2, virtualLineBlue);
             }
 
         }
