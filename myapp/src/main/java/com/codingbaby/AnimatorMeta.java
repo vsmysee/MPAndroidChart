@@ -29,18 +29,18 @@ public class AnimatorMeta {
     }
 
     static {
-        keyWords.put("月", buildAnimator(200, 3 * 1000));
-        keyWords.put("星", buildAnimator(300, 4 * 1000));
-        keyWords.put("雪", buildAnimator(400, 4 * 1000));
-        keyWords.put("日出", buildAnimator(200, 3 * 1000));
-        keyWords.put("白日", buildAnimator(200, 3 * 1000));
-        keyWords.put("花", buildAnimator(200, 3 * 1000));
-        keyWords.put("船", buildAnimator(1000, 6 * 1000));
-        keyWords.put("舟", buildAnimator(1000, 6 * 1000));
-        keyWords.put("雨", buildAnimator(300, 5 * 1000));
-        keyWords.put("草", buildAnimator(200, 3 * 1000));
-        keyWords.put("云", buildAnimator(200, 3 * 1000));
-        keyWords.put("鸟", buildAnimator(200, 3 * 1000));
+        keyWords.put("月", buildAnimator(1000, 20 * 1000));
+        keyWords.put("星", buildAnimator(300, 10 * 1000));
+        keyWords.put("雪", buildAnimator(200, 10 * 1000));
+        keyWords.put("日出", buildAnimator(200, 10 * 1000));
+        keyWords.put("白日", buildAnimator(200, 10 * 1000));
+        keyWords.put("花", buildAnimator(150, 10 * 1000));
+        keyWords.put("船", buildAnimator(1000, 10 * 1000));
+        keyWords.put("舟", buildAnimator(1000, 10 * 1000));
+        keyWords.put("雨", buildAnimator(300, 10 * 1000));
+        keyWords.put("草", buildAnimator(200, 10 * 1000));
+        keyWords.put("云", buildAnimator(200, 10 * 1000));
+        keyWords.put("鸟", buildAnimator(1000, 10 * 1000));
     }
 
     public static List<ValueAnimator> checkIf(String poem) {

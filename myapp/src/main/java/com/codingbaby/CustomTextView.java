@@ -1,5 +1,6 @@
 package com.codingbaby;
 
+import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.AssetManager;
@@ -440,65 +441,6 @@ public class CustomTextView extends View {
         canvas.translate(getWidth() / 2, getHeight() / 2);
 
         if (selectPoem) {
-
-            String k = "月";
-
-            if (poem.contains(k) && AnimatorMeta.get(k).isRunning()) {
-                canvas.drawBitmap(moonMap, getWidth() / 2 - (int) AnimatorMeta.get(k).getAnimatedValue(), -getHeight() / 2 + 20, paint);
-            }
-
-            k = "日出";
-
-            if (poem.contains(k) && AnimatorMeta.get(k).isRunning()) {
-                canvas.drawBitmap(sunMap, getWidth() / 2 - (int) AnimatorMeta.get(k).getAnimatedValue(), -getHeight() / 2 + 20, paint);
-            }
-
-            k = "雨";
-
-            if (poem.contains(k) && AnimatorMeta.get(k).isRunning()) {
-                canvas.drawBitmap(rainMap, -getWidth() / 2, -getHeight() / 2 - rainMap.getHeight() + (int) AnimatorMeta.get(k).getAnimatedValue(), paint);
-            }
-
-
-            k = "云";
-
-            if (poem.contains(k) && AnimatorMeta.get(k).isRunning()) {
-                canvas.drawBitmap(cloudMap, 0, -getHeight() / 2 - cloudMap.getHeight() + (int) AnimatorMeta.get(k).getAnimatedValue(), paint);
-            }
-
-            k = "星";
-            if (poem.contains(k) && AnimatorMeta.get(k).isRunning()) {
-                canvas.drawBitmap(starMap, -getWidth() / 3, -getHeight() / 2 - starMap.getHeight() + (int) AnimatorMeta.get(k).getAnimatedValue(), paint);
-            }
-
-            k = "雪";
-            if (poem.contains(k) && AnimatorMeta.get(k).isRunning()) {
-                canvas.drawBitmap(snowMap, -getWidth() / 3, -getHeight() / 2 + (int) AnimatorMeta.get(k).getAnimatedValue(), paint);
-            }
-
-            k = "花";
-            if (poem.contains(k) && AnimatorMeta.get(k).isRunning()) {
-                canvas.drawBitmap(flowerMap, -getWidth() / 2 - flowerMap.getWidth() + (int) AnimatorMeta.get(k).getAnimatedValue(), getHeight() / 2 - flowerMap.getHeight() - 100, paint);
-            }
-
-
-            if (poem.contains(k) && (AnimatorMeta.get("船").isRunning() || AnimatorMeta.get("舟").isRunning())) {
-                int v = (int) AnimatorMeta.get("舟").getAnimatedValue();
-                canvas.drawBitmap(boatMap, -getWidth() / 2 - boatMap.getWidth() + v, getHeight() / 2 - boatMap.getHeight(), paint);
-            }
-
-            k = "草";
-            if (poem.contains(k) && AnimatorMeta.get(k).isRunning()) {
-                canvas.drawBitmap(grassMap, -getWidth() / 2, getHeight() / 2 - (int) AnimatorMeta.get(k).getAnimatedValue(), paint);
-            }
-
-
-            k = "鸟";
-            if (poem.contains(k) && AnimatorMeta.get(k).isRunning()) {
-                canvas.drawBitmap(birdMap, -getWidth() / 2 + (int) AnimatorMeta.get(k).getAnimatedValue(), 0, paint);
-            }
-
-
             if (drawLinePoint.size() > 0) {
                 for (LinePoint linePoint : drawLinePoint) {
                     canvas.drawLine(linePoint.sx, linePoint.sy, linePoint.ex, linePoint.ey, virtualLine);
@@ -640,15 +582,9 @@ public class CustomTextView extends View {
                     valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                         @Override
                         public void onAnimationUpdate(ValueAnimator animation) {
-                            if (!longPress && !switchShow && selectPoem) {
-                                invalidate();
-                            }
                         }
                     });
-
-                    valueAnimator.start();
                 }
-
             }
 
             invalidate();
