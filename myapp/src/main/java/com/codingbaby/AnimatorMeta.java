@@ -39,10 +39,6 @@ public class AnimatorMeta {
         });
 
 
-
-
-
-
     }
 
     private ValueAnimator buildAnimator(int number, int duration) {
@@ -91,8 +87,22 @@ public class AnimatorMeta {
             for (int i = 3; i < split.length; i++) {
                 String p = split[i];
                 if (p.contains(key)) {
-                    keyWords.get(key).start();
-                    break;
+                    if (!p.contains("岁")
+                            && !p.contains("一")
+                            && !p.contains("二")
+                            && !p.contains("三")
+                            && !p.contains("四")
+                            && !p.contains("五")
+                            && !p.contains("六")
+                            && !p.contains("七")
+                            && !p.contains("八")
+                            && !p.contains("九")
+                            && !p.contains("十")
+                            && !p.contains("十一")
+                            && !p.contains("十二")) {
+                        keyWords.get(key).start();
+                        break;
+                    }
                 }
             }
 

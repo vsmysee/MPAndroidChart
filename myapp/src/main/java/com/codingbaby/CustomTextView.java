@@ -760,6 +760,9 @@ public class CustomTextView extends View {
 
                 if (selectPoem && cursor == 0) {
                     randomPoem();
+
+                    animatorMeta.start(poem);
+
                 }
 
 
