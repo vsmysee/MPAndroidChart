@@ -8,6 +8,7 @@ import android.view.View;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class AnimatorMeta {
 
@@ -16,7 +17,7 @@ public class AnimatorMeta {
     private int LONG = 500;
 
 
-    public AnimatorMeta(final Bitmap moonMap, final Bitmap rainMap, final Bitmap grassMap, final View view) {
+    public AnimatorMeta(final Bitmap moonMap, final Bitmap rainMap, final Bitmap grassMap, final Bitmap boatMap, final View view) {
 
         String moon = "月";
 
@@ -81,6 +82,35 @@ public class AnimatorMeta {
         });
 
 
+        String boat = "船";
+
+        ValueAnimator boatVa = buildAnimator(1300, 20 * 1000);
+        boatVa.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                if ((int) valueAnimator.getAnimatedValue() != 1300) {
+                    view.invalidate();
+                }
+            }
+        });
+
+        keyWords.put(boat, boatVa);
+        actions.put(boat, new AnimatorAction() {
+            @Override
+            public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
+                canvas.drawBitmap(boatMap, -width / 2 - boatMap.getWidth() + value, height / 2, paint);
+            }
+        });
+
+        keyWords.put("舟", boatVa);
+        actions.put("舟", new AnimatorAction() {
+            @Override
+            public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
+                canvas.drawBitmap(boatMap, -width / 2 - boatMap.getWidth() + value, height / 2 - boatMap.getHeight(), paint);
+            }
+        });
+
+
     }
 
     private ValueAnimator buildAnimator(int number, int duration) {
@@ -105,6 +135,10 @@ public class AnimatorMeta {
 
     public int getValue(String key) {
         return (int) keyWords.get(key).getAnimatedValue();
+    }
+
+    public Set<String> keySet() {
+        return keyWords.keySet();
     }
 
     private Map<String, ValueAnimator> keyWords = new HashMap<>();

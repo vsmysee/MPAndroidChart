@@ -182,7 +182,7 @@ public class CustomTextView extends View {
     public CustomTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        animatorMeta = new AnimatorMeta(moonMap, rainMap, grassMap, this);
+        animatorMeta = new AnimatorMeta(moonMap, rainMap, grassMap, boatMap, this);
 
         final AssetManager assets = context.getAssets();
 
@@ -427,7 +427,7 @@ public class CustomTextView extends View {
 
         if (selectPoem) {
 
-            for (String key : Arrays.asList("月", "雨", "草")) {
+            for (String key : animatorMeta.keySet()) {
                 if (animatorMeta.isOn(key)) {
                     int value = animatorMeta.getValue(key);
                     ValueAnimator va = animatorMeta.va(key);
