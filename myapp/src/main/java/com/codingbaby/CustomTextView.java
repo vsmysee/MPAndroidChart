@@ -182,29 +182,10 @@ public class CustomTextView extends View {
 
         // load poem
         final AssetManager assets = context.getAssets();
-        try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("poem.txt")))) {
-            String line;
-            while ((line = bf.readLine()) != null) {
-                if (!line.trim().equals("")) {
-                    poems.add(line);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
+        poems.addAll(FileReader.loadPoem(assets));
 
-        //load poem for students
-        try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("poem-students.txt")))) {
-            String line;
-            while ((line = bf.readLine()) != null) {
-                if (!line.trim().equals("")) {
-                    poems_students.add(line);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        poems_students.addAll(FileReader.loadStudentPoem(assets));
 
         randomPoem();
 
@@ -252,21 +233,7 @@ public class CustomTextView extends View {
                     e.printStackTrace();
                 }
 
-
-                try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("freqChinese.txt")))) {
-                    String line;
-                    while ((line = bf.readLine()) != null) {
-                        if (!line.trim().equals("")) {
-                            for (char c : line.toCharArray()) {
-                                if (Pinyin.isChinese(c)) {
-                                    words_students.add(c);
-                                }
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                words_students.addAll(FileReader.freqChinese(assets));
 
             }
         }).start();
@@ -278,15 +245,8 @@ public class CustomTextView extends View {
                 idioms.addAll(FileReader.loadIdiom(assets));
                 idioms_students.addAll(FileReader.loadStudentIdiom(assets));
 
-                // load short english
-                try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("cet4/short.txt")))) {
-                    String line;
-                    while ((line = bf.readLine()) != null) {
-                        shortEnglish.add(line);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                shortEnglish.addAll(FileReader.loadCet4Short(assets));
+
 
                 // load english word
                 for (char ch = 'A'; ch <= 'Z'; ch++) {
