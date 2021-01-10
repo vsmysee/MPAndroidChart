@@ -19,6 +19,7 @@ public class AnimatorMeta {
 
     public AnimatorMeta(final Bitmap moonMap, final Bitmap rainMap, final Bitmap grassMap,
                         final Bitmap boatMap, final Bitmap sunMap, final Bitmap snowMap, final Bitmap autumnMap,
+                        final Bitmap springMap, final Bitmap springMap2,
                         final View view) {
 
         String moon = "月";
@@ -136,6 +137,32 @@ public class AnimatorMeta {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
                 canvas.drawBitmap(autumnMap, -width / 2 - 50, height / 2 - value, paint);
+            }
+        });
+
+
+        String spring = "春";
+
+        ValueAnimator springVa = buildAnimator(100, 10 * 1000);
+        springVa.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                if ((int) valueAnimator.getAnimatedValue() != 100) {
+                    view.invalidate();
+                }
+            }
+        });
+
+        keyWords.put(spring, springVa);
+        actions.put(spring, new AnimatorAction() {
+            @Override
+            public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
+                for (int i = 0; i < 20; i++) {
+                    canvas.drawBitmap(springMap, -width / 2 + i * 80, height / 2 - value, paint);
+                    if (i == 5) {
+                        canvas.drawBitmap(springMap2, -width / 2 + i * 70, height / 2 - value, paint);
+                    }
+                }
             }
         });
 

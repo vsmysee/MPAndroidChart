@@ -49,6 +49,8 @@ public class CustomTextView extends View {
     private Bitmap snowMap = BitmapFactory.decodeResource(getResources(), R.drawable.snow);
     private Bitmap treeMap = BitmapFactory.decodeResource(getResources(), R.drawable.tree);
     private Bitmap autumn = BitmapFactory.decodeResource(getResources(), R.drawable.autumn);
+    private Bitmap spring = BitmapFactory.decodeResource(getResources(), R.drawable.spring);
+    private Bitmap spring2 = BitmapFactory.decodeResource(getResources(), R.drawable.spring2);
 
     private AnimatorMeta animatorMeta;
 
@@ -182,7 +184,7 @@ public class CustomTextView extends View {
     public CustomTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        animatorMeta = new AnimatorMeta(moonMap, rainMap, grassMap, boatMap, sunMap, snowMap, autumn, this);
+        animatorMeta = new AnimatorMeta(moonMap, rainMap, grassMap, boatMap, sunMap, snowMap, autumn,spring,spring2, this);
 
         final AssetManager assets = context.getAssets();
 
@@ -751,6 +753,8 @@ public class CustomTextView extends View {
                 } catch (Exception e) {
                     randomPoem();
                 }
+
+                animatorMeta.start(poem);
 
                 invalidate();
                 return true;
