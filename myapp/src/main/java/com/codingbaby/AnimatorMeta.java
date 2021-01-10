@@ -19,7 +19,7 @@ public class AnimatorMeta {
 
     public AnimatorMeta(final Bitmap moonMap, final Bitmap rainMap, final Bitmap grassMap,
                         final Bitmap boatMap, final Bitmap sunMap, final Bitmap snowMap, final Bitmap autumnMap,
-                        final Bitmap springMap, final Bitmap springMap2,
+                        final Bitmap springMap, final Bitmap springMap2, final Bitmap peachMap,
                         final View view) {
 
         String moon = "月";
@@ -163,6 +163,27 @@ public class AnimatorMeta {
                         canvas.drawBitmap(springMap2, -width / 2 + i * 70, height / 2 - value, paint);
                     }
                 }
+            }
+        });
+
+
+        String peach = "桃";
+
+        ValueAnimator peachVa = buildAnimator(1000, 10 * 1000);
+        peachVa.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                if ((int) valueAnimator.getAnimatedValue() != 1000) {
+                    view.invalidate();
+                }
+            }
+        });
+
+        keyWords.put(peach, peachVa);
+        actions.put(peach, new AnimatorAction() {
+            @Override
+            public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
+                canvas.drawBitmap(peachMap, -width / 2, height / 2 + grassMap.getHeight() - value, paint);
             }
         });
 
