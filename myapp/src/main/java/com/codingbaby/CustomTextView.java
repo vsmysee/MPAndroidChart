@@ -23,7 +23,6 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -44,11 +43,12 @@ public class CustomTextView extends View {
     private Bitmap rainMap = BitmapFactory.decodeResource(getResources(), R.drawable.rain);
     private Bitmap birdMap = BitmapFactory.decodeResource(getResources(), R.drawable.bird);
     private Bitmap boatMap = BitmapFactory.decodeResource(getResources(), R.drawable.boat);
-    private Bitmap cloudMap = BitmapFactory.decodeResource(getResources(), R.drawable.cloud);
     private Bitmap leafMap = BitmapFactory.decodeResource(getResources(), R.drawable.leaf);
     private Bitmap starMap = BitmapFactory.decodeResource(getResources(), R.drawable.star);
     private Bitmap sunMap = BitmapFactory.decodeResource(getResources(), R.drawable.sun);
     private Bitmap snowMap = BitmapFactory.decodeResource(getResources(), R.drawable.snow);
+    private Bitmap treeMap = BitmapFactory.decodeResource(getResources(), R.drawable.tree);
+    private Bitmap autumn = BitmapFactory.decodeResource(getResources(), R.drawable.autumn);
 
     private AnimatorMeta animatorMeta;
 
@@ -182,7 +182,7 @@ public class CustomTextView extends View {
     public CustomTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        animatorMeta = new AnimatorMeta(moonMap, rainMap, grassMap, boatMap, this);
+        animatorMeta = new AnimatorMeta(moonMap, rainMap, grassMap, boatMap, sunMap, snowMap, autumn, this);
 
         final AssetManager assets = context.getAssets();
 
