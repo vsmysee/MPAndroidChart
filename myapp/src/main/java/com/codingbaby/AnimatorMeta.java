@@ -10,42 +10,62 @@ import java.util.Map;
 public class AnimatorMeta {
 
 
-    private static Map<String, ValueAnimator> keyWords = new HashMap<>();
+    class AnimatorData {
 
-    private static ValueAnimator buildAnimator(int number, int duration) {
-        ValueAnimator animator = ValueAnimator.ofInt(0, number);
-        animator.setDuration(duration);
-        return animator;
-    }
+        private ValueAnimator valueAnimator;
 
-    public static ValueAnimator get(String key) {
-        return keyWords.get(key);
-    }
+        private AnimatorAction animatorAction;
 
-    public static void stop() {
-        for (ValueAnimator value : keyWords.values()) {
-            value.end();
+        public ValueAnimator getValueAnimator() {
+            return valueAnimator;
+        }
+
+        public void setValueAnimator(ValueAnimator valueAnimator) {
+            this.valueAnimator = valueAnimator;
+        }
+
+        public AnimatorAction getAnimatorAction() {
+            return animatorAction;
+        }
+
+        public void setAnimatorAction(AnimatorAction animatorAction) {
+            this.animatorAction = animatorAction;
         }
     }
 
-    static {
-        keyWords.put("月", buildAnimator(1000, 20 * 1000));
-        keyWords.put("星", buildAnimator(300, 10 * 1000));
-        keyWords.put("雪", buildAnimator(200, 10 * 1000));
-        keyWords.put("日出", buildAnimator(200, 10 * 1000));
-        keyWords.put("白日", buildAnimator(200, 10 * 1000));
-        keyWords.put("花", buildAnimator(150, 10 * 1000));
-        keyWords.put("船", buildAnimator(1000, 10 * 1000));
-        keyWords.put("舟", buildAnimator(1000, 10 * 1000));
-        keyWords.put("雨", buildAnimator(300, 10 * 1000));
-        keyWords.put("草", buildAnimator(200, 10 * 1000));
-        keyWords.put("云", buildAnimator(200, 10 * 1000));
-        keyWords.put("鸟", buildAnimator(1000, 10 * 1000));
+    private  Map<String, AnimatorData> keyWords = new HashMap<>();
+
+    private  AnimatorData buildAnimator(int number, int duration,AnimatorAction action) {
+        ValueAnimator animator = ValueAnimator.ofInt(0, number);
+        animator.setDuration(duration);
+
+        AnimatorData data = new AnimatorData();
+        data.valueAnimator = animator;
+
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+
+            }
+        });
+
+        data.animatorAction = action;
+        return data;
     }
 
-    public static List<ValueAnimator> checkIf(String poem) {
 
-        List<ValueAnimator> valueAnimators = new ArrayList<>();
+    public  void stop() {
+        for (AnimatorData value : keyWords.values()) {
+            value.valueAnimator.end();
+        }
+    }
+
+    public AnimatorMeta() {
+    }
+
+    public  List<AnimatorData> checkIf(String poem) {
+
+        List<AnimatorData> valueAnimators = new ArrayList<>();
 
         String[] split = poem.split(";");
 

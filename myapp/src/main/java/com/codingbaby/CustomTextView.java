@@ -1,6 +1,5 @@
 package com.codingbaby;
 
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
@@ -48,6 +47,8 @@ public class CustomTextView extends View {
     private Bitmap starMap = BitmapFactory.decodeResource(getResources(), R.drawable.star);
     private Bitmap sunMap = BitmapFactory.decodeResource(getResources(), R.drawable.sun);
     private Bitmap snowMap = BitmapFactory.decodeResource(getResources(), R.drawable.snow);
+
+    private AnimatorMeta animatorMeta;
 
     // 画笔
     private Paint paint = new Paint();
@@ -274,27 +275,8 @@ public class CustomTextView extends View {
             @Override
             public void run() {
 
-                // load chinese idiom
-                try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("idiom.txt")))) {
-                    String line;
-                    while ((line = bf.readLine()) != null) {
-                        idioms.add(line);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-
-                // load chinese idiom
-                try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("idiom-students.txt")))) {
-                    String line;
-                    while ((line = bf.readLine()) != null) {
-                        idioms_students.add(line);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
+                idioms.addAll(FileReader.loadIdiom(assets));
+                idioms_students.addAll(FileReader.loadStudentIdiom(assets));
 
                 // load short english
                 try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("cet4/short.txt")))) {
@@ -328,8 +310,6 @@ public class CustomTextView extends View {
                 longPress = !longPress;
                 runTime = 0;
                 switchShow = false;
-
-                AnimatorMeta.stop();
 
                 invalidate();
                 return true;
@@ -477,6 +457,7 @@ public class CustomTextView extends View {
         canvas.translate(getWidth() / 2, getHeight() / 2);
 
         if (selectPoem) {
+
             if (drawLinePoint.size() > 0) {
                 for (LinePoint linePoint : drawLinePoint) {
                     canvas.drawLine(linePoint.sx, linePoint.sy, linePoint.ex, linePoint.ey, virtualLine);
@@ -609,18 +590,6 @@ public class CustomTextView extends View {
 
                 randomPoem();
 
-                AnimatorMeta.stop();
-
-                List<ValueAnimator> valueAnimators = AnimatorMeta.checkIf(poem);
-                for (ValueAnimator valueAnimator : valueAnimators) {
-
-                    valueAnimator.removeAllUpdateListeners();
-                    valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                        @Override
-                        public void onAnimationUpdate(ValueAnimator animation) {
-                        }
-                    });
-                }
             }
 
             invalidate();
