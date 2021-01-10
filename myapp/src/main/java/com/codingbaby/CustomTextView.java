@@ -23,6 +23,7 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -181,7 +182,7 @@ public class CustomTextView extends View {
     public CustomTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        animatorMeta = new AnimatorMeta(moonMap, this);
+        animatorMeta = new AnimatorMeta(moonMap, rainMap, grassMap, this);
 
         final AssetManager assets = context.getAssets();
 
@@ -426,14 +427,13 @@ public class CustomTextView extends View {
 
         if (selectPoem) {
 
-            String key = "月";
-
-            if (animatorMeta.isOn(key)) {
-                int value = animatorMeta.getValue(key);
-                ValueAnimator va = animatorMeta.va(key);
-                animatorMeta.action(key).draw(va, canvas, paint, getHeight(), getWidth(), value);
+            for (String key : Arrays.asList("月", "雨", "草")) {
+                if (animatorMeta.isOn(key)) {
+                    int value = animatorMeta.getValue(key);
+                    ValueAnimator va = animatorMeta.va(key);
+                    animatorMeta.action(key).draw(va, canvas, paint, getHeight(), getWidth(), value);
+                }
             }
-
 
 
             if (drawLinePoint.size() > 0) {

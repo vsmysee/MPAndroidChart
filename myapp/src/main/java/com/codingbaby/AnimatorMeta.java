@@ -13,15 +13,15 @@ public class AnimatorMeta {
 
 
     private int SHORT = 180;
+    private int LONG = 500;
 
 
-    public AnimatorMeta(final Bitmap moonMap, final View view) {
+    public AnimatorMeta(final Bitmap moonMap, final Bitmap rainMap, final Bitmap grassMap, final View view) {
 
-        String key = "月";
+        String moon = "月";
 
-
-        ValueAnimator v = buildAnimator(SHORT, 6 * 1000);
-        v.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        ValueAnimator moonVa = buildAnimator(SHORT, 6 * 1000);
+        moonVa.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
                 if ((int) valueAnimator.getAnimatedValue() != SHORT) {
@@ -30,11 +30,53 @@ public class AnimatorMeta {
             }
         });
 
-        keyWords.put(key, v);
-        actions.put(key, new AnimatorAction() {
+        keyWords.put(moon, moonVa);
+        actions.put(moon, new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
                 canvas.drawBitmap(moonMap, width / 2 - value, -height / 2, paint);
+            }
+        });
+
+
+        String rain = "雨";
+
+        ValueAnimator rainVa = buildAnimator(LONG, 10 * 1000);
+        rainVa.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                if ((int) valueAnimator.getAnimatedValue() != LONG) {
+                    view.invalidate();
+                }
+            }
+        });
+
+        keyWords.put(rain, rainVa);
+        actions.put(rain, new AnimatorAction() {
+            @Override
+            public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
+                canvas.drawBitmap(rainMap, -width / 2, -height / 2 - rainMap.getHeight() + value, paint);
+            }
+        });
+
+
+        String grass = "草";
+
+        ValueAnimator grassVa = buildAnimator(350, 10 * 1000);
+        grassVa.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                if ((int) valueAnimator.getAnimatedValue() != 350) {
+                    view.invalidate();
+                }
+            }
+        });
+
+        keyWords.put(grass, grassVa);
+        actions.put(grass, new AnimatorAction() {
+            @Override
+            public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
+                canvas.drawBitmap(grassMap, -width / 2, height / 2 + grassMap.getHeight() - value, paint);
             }
         });
 
