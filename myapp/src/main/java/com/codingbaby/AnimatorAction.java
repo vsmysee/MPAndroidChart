@@ -1,13 +1,13 @@
 package com.codingbaby;
 
-import android.graphics.Bitmap;
+import android.animation.ValueAnimator;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
 public interface AnimatorAction {
 
 
-    void draw(Canvas canvas, Paint paint, int height, int width, Bitmap bitmap,int value);
+    void draw(ValueAnimator va,Canvas canvas, Paint paint, int height, int width, int value);
 
 
 }

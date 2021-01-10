@@ -1,5 +1,6 @@
 package com.codingbaby;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
@@ -180,12 +181,14 @@ public class CustomTextView extends View {
     public CustomTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        // load poem
+        animatorMeta = new AnimatorMeta(moonMap, this);
+
         final AssetManager assets = context.getAssets();
 
-        poems.addAll(FileReader.loadPoem(assets));
 
+        poems.addAll(FileReader.loadPoem(assets));
         poems_students.addAll(FileReader.loadStudentPoem(assets));
+
 
         randomPoem();
 
@@ -260,6 +263,8 @@ public class CustomTextView extends View {
                         e.printStackTrace();
                     }
                 }
+
+
             }
         }).start();
 
@@ -270,6 +275,8 @@ public class CustomTextView extends View {
                 longPress = !longPress;
                 runTime = 0;
                 switchShow = false;
+
+                animatorMeta.stop();
 
                 invalidate();
                 return true;
@@ -416,7 +423,18 @@ public class CustomTextView extends View {
 
         canvas.translate(getWidth() / 2, getHeight() / 2);
 
+
         if (selectPoem) {
+
+            String key = "月";
+
+            if (animatorMeta.isOn(key)) {
+                int value = animatorMeta.getValue(key);
+                ValueAnimator va = animatorMeta.va(key);
+                animatorMeta.action(key).draw(va, canvas, paint, getHeight(), getWidth(), value);
+            }
+
+
 
             if (drawLinePoint.size() > 0) {
                 for (LinePoint linePoint : drawLinePoint) {
@@ -426,6 +444,8 @@ public class CustomTextView extends View {
             } else {
                 drawPoem(canvas, false);
             }
+
+
         }
 
         if (selectWord) {
@@ -504,6 +524,7 @@ public class CustomTextView extends View {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
 
+
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
 
             float y = event.getY();
@@ -549,6 +570,8 @@ public class CustomTextView extends View {
             if (selectPoem && cursor == 0) {
 
                 randomPoem();
+
+                animatorMeta.start(poem);
 
             }
 

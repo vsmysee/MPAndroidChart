@@ -1,83 +1,102 @@
 package com.codingbaby;
 
 import android.animation.ValueAnimator;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.view.View;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class AnimatorMeta {
 
 
-    class AnimatorData {
+    private int SHORT = 180;
 
-        private ValueAnimator valueAnimator;
 
-        private AnimatorAction animatorAction;
+    public AnimatorMeta(final Bitmap moonMap, final View view) {
 
-        public ValueAnimator getValueAnimator() {
-            return valueAnimator;
-        }
+        String key = "月";
 
-        public void setValueAnimator(ValueAnimator valueAnimator) {
-            this.valueAnimator = valueAnimator;
-        }
 
-        public AnimatorAction getAnimatorAction() {
-            return animatorAction;
-        }
-
-        public void setAnimatorAction(AnimatorAction animatorAction) {
-            this.animatorAction = animatorAction;
-        }
-    }
-
-    private  Map<String, AnimatorData> keyWords = new HashMap<>();
-
-    private  AnimatorData buildAnimator(int number, int duration,AnimatorAction action) {
-        ValueAnimator animator = ValueAnimator.ofInt(0, number);
-        animator.setDuration(duration);
-
-        AnimatorData data = new AnimatorData();
-        data.valueAnimator = animator;
-
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        ValueAnimator v = buildAnimator(SHORT, 6 * 1000);
+        v.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
-
+                if ((int) valueAnimator.getAnimatedValue() != SHORT) {
+                    view.invalidate();
+                }
             }
         });
 
-        data.animatorAction = action;
-        return data;
+        keyWords.put(key, v);
+        actions.put(key, new AnimatorAction() {
+            @Override
+            public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
+                canvas.drawBitmap(moonMap, width / 2 - value, -height / 2, paint);
+            }
+        });
+
+
+
+
+
+
     }
 
+    private ValueAnimator buildAnimator(int number, int duration) {
 
-    public  void stop() {
-        for (AnimatorData value : keyWords.values()) {
-            value.valueAnimator.end();
+        ValueAnimator animator = ValueAnimator.ofInt(0, number);
+        animator.setDuration(duration);
+
+        return animator;
+    }
+
+    public AnimatorAction action(String key) {
+        return actions.get(key);
+    }
+
+    public boolean isOn(String key) {
+        return keyWords.containsKey(key) && keyWords.get(key).isStarted();
+    }
+
+    public ValueAnimator va(String key) {
+        return keyWords.get(key);
+    }
+
+    public int getValue(String key) {
+        return (int) keyWords.get(key).getAnimatedValue();
+    }
+
+    private Map<String, ValueAnimator> keyWords = new HashMap<>();
+    private Map<String, AnimatorAction> actions = new HashMap<>();
+
+
+    public void stop() {
+        for (ValueAnimator value : keyWords.values()) {
+            value.end();
         }
     }
 
-    public AnimatorMeta() {
-    }
 
-    public  List<AnimatorData> checkIf(String poem) {
+    public void start(String poem) {
 
-        List<AnimatorData> valueAnimators = new ArrayList<>();
+        stop();
 
         String[] split = poem.split(";");
 
-        for (int i = 3; i < split.length; i++) {
-            for (String keyWord : keyWords.keySet()) {
-                if (split[i].contains(keyWord)) {
-                    valueAnimators.add(keyWords.get(keyWord));
+        for (String key : keyWords.keySet()) {
+
+            for (int i = 3; i < split.length; i++) {
+                String p = split[i];
+                if (p.contains(key)) {
+                    keyWords.get(key).start();
+                    break;
                 }
             }
-        }
 
-        return valueAnimators;
+        }
 
     }
 
