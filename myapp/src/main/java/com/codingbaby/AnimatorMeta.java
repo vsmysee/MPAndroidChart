@@ -19,7 +19,7 @@ public class AnimatorMeta {
 
     public AnimatorMeta(final Bitmap moonMap, final Bitmap rainMap, final Bitmap grassMap,
                         final Bitmap boatMap, final Bitmap sunMap, final Bitmap snowMap, final Bitmap autumnMap,
-                        final Bitmap springMap, final Bitmap springMap2, final Bitmap peachMap,
+                        final Bitmap springMap, final Bitmap peachMap,
                         final View view) {
 
         String moon = "月";
@@ -143,11 +143,11 @@ public class AnimatorMeta {
 
         String spring = "春";
 
-        ValueAnimator springVa = buildAnimator(100, 10 * 1000);
+        ValueAnimator springVa = buildAnimator(300, 6 * 1000);
         springVa.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                if ((int) valueAnimator.getAnimatedValue() != 100) {
+                if ((int) valueAnimator.getAnimatedValue() != 300) {
                     view.invalidate();
                 }
             }
@@ -157,23 +157,18 @@ public class AnimatorMeta {
         actions.put(spring, new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                for (int i = 0; i < 20; i++) {
-                    canvas.drawBitmap(springMap, -width / 2 + i * 80, height / 2 - value, paint);
-                    if (i == 5) {
-                        canvas.drawBitmap(springMap2, -width / 2 + i * 70, height / 2 - value, paint);
-                    }
-                }
+                canvas.drawBitmap(springMap, -width / 2, height / 2 - value, paint);
             }
         });
 
 
         String peach = "桃";
 
-        ValueAnimator peachVa = buildAnimator(1000, 10 * 1000);
+        ValueAnimator peachVa = buildAnimator(600, 10 * 1000);
         peachVa.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                if ((int) valueAnimator.getAnimatedValue() != 1000) {
+                if ((int) valueAnimator.getAnimatedValue() != 600) {
                     view.invalidate();
                 }
             }
@@ -183,7 +178,7 @@ public class AnimatorMeta {
         actions.put(peach, new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(peachMap, -width / 2, height / 2 + grassMap.getHeight() - value, paint);
+                canvas.drawBitmap(peachMap, width / 2 - value, height / 2 - peachMap.getHeight(), paint);
             }
         });
 
@@ -308,12 +303,16 @@ public class AnimatorMeta {
         stop();
 
         String[] split = poem.split(";");
+        StringBuffer sb = new StringBuffer();
+        for (int i = 3; i < split.length; i++) {
+            sb.append(split[i]);
+        }
+
+        String p = sb.toString();
 
         for (String key : keyWords.keySet()) {
-
-            for (int i = 3; i < split.length; i++) {
-                String p = split[i];
-                if (p.contains(key)) {
+            if (p.contains(key)) {
+                if (p.contains("月")) {
                     if (!p.contains("岁")
                             && !p.contains("一")
                             && !p.contains("二")
@@ -330,6 +329,10 @@ public class AnimatorMeta {
                         keyWords.get(key).start();
                         break;
                     }
+                } else {
+
+                    keyWords.get(key).start();
+                    break;
                 }
             }
 
