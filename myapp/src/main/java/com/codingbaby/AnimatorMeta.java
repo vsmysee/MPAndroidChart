@@ -15,7 +15,7 @@ public class AnimatorMeta {
 
     public AnimatorMeta(final Bitmap moonMap, final Bitmap rainMap, final Bitmap grassMap,
                         final Bitmap boatMap, final Bitmap sunMap, final Bitmap snowMap, final Bitmap autumnMap,
-                        final Bitmap springMap, final Bitmap peachMap,
+                        final Bitmap springMap, final Bitmap peachMap, final Bitmap cloudMap,
                         final View view) {
 
         String moon = "月";
@@ -37,7 +37,6 @@ public class AnimatorMeta {
                 canvas.drawBitmap(moonMap, width / 2 - value, -height / 2, paint);
             }
         });
-
 
 
         String sun = "日出";
@@ -185,6 +184,26 @@ public class AnimatorMeta {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
                 canvas.drawBitmap(peachMap, width / 2 - value, height / 2 - peachMap.getHeight(), paint);
+            }
+        });
+
+        String cloud = "云";
+
+        ValueAnimator cloudVa = buildAnimator(650, 10 * 1000);
+        cloudVa.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                if ((int) valueAnimator.getAnimatedValue() != 650) {
+                    view.invalidate();
+                }
+            }
+        });
+
+        keyWords.put(cloud, cloudVa);
+        actions.put(cloud, new AnimatorAction() {
+            @Override
+            public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
+                canvas.drawBitmap(cloudMap, -width / 2, -height / 2 - cloudMap.getHeight() + value, paint);
             }
         });
 
