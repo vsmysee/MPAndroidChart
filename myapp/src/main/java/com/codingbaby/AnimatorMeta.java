@@ -12,6 +12,7 @@ import java.util.Set;
 
 public class AnimatorMeta {
 
+    private AnimatorStatus animatorStatus = new AnimatorStatus();
 
     public AnimatorMeta(final Bitmap moonMap, final Bitmap rainMap, final Bitmap grassMap,
                         final Bitmap boatMap, final Bitmap sunMap, final Bitmap snowMap, final Bitmap autumnMap,
@@ -24,7 +25,7 @@ public class AnimatorMeta {
         moonVa.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                if ((int) valueAnimator.getAnimatedValue() != 180) {
+                if ((int) valueAnimator.getAnimatedValue() != 180 && animatorStatus.isOpen()) {
                     view.invalidate();
                 }
             }
@@ -45,7 +46,7 @@ public class AnimatorMeta {
         sunVa.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                if ((int) valueAnimator.getAnimatedValue() != 180) {
+                if ((int) valueAnimator.getAnimatedValue() != 180 && animatorStatus.isOpen()) {
                     view.invalidate();
                 }
             }
@@ -82,7 +83,7 @@ public class AnimatorMeta {
         rainVa.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                if ((int) valueAnimator.getAnimatedValue() != 500) {
+                if ((int) valueAnimator.getAnimatedValue() != 500 && animatorStatus.isOpen()) {
                     view.invalidate();
                 }
             }
@@ -103,7 +104,7 @@ public class AnimatorMeta {
         snowVa.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                if ((int) valueAnimator.getAnimatedValue() != 2000) {
+                if ((int) valueAnimator.getAnimatedValue() != 2000 && animatorStatus.isOpen()) {
                     view.invalidate();
                 }
             }
@@ -131,7 +132,7 @@ public class AnimatorMeta {
         autumnVa.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                if ((int) valueAnimator.getAnimatedValue() != 500) {
+                if ((int) valueAnimator.getAnimatedValue() != 500 && animatorStatus.isOpen()) {
                     view.invalidate();
                 }
             }
@@ -152,7 +153,7 @@ public class AnimatorMeta {
         springVa.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                if ((int) valueAnimator.getAnimatedValue() != 300) {
+                if ((int) valueAnimator.getAnimatedValue() != 300 && animatorStatus.isOpen()) {
                     view.invalidate();
                 }
             }
@@ -173,7 +174,7 @@ public class AnimatorMeta {
         peachVa.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                if ((int) valueAnimator.getAnimatedValue() != 600) {
+                if ((int) valueAnimator.getAnimatedValue() != 600 && animatorStatus.isOpen()) {
                     view.invalidate();
                 }
             }
@@ -193,7 +194,7 @@ public class AnimatorMeta {
         cloudVa.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                if ((int) valueAnimator.getAnimatedValue() != 500) {
+                if ((int) valueAnimator.getAnimatedValue() != 500 && animatorStatus.isOpen()) {
                     view.invalidate();
                 }
             }
@@ -214,7 +215,7 @@ public class AnimatorMeta {
         grassVa.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                if ((int) valueAnimator.getAnimatedValue() != 350) {
+                if ((int) valueAnimator.getAnimatedValue() != 350 && animatorStatus.isOpen()) {
                     view.invalidate();
                 }
             }
@@ -243,7 +244,7 @@ public class AnimatorMeta {
         boatVa.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                if ((int) valueAnimator.getAnimatedValue() != 1300) {
+                if ((int) valueAnimator.getAnimatedValue() != 1300 && animatorStatus.isOpen()) {
                     view.invalidate();
                 }
             }
@@ -317,15 +318,26 @@ public class AnimatorMeta {
 
 
     public void stop() {
+        animatorStatus.close();
         for (ValueAnimator value : keyWords.values()) {
             value.end();
         }
     }
 
+    public boolean hasAnimator() {
+        boolean res = false;
+        for (ValueAnimator value : keyWords.values()) {
+            if (value.isStarted()) {
+                res = true;
+            }
+        }
+        return res;
+    }
+
 
     public void start(String poem) {
 
-        stop();
+        animatorStatus.open();
 
         String[] split = poem.split(";");
         StringBuffer sb = new StringBuffer();
@@ -364,4 +376,7 @@ public class AnimatorMeta {
     }
 
 
+    public boolean isOpen() {
+        return animatorStatus.isOpen();
+    }
 }

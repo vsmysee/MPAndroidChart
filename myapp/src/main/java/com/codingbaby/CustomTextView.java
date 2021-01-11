@@ -191,6 +191,16 @@ public class CustomTextView extends View {
 
         randomPoem();
 
+        String[] textsSplit = poem.split(";");
+
+        time = textsSplit[0];
+        author = textsSplit[1];
+        title = textsSplit[2];
+
+        for (int i = 3; i < textsSplit.length; i++) {
+            rows.add(textsSplit[i]);
+        }
+
 
         new Thread(new Runnable() {
             @Override
@@ -325,6 +335,57 @@ public class CustomTextView extends View {
 
         initPint();
 
+        drawBottomButton(canvas);
+
+
+        canvas.translate(getWidth() / 2, getHeight() / 2);
+
+
+        if (selectPoem) {
+
+            //渲染动画
+            for (String key : animatorMeta.keySet()) {
+                if (animatorMeta.isOn(key)) {
+                    int value = animatorMeta.getValue(key);
+                    ValueAnimator va = animatorMeta.va(key);
+                    animatorMeta.action(key).draw(va, canvas, paint, getHeight(), getWidth(), value);
+                }
+            }
+
+
+            if (drawLinePoint.size() > 0) {
+                for (LinePoint linePoint : drawLinePoint) {
+                    canvas.drawLine(linePoint.sx, linePoint.sy, linePoint.ex, linePoint.ey, virtualLine);
+                }
+                drawPoem(canvas, true);
+            } else {
+                boolean reDraw = animatorMeta.hasAnimator() && animatorMeta.isOpen();
+                drawPoem(canvas, reDraw);
+            }
+
+        }
+
+        if (selectWord) {
+            drawWord(canvas);
+        }
+
+        if (selectIdiom) {
+            drawIdiom(canvas);
+        }
+
+        if (selectEnglishWord) {
+            drawEnglishWord(canvas);
+        }
+
+        if (selectShortEnglish) {
+            drawShortEnglish(canvas);
+        }
+
+        super.draw(canvas);
+
+    }
+
+    private void drawBottomButton(Canvas canvas) {
         int radius = 40;
 
         if (selectEnglishWord && longPress) {
@@ -418,52 +479,6 @@ public class CustomTextView extends View {
             paint.setTextSize(40);
             canvas.drawText("全", 80 + n * 100, getHeight() - 100 + 12, paint);
         }
-
-
-        canvas.translate(getWidth() / 2, getHeight() / 2);
-
-
-        if (selectPoem) {
-
-            for (String key : animatorMeta.keySet()) {
-                if (animatorMeta.isOn(key)) {
-                    int value = animatorMeta.getValue(key);
-                    ValueAnimator va = animatorMeta.va(key);
-                    animatorMeta.action(key).draw(va, canvas, paint, getHeight(), getWidth(), value);
-                }
-            }
-
-
-            if (drawLinePoint.size() > 0) {
-                for (LinePoint linePoint : drawLinePoint) {
-                    canvas.drawLine(linePoint.sx, linePoint.sy, linePoint.ex, linePoint.ey, virtualLine);
-                }
-                drawPoem(canvas, true);
-            } else {
-                drawPoem(canvas, false);
-            }
-
-
-        }
-
-        if (selectWord) {
-            drawWord(canvas);
-        }
-
-        if (selectIdiom) {
-            drawIdiom(canvas);
-        }
-
-        if (selectEnglishWord) {
-            drawEnglishWord(canvas);
-        }
-
-        if (selectShortEnglish) {
-            drawShortEnglish(canvas);
-        }
-
-        super.draw(canvas);
-
     }
 
 
@@ -525,6 +540,9 @@ public class CustomTextView extends View {
 
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
 
+            animatorMeta.stop();
+
+
             float y = event.getY();
             float x = event.getX();
 
@@ -568,6 +586,20 @@ public class CustomTextView extends View {
             if (selectPoem && cursor == 0) {
 
                 randomPoem();
+
+                String[] textsSplit = poem.split(";");
+
+                time = textsSplit[0];
+                author = textsSplit[1];
+                title = textsSplit[2];
+
+                rows.clear();
+
+                for (int i = 3; i < textsSplit.length; i++) {
+                    rows.add(textsSplit[i]);
+                }
+
+                reset();
 
                 animatorMeta.start(poem);
 
@@ -987,7 +1019,6 @@ public class CustomTextView extends View {
 
         initPint();
 
-
         Paint.FontMetrics fontMetrics = paint.getFontMetrics();
 
         // 文本高度
@@ -1001,9 +1032,7 @@ public class CustomTextView extends View {
 
         int showRow = (int) ((getHeight() / textHeight) - 5);
 
-        if (!reDraw) {
-            rows = new ArrayList<>();
-        }
+
         linePoints.clear();
 
         if (!reDraw) {
@@ -1011,16 +1040,6 @@ public class CustomTextView extends View {
             if (cache.size() == 0) {
 
                 reset();
-
-                String[] textsSplit = poem.split(";");
-
-                time = textsSplit[0];
-                author = textsSplit[1];
-                title = textsSplit[2];
-
-                for (int i = 3; i < textsSplit.length; i++) {
-                    rows.add(textsSplit[i]);
-                }
 
                 if (rows.size() * textHeight > getHeight() - dp2px(200)) {
 
@@ -1036,6 +1055,8 @@ public class CustomTextView extends View {
             if (cache.size() > 0) {
 
                 rows.clear();
+                reset();
+
                 int end = cursor + showRow;
 
                 for (int i = cursor; i < end; i++) {
