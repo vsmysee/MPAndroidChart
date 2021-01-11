@@ -100,9 +100,6 @@ public class CustomTextView extends View {
     private static String author;
     private static String title;
 
-    private static float firstY = 0;
-    private static float endY = 0;
-    private static float maxWidth = 0;
 
     private Stack<String> history = new Stack<>();
 
@@ -587,19 +584,7 @@ public class CustomTextView extends View {
 
                 randomPoem();
 
-                String[] textsSplit = poem.split(";");
-
-                time = textsSplit[0];
-                author = textsSplit[1];
-                title = textsSplit[2];
-
-                rows.clear();
-
-                for (int i = 3; i < textsSplit.length; i++) {
-                    rows.add(textsSplit[i]);
-                }
-
-                reset();
+                buildRows();
 
                 animatorMeta.start(poem);
 
@@ -767,6 +752,8 @@ public class CustomTextView extends View {
 
             case KeyEvent.KEYCODE_VOLUME_UP:
 
+                animatorMeta.stop();
+
                 cache.clear();
                 reset();
 
@@ -782,6 +769,9 @@ public class CustomTextView extends View {
                     randomPoem();
                 }
 
+                buildRows();
+
+
                 animatorMeta.start(poem);
 
                 invalidate();
@@ -790,8 +780,13 @@ public class CustomTextView extends View {
 
             case KeyEvent.KEYCODE_VOLUME_DOWN:
 
+                animatorMeta.stop();
+
+
                 if (selectPoem && cursor == 0) {
                     randomPoem();
+
+                    buildRows();
 
                     animatorMeta.start(poem);
 
@@ -806,12 +801,23 @@ public class CustomTextView extends View {
         return super.onKeyDown(keyCode, event);
     }
 
+    private void buildRows() {
+        String[] textsSplit = poem.split(";");
+
+        time = textsSplit[0];
+        author = textsSplit[1];
+        title = textsSplit[2];
+
+        rows.clear();
+
+        for (int i = 3; i < textsSplit.length; i++) {
+            rows.add(textsSplit[i]);
+        }
+    }
+
 
     private void reset() {
         cursor = 0;
-        firstY = 0;
-        endY = 0;
-        maxWidth = 0;
     }
 
     private void drawEnglishWord(Canvas canvas) {
@@ -1035,58 +1041,67 @@ public class CustomTextView extends View {
 
         linePoints.clear();
 
-        if (!reDraw) {
 
-            if (cache.size() == 0) {
+        if (cache.size() == 0) {
 
-                reset();
+            reset();
 
-                if (rows.size() * textHeight > getHeight() - dp2px(200)) {
+            if (rows.size() * textHeight > getHeight() - dp2px(200)) {
 
-                    cache.clear();
-
-                    for (String row : rows) {
-                        cache.add(row);
-                    }
-
+                for (String row : rows) {
+                    cache.add(row);
                 }
-            }
-
-            if (cache.size() > 0) {
 
                 rows.clear();
-                reset();
 
                 int end = cursor + showRow;
 
                 for (int i = cursor; i < end; i++) {
-                    try {
-                        rows.add(cache.get(i));
-                        cursor++;
-                    } catch (Exception e) {
-                        break;
-                    }
+                    rows.add(cache.get(i));
+                    cursor++;
                 }
 
-                //补齐
-                if (rows.size() != showRow) {
-                    List<String> padding = new ArrayList<>();
-                    int missCount = showRow - rows.size();
-                    int from = cache.size() - rows.size() - missCount;
-                    for (int j = 0; j < missCount; j++) {
-                        padding.add("w" + cache.get(from + j));
-                    }
-                    padding.addAll(rows);
-                    rows = padding;
-                    cache.clear();
-                    randomPoem();
+            }
+        }
+
+
+        if (cache.size() > 0 && cursor > 0 && !reDraw) {
+
+            rows.clear();
+
+            int end = cursor + showRow;
+
+            for (int i = cursor; i < end; i++) {
+                try {
+                    rows.add(cache.get(i));
+                    cursor++;
+                } catch (Exception e) {
+                    break;
                 }
             }
 
+            //补齐
+            if (rows.size() != showRow) {
+                List<String> padding = new ArrayList<>();
+                int missCount = showRow - rows.size();
+                int from = cache.size() - rows.size() - missCount;
+                for (int j = 0; j < missCount; j++) {
+                    padding.add("w" + cache.get(from + j));
+                }
+                padding.addAll(rows);
+                rows = padding;
+
+                cache.clear();
+                reset();
+            }
         }
+
 
         int textLines = rows.size();
 
+        float firstY = 0;
+        float endY = 0;
+        float maxWidth = 0;
 
         for (int i = 0; i < textLines; i++) {
 
