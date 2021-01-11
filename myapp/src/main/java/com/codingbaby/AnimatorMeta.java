@@ -13,10 +13,6 @@ import java.util.Set;
 public class AnimatorMeta {
 
 
-    private int SHORT = 180;
-    private int LONG = 500;
-
-
     public AnimatorMeta(final Bitmap moonMap, final Bitmap rainMap, final Bitmap grassMap,
                         final Bitmap boatMap, final Bitmap sunMap, final Bitmap snowMap, final Bitmap autumnMap,
                         final Bitmap springMap, final Bitmap peachMap,
@@ -24,11 +20,11 @@ public class AnimatorMeta {
 
         String moon = "月";
 
-        ValueAnimator moonVa = buildAnimator(SHORT, 6 * 1000);
+        ValueAnimator moonVa = buildAnimator(180, 6 * 1000);
         moonVa.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                if ((int) valueAnimator.getAnimatedValue() != SHORT) {
+                if ((int) valueAnimator.getAnimatedValue() != 180) {
                     view.invalidate();
                 }
             }
@@ -42,13 +38,15 @@ public class AnimatorMeta {
             }
         });
 
+
+
         String sun = "日出";
 
-        ValueAnimator sunVa = buildAnimator(SHORT, 6 * 1000);
+        ValueAnimator sunVa = buildAnimator(180, 6 * 1000);
         sunVa.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                if ((int) valueAnimator.getAnimatedValue() != SHORT) {
+                if ((int) valueAnimator.getAnimatedValue() != 180) {
                     view.invalidate();
                 }
             }
@@ -81,11 +79,11 @@ public class AnimatorMeta {
 
         String rain = "雨";
 
-        ValueAnimator rainVa = buildAnimator(LONG, 10 * 1000);
+        ValueAnimator rainVa = buildAnimator(500, 10 * 1000);
         rainVa.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                if ((int) valueAnimator.getAnimatedValue() != LONG) {
+                if ((int) valueAnimator.getAnimatedValue() != 500) {
                     view.invalidate();
                 }
             }
@@ -114,6 +112,14 @@ public class AnimatorMeta {
 
         keyWords.put(snow, snowVa);
         actions.put(snow, new AnimatorAction() {
+            @Override
+            public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
+                canvas.drawBitmap(snowMap, -width / 2, -height / 2 - snowMap.getHeight() + value, paint);
+            }
+        });
+
+        keyWords.put("霜", snowVa);
+        actions.put("霜", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
                 canvas.drawBitmap(snowMap, -width / 2, -height / 2 - snowMap.getHeight() + value, paint);
@@ -185,7 +191,7 @@ public class AnimatorMeta {
 
         String grass = "草";
 
-        ValueAnimator grassVa = buildAnimator(350, 10 * 1000);
+        ValueAnimator grassVa = buildAnimator(350, 8 * 1000);
         grassVa.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
@@ -312,7 +318,8 @@ public class AnimatorMeta {
 
         for (String key : keyWords.keySet()) {
             if (p.contains(key)) {
-                if (p.contains("月")) {
+
+                if (key.equals("月")) {
                     if (!p.contains("岁")
                             && !p.contains("一")
                             && !p.contains("二")
@@ -327,12 +334,9 @@ public class AnimatorMeta {
                             && !p.contains("十一")
                             && !p.contains("十二")) {
                         keyWords.get(key).start();
-                        break;
                     }
                 } else {
-
                     keyWords.get(key).start();
-                    break;
                 }
             }
 
