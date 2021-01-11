@@ -38,16 +38,11 @@ public class CustomTextView extends View {
     private static int DEFAULT_COLOR = Color.BLACK;
 
     private Bitmap moonMap = BitmapFactory.decodeResource(getResources(), R.drawable.moon);
-    private Bitmap flowerMap = BitmapFactory.decodeResource(getResources(), R.drawable.flower);
     private Bitmap grassMap = BitmapFactory.decodeResource(getResources(), R.drawable.grass);
     private Bitmap rainMap = BitmapFactory.decodeResource(getResources(), R.drawable.rain);
-    private Bitmap birdMap = BitmapFactory.decodeResource(getResources(), R.drawable.bird);
     private Bitmap boatMap = BitmapFactory.decodeResource(getResources(), R.drawable.boat);
-    private Bitmap leafMap = BitmapFactory.decodeResource(getResources(), R.drawable.leaf);
-    private Bitmap starMap = BitmapFactory.decodeResource(getResources(), R.drawable.star);
     private Bitmap sunMap = BitmapFactory.decodeResource(getResources(), R.drawable.sun);
     private Bitmap snowMap = BitmapFactory.decodeResource(getResources(), R.drawable.snow);
-    private Bitmap treeMap = BitmapFactory.decodeResource(getResources(), R.drawable.tree);
     private Bitmap autumn = BitmapFactory.decodeResource(getResources(), R.drawable.autumn);
     private Bitmap spring = BitmapFactory.decodeResource(getResources(), R.drawable.spring);
     private Bitmap peach = BitmapFactory.decodeResource(getResources(), R.drawable.peach);
@@ -185,7 +180,7 @@ public class CustomTextView extends View {
     public CustomTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        animatorMeta = new AnimatorMeta(moonMap, rainMap, grassMap, boatMap, sunMap, snowMap, autumn, spring, peach,cloudMap, this);
+        animatorMeta = new AnimatorMeta(moonMap, rainMap, grassMap, boatMap, sunMap, snowMap, autumn, spring, peach, cloudMap, this);
 
         final AssetManager assets = context.getAssets();
 

@@ -189,11 +189,11 @@ public class AnimatorMeta {
 
         String cloud = "云";
 
-        ValueAnimator cloudVa = buildAnimator(650, 10 * 1000);
+        ValueAnimator cloudVa = buildAnimator(500, 10 * 1000);
         cloudVa.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                if ((int) valueAnimator.getAnimatedValue() != 650) {
+                if ((int) valueAnimator.getAnimatedValue() != 500) {
                     view.invalidate();
                 }
             }
@@ -339,19 +339,19 @@ public class AnimatorMeta {
             if (p.contains(key)) {
 
                 if (key.equals("月")) {
-                    if (!p.contains("岁")
-                            && !p.contains("一")
-                            && !p.contains("二")
-                            && !p.contains("三")
-                            && !p.contains("四")
-                            && !p.contains("五")
-                            && !p.contains("六")
-                            && !p.contains("七")
-                            && !p.contains("八")
-                            && !p.contains("九")
-                            && !p.contains("十")
-                            && !p.contains("十一")
-                            && !p.contains("十二")) {
+                    if (!p.contains("岁月")
+                            && !p.contains("一月")
+                            && !p.contains("二月")
+                            && !p.contains("三月")
+                            && !p.contains("四月")
+                            && !p.contains("五月")
+                            && !p.contains("六月")
+                            && !p.contains("七月")
+                            && !p.contains("八月")
+                            && !p.contains("九月")
+                            && !p.contains("十月")
+                            && !p.contains("十一月")
+                            && !p.contains("十二月")) {
                         keyWords.get(key).start();
                     }
                 } else {
