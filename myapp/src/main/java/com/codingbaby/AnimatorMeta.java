@@ -17,7 +17,7 @@ public class AnimatorMeta {
 
     public AnimatorMeta(final Bitmap moonMap, final Bitmap rainMap, final Bitmap grassMap,
                         final Bitmap boatMap, final Bitmap sunMap, final Bitmap snowMap, final Bitmap autumnMap,
-                        final Bitmap springMap, final Bitmap peachMap, final Bitmap cloudMap,
+                        final Bitmap springMap, final Bitmap peachMap, final Bitmap cloudMap, final Bitmap xiyangMap, final Bitmap lianMap,
                         final View view) {
 
         String moon = "月";
@@ -46,14 +46,14 @@ public class AnimatorMeta {
 
         String sun = "日出";
 
-        ValueAnimator sunVa = buildAnimator(180, 6 * 1000);
+        ValueAnimator sunVa = buildAnimator(150, 6 * 1000);
         sunVa.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
                 if (animatorStatus.isClose()) {
                     return;
                 }
-                if ((int) valueAnimator.getAnimatedValue() != 180 && animatorStatus.isOpen()) {
+                if ((int) valueAnimator.getAnimatedValue() != 150 && animatorStatus.isOpen()) {
                     view.invalidate();
                 }
             }
@@ -67,13 +67,6 @@ public class AnimatorMeta {
             }
         });
 
-        keyWords.put("落日", sunVa);
-        actions.put("落日", new AnimatorAction() {
-            @Override
-            public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(sunMap, -width / 2 + value, -height / 2, paint);
-            }
-        });
 
         keyWords.put("白日", sunVa);
         actions.put("白日", new AnimatorAction() {
@@ -86,14 +79,14 @@ public class AnimatorMeta {
 
         String rain = "雨";
 
-        ValueAnimator rainVa = buildAnimator(500, 10 * 1000);
+        ValueAnimator rainVa = buildAnimator(600, 10 * 1000);
         rainVa.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
                 if (animatorStatus.isClose()) {
                     return;
                 }
-                if ((int) valueAnimator.getAnimatedValue() != 500 && animatorStatus.isOpen()) {
+                if ((int) valueAnimator.getAnimatedValue() != 600 && animatorStatus.isOpen()) {
                     view.invalidate();
                 }
             }
@@ -107,6 +100,54 @@ public class AnimatorMeta {
             }
         });
 
+
+        String xiyang = "夕阳";
+
+        ValueAnimator xiyangVa = buildAnimator(600, 10 * 1000);
+        xiyangVa.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                if (animatorStatus.isClose()) {
+                    return;
+                }
+                if ((int) valueAnimator.getAnimatedValue() != 600 && animatorStatus.isOpen()) {
+                    view.invalidate();
+                }
+            }
+        });
+
+        keyWords.put(xiyang, xiyangVa);
+        actions.put(xiyang, new AnimatorAction() {
+            @Override
+            public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
+                canvas.drawBitmap(xiyangMap, -width / 2, -height / 2 - xiyangMap.getHeight() + value, paint);
+            }
+        });
+
+        keyWords.put("落日", xiyangVa);
+        actions.put("落日", new AnimatorAction() {
+            @Override
+            public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
+                canvas.drawBitmap(xiyangMap, -width / 2, -height / 2 - xiyangMap.getHeight() + value, paint);
+            }
+        });
+
+
+        keyWords.put("黄昏", xiyangVa);
+        actions.put("黄昏", new AnimatorAction() {
+            @Override
+            public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
+                canvas.drawBitmap(xiyangMap, -width / 2, -height / 2 - xiyangMap.getHeight() + value, paint);
+            }
+        });
+
+        keyWords.put("日暮", xiyangVa);
+        actions.put("日暮", new AnimatorAction() {
+            @Override
+            public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
+                canvas.drawBitmap(xiyangMap, -width / 2, -height / 2 - xiyangMap.getHeight() + value, paint);
+            }
+        });
 
         String snow = "雪";
 
@@ -254,6 +295,37 @@ public class AnimatorMeta {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
                 canvas.drawBitmap(grassMap, -width / 2, height / 2 + grassMap.getHeight() - value, paint);
+            }
+        });
+
+        String lian = "莲";
+
+        ValueAnimator lianVa = buildAnimator(350, 8 * 1000);
+        lianVa.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                if (animatorStatus.isClose()) {
+                    return;
+                }
+                if ((int) valueAnimator.getAnimatedValue() != 350 && animatorStatus.isOpen()) {
+                    view.invalidate();
+                }
+            }
+        });
+
+        keyWords.put(lian, lianVa);
+        actions.put(lian, new AnimatorAction() {
+            @Override
+            public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
+                canvas.drawBitmap(lianMap, 0, height / 2 - value, paint);
+            }
+        });
+
+        keyWords.put("荷", lianVa);
+        actions.put("荷", new AnimatorAction() {
+            @Override
+            public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
+                canvas.drawBitmap(lianMap, 0, height / 2 - value, paint);
             }
         });
 
@@ -416,7 +488,8 @@ public class AnimatorMeta {
                     ValuePair vp = new ValuePair();
                     vp.key = key;
                     vp.valueAnimator = valueAnimator;
-                    current.add(vp);                }
+                    current.add(vp);
+                }
             }
 
         }
