@@ -1,6 +1,5 @@
 package com.codingbaby;
 
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
@@ -181,23 +180,11 @@ public class CustomTextView extends View {
 
         final AssetManager assets = context.getAssets();
 
-
         poems.addAll(FileReader.loadPoem(assets));
         poems_students.addAll(FileReader.loadStudentPoem(assets));
 
-
         randomPoem();
-
-        String[] textsSplit = poem.split(";");
-
-        time = textsSplit[0];
-        author = textsSplit[1];
-        title = textsSplit[2];
-
-        for (int i = 3; i < textsSplit.length; i++) {
-            rows.add(textsSplit[i]);
-        }
-
+        buildRows();
 
         new Thread(new Runnable() {
             @Override
@@ -253,23 +240,8 @@ public class CustomTextView extends View {
 
                 idioms.addAll(FileReader.loadIdiom(assets));
                 idioms_students.addAll(FileReader.loadStudentIdiom(assets));
-
                 shortEnglish.addAll(FileReader.loadCet4Short(assets));
-
-
-                // load english word
-                for (char ch = 'A'; ch <= 'Z'; ch++) {
-                    english.put(ch, new ArrayList<String>());
-                    try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("cet4/" + ch + ".md")))) {
-                        String line;
-                        while ((line = bf.readLine()) != null) {
-                            english.get(ch).add(line);
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-
+                english.putAll(FileReader.loadEnglishWord(assets));
 
             }
         }).start();
@@ -278,6 +250,7 @@ public class CustomTextView extends View {
         setOnLongClickListener(new OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
+
                 longPress = !longPress;
                 runTime = 0;
                 switchShow = false;
@@ -310,7 +283,7 @@ public class CustomTextView extends View {
 
         //draw background
         paint.setStyle(Paint.Style.FILL);
-        paint.setColor(Color.rgb(205, 205, 205));
+        paint.setColor(Color.WHITE);
         canvas.drawRect(0, 0, getWidth(), getHeight(), paint);
 
 
@@ -321,7 +294,7 @@ public class CustomTextView extends View {
         }
 
         if (switchShow) {
-            if (runTime == 2) {
+            if (runTime == 3) {
                 switchShow = false;
                 longPress = false;
             } else {
@@ -341,11 +314,10 @@ public class CustomTextView extends View {
         if (selectPoem) {
 
             //渲染动画
-            for (String key : animatorMeta.keySet()) {
-                if (animatorMeta.isOn(key)) {
-                    int value = animatorMeta.getValue(key);
-                    ValueAnimator va = animatorMeta.va(key);
-                    animatorMeta.action(key).draw(va, canvas, paint, getHeight(), getWidth(), value);
+            if (animatorMeta.isOpen()) {
+                for (AnimatorMeta.ValuePair v : animatorMeta.current) {
+                    int value = (int) v.getValueAnimator().getAnimatedValue();
+                    animatorMeta.action(v.getKey()).draw(v.getValueAnimator(), canvas, paint, getHeight(), getWidth(), value);
                 }
             }
 
@@ -537,7 +509,9 @@ public class CustomTextView extends View {
 
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
 
-            animatorMeta.stop();
+            if (selectPoem) {
+                animatorMeta.stop();
+            }
 
 
             float y = event.getY();
@@ -1115,7 +1089,7 @@ public class CustomTextView extends View {
 
             if (content.startsWith("w")) {
                 content = content.replace("w", "");
-                paint.setColor(Color.WHITE);
+                paint.setColor(Color.GRAY);
             } else {
                 paint.setColor(DEFAULT_COLOR);
             }
@@ -1163,11 +1137,14 @@ public class CustomTextView extends View {
         //draw author
         paint.setColor(Color.RED);
         String endText = time + "  " + author;
-        float endTextWidth = paint.measureText(endText);
         float timeWidth = paint.measureText(time);
+        float endTextWidth = paint.measureText(endText);
+
         canvas.drawRoundRect(maxWidth / 2 - endTextWidth - 5, endY + 2 * descent + 10, maxWidth / 2 - endTextWidth + timeWidth + 5, endY + textHeight + descent, 10, 10, paint);
         paint.setColor(Color.WHITE);
-        canvas.drawText(endText, maxWidth / 2 - endTextWidth, endY + textHeight, paint);
+        canvas.drawText(time, maxWidth / 2 - endTextWidth, endY + textHeight, paint);
+        paint.setColor(Color.GRAY);
+        canvas.drawText(author, maxWidth / 2 - endTextWidth + timeWidth + 20, endY + textHeight, paint);
 
 
         runTime++;
