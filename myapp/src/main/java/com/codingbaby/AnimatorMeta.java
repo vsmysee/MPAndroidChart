@@ -6,9 +6,10 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.view.View;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class AnimatorMeta {
 
@@ -21,10 +22,13 @@ public class AnimatorMeta {
 
         String moon = "月";
 
-        ValueAnimator moonVa = buildAnimator(180, 6 * 1000);
+        final ValueAnimator moonVa = buildAnimator(180, 6 * 1000);
         moonVa.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                if (animatorStatus.isClose()) {
+                    return;
+                }
                 if ((int) valueAnimator.getAnimatedValue() != 180 && animatorStatus.isOpen()) {
                     view.invalidate();
                 }
@@ -46,6 +50,9 @@ public class AnimatorMeta {
         sunVa.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                if (animatorStatus.isClose()) {
+                    return;
+                }
                 if ((int) valueAnimator.getAnimatedValue() != 180 && animatorStatus.isOpen()) {
                     view.invalidate();
                 }
@@ -64,7 +71,7 @@ public class AnimatorMeta {
         actions.put("落日", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(sunMap, -width / 2 - value, -height / 2, paint);
+                canvas.drawBitmap(sunMap, -width / 2 + value, -height / 2, paint);
             }
         });
 
@@ -72,7 +79,7 @@ public class AnimatorMeta {
         actions.put("白日", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(sunMap, -width / 2 - value, -height / 2, paint);
+                canvas.drawBitmap(sunMap, -width / 2 + value, -height / 2, paint);
             }
         });
 
@@ -83,6 +90,9 @@ public class AnimatorMeta {
         rainVa.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                if (animatorStatus.isClose()) {
+                    return;
+                }
                 if ((int) valueAnimator.getAnimatedValue() != 500 && animatorStatus.isOpen()) {
                     view.invalidate();
                 }
@@ -104,6 +114,9 @@ public class AnimatorMeta {
         snowVa.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                if (animatorStatus.isClose()) {
+                    return;
+                }
                 if ((int) valueAnimator.getAnimatedValue() != 2000 && animatorStatus.isOpen()) {
                     view.invalidate();
                 }
@@ -132,6 +145,9 @@ public class AnimatorMeta {
         autumnVa.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                if (animatorStatus.isClose()) {
+                    return;
+                }
                 if ((int) valueAnimator.getAnimatedValue() != 500 && animatorStatus.isOpen()) {
                     view.invalidate();
                 }
@@ -153,6 +169,9 @@ public class AnimatorMeta {
         springVa.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                if (animatorStatus.isClose()) {
+                    return;
+                }
                 if ((int) valueAnimator.getAnimatedValue() != 300 && animatorStatus.isOpen()) {
                     view.invalidate();
                 }
@@ -174,6 +193,9 @@ public class AnimatorMeta {
         peachVa.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                if (animatorStatus.isClose()) {
+                    return;
+                }
                 if ((int) valueAnimator.getAnimatedValue() != 600 && animatorStatus.isOpen()) {
                     view.invalidate();
                 }
@@ -194,6 +216,9 @@ public class AnimatorMeta {
         cloudVa.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                if (animatorStatus.isClose()) {
+                    return;
+                }
                 if ((int) valueAnimator.getAnimatedValue() != 500 && animatorStatus.isOpen()) {
                     view.invalidate();
                 }
@@ -215,6 +240,9 @@ public class AnimatorMeta {
         grassVa.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                if (animatorStatus.isClose()) {
+                    return;
+                }
                 if ((int) valueAnimator.getAnimatedValue() != 350 && animatorStatus.isOpen()) {
                     view.invalidate();
                 }
@@ -244,6 +272,9 @@ public class AnimatorMeta {
         boatVa.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                if (animatorStatus.isClose()) {
+                    return;
+                }
                 if ((int) valueAnimator.getAnimatedValue() != 1300 && animatorStatus.isOpen()) {
                     view.invalidate();
                 }
@@ -297,25 +328,11 @@ public class AnimatorMeta {
         return actions.get(key);
     }
 
-    public boolean isOn(String key) {
-        return keyWords.containsKey(key) && keyWords.get(key).isStarted();
-    }
-
-    public ValueAnimator va(String key) {
-        return keyWords.get(key);
-    }
-
-    public int getValue(String key) {
-        return (int) keyWords.get(key).getAnimatedValue();
-    }
-
-    public Set<String> keySet() {
-        return keyWords.keySet();
-    }
 
     private Map<String, ValueAnimator> keyWords = new HashMap<>();
     private Map<String, AnimatorAction> actions = new HashMap<>();
 
+    public List<ValuePair> current = new ArrayList<>();
 
     public void stop() {
         animatorStatus.close();
@@ -334,10 +351,31 @@ public class AnimatorMeta {
         return res;
     }
 
+    static class ValuePair {
+        private String key;
+        private ValueAnimator valueAnimator;
+
+        public String getKey() {
+            return key;
+        }
+
+        public void setKey(String key) {
+            this.key = key;
+        }
+
+        public ValueAnimator getValueAnimator() {
+            return valueAnimator;
+        }
+
+        public void setValueAnimator(ValueAnimator valueAnimator) {
+            this.valueAnimator = valueAnimator;
+        }
+    }
 
     public void start(String poem) {
 
         animatorStatus.open();
+        current.clear();
 
         String[] split = poem.split(";");
         StringBuffer sb = new StringBuffer();
@@ -348,6 +386,8 @@ public class AnimatorMeta {
         String p = sb.toString();
 
         for (String key : keyWords.keySet()) {
+            ValueAnimator valueAnimator = keyWords.get(key);
+
             if (p.contains(key)) {
 
                 if (key.equals("月")) {
@@ -364,11 +404,19 @@ public class AnimatorMeta {
                             && !p.contains("十月")
                             && !p.contains("十一月")
                             && !p.contains("十二月")) {
-                        keyWords.get(key).start();
+                        valueAnimator.start();
+
+                        ValuePair vp = new ValuePair();
+                        vp.key = key;
+                        vp.valueAnimator = valueAnimator;
+                        current.add(vp);
                     }
                 } else {
-                    keyWords.get(key).start();
-                }
+                    valueAnimator.start();
+                    ValuePair vp = new ValuePair();
+                    vp.key = key;
+                    vp.valueAnimator = valueAnimator;
+                    current.add(vp);                }
             }
 
         }
