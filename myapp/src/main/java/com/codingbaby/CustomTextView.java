@@ -795,6 +795,8 @@ public class CustomTextView extends View {
 
                 cache.clear();
                 reset();
+                drawLinePoint.clear();
+
 
                 try {
                     String pop = history.pop();
@@ -859,7 +861,6 @@ public class CustomTextView extends View {
 
     private void reset() {
         cursor = 0;
-        drawLinePoint.clear();
     }
 
     private void drawEnglishWord(Canvas canvas) {
