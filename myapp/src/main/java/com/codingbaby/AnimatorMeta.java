@@ -56,17 +56,24 @@ public class AnimatorMeta {
     public AnimatorMeta(final Bitmap moonMap, final Bitmap rainMap, final Bitmap grassMap,
                         final Bitmap boatMap, final Bitmap sunMap, final Bitmap snowMap, final Bitmap autumnMap,
                         final Bitmap springMap, final Bitmap peachMap, final Bitmap cloudMap, final Bitmap xiyangMap,
-                        final Bitmap lianMap, final View view) {
+                        final Bitmap lianMap, final Bitmap meiMap, final View view) {
 
         this.view = view;
 
-        final ValueAnimator moonVa = buildRepeatAnimator(180, 6 * 1000);
 
-        keyWords.put("月", moonVa);
+        keyWords.put("月", buildRepeatAnimator(180, 6 * 1000));
         actions.put("月", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
                 canvas.drawBitmap(moonMap, width / 2 - value, -height / 2, paint);
+            }
+        });
+
+        keyWords.put("梅", buildRepeatAnimator(800, 10 * 1000));
+        actions.put("梅", new AnimatorAction() {
+            @Override
+            public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
+                canvas.drawBitmap(meiMap, -width / 2 - meiMap.getWidth() + value, height / 2 - meiMap.getHeight(), paint);
             }
         });
 
@@ -77,7 +84,7 @@ public class AnimatorMeta {
         actions.put("日出", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(sunMap, -width / 2 + value, -height / 2, paint);
+                canvas.drawBitmap(sunMap, -width / 2 - sunMap.getWidth() + value, -height / 2, paint);
             }
         });
 
@@ -86,7 +93,7 @@ public class AnimatorMeta {
         actions.put("白日", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(sunMap, -width / 2 + value, -height / 2, paint);
+                canvas.drawBitmap(sunMap, -width / 2 - sunMap.getWidth() + value, -height / 2, paint);
             }
         });
 
