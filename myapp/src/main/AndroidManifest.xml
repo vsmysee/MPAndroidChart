@@ -3,24 +3,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.codingbaby">
 
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="false"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="诗品大千"
-        tools:replace="android:label"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:theme="@style/AppTheme">
-        <activity
-            android:name="com.codingbaby.MainActivity">
+        android:theme="@style/AppTheme"
+        tools:replace="android:label">
+        <activity android:name="com.codingbaby.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".MainActivity" />
 
     </application>
 
