@@ -51,6 +51,7 @@ public class CustomTextView extends View {
     private Bitmap xiyangMap = BitmapFactory.decodeResource(getResources(), R.drawable.xiyang);
     private Bitmap lianMap = BitmapFactory.decodeResource(getResources(), R.drawable.lian);
     private Bitmap meiMap = BitmapFactory.decodeResource(getResources(), R.drawable.mei);
+    private Bitmap zhuMap = BitmapFactory.decodeResource(getResources(), R.drawable.zhu);
 
     private AnimatorMeta animatorMeta;
 
@@ -236,7 +237,7 @@ public class CustomTextView extends View {
     public CustomTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        animatorMeta = new AnimatorMeta(moonMap, rainMap, grassMap, boatMap, sunMap, snowMap, autumn, spring, peach, cloudMap, xiyangMap, lianMap, meiMap, this);
+        animatorMeta = new AnimatorMeta(moonMap, rainMap, grassMap, boatMap, sunMap, snowMap, autumn, spring, peach, cloudMap, xiyangMap, lianMap, meiMap, zhuMap, this);
 
         final AssetManager assets = context.getAssets();
 

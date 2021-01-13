@@ -56,7 +56,7 @@ public class AnimatorMeta {
     public AnimatorMeta(final Bitmap moonMap, final Bitmap rainMap, final Bitmap grassMap,
                         final Bitmap boatMap, final Bitmap sunMap, final Bitmap snowMap, final Bitmap autumnMap,
                         final Bitmap springMap, final Bitmap peachMap, final Bitmap cloudMap, final Bitmap xiyangMap,
-                        final Bitmap lianMap, final Bitmap meiMap, final View view) {
+                        final Bitmap lianMap, final Bitmap meiMap, final Bitmap zhuMap, final View view) {
 
         this.view = view;
 
@@ -66,6 +66,14 @@ public class AnimatorMeta {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
                 canvas.drawBitmap(moonMap, width / 2 - value, -height / 2, paint);
+            }
+        });
+
+        keyWords.put("竹", buildRepeatAnimator(800, 10 * 1000));
+        actions.put("竹", new AnimatorAction() {
+            @Override
+            public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
+                canvas.drawBitmap(zhuMap, -width / 2 - zhuMap.getWidth() + value, height / 2 - zhuMap.getHeight(), paint);
             }
         });
 
@@ -138,6 +146,14 @@ public class AnimatorMeta {
 
         keyWords.put("日暮", xiyangVa);
         actions.put("日暮", new AnimatorAction() {
+            @Override
+            public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
+                canvas.drawBitmap(xiyangMap, -width / 2, -height / 2 - xiyangMap.getHeight() + value, paint);
+            }
+        });
+
+        keyWords.put("残阳", xiyangVa);
+        actions.put("残阳", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
                 canvas.drawBitmap(xiyangMap, -width / 2, -height / 2 - xiyangMap.getHeight() + value, paint);
