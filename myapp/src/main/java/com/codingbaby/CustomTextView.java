@@ -140,6 +140,8 @@ public class CustomTextView extends View {
 
     private Character chineseWord;
 
+    private List<String> showIdioms;
+
     private static String time;
     private static String author;
     private static String title;
@@ -198,11 +200,17 @@ public class CustomTextView extends View {
     }
 
 
-    private String randIdiom(boolean students) {
-        Random rand = new Random();
-        int index = rand.nextInt(students ? idioms_students.size() : idioms.size());
-        return students ? idioms_students.get(index) : idioms.get(index);
+    private void randIdiom(boolean students) {
+        List<String> list = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+
+            Random rand = new Random();
+            int index = rand.nextInt(students ? idioms_students.size() : idioms.size());
+            list.add(students ? idioms_students.get(index) : idioms.get(index));
+        }
+        showIdioms = list;
     }
+
 
     private String randShortEnglish() {
         Random rand = new Random();
@@ -635,6 +643,10 @@ public class CustomTextView extends View {
                 randChineseWord();
             }
 
+            if (selectIdiom) {
+                randIdiom(selectIdiomStudent);
+            }
+
             invalidate();
 
         }
@@ -683,6 +695,7 @@ public class CustomTextView extends View {
             selectPoem = false;
             selectEnglishWord = false;
 
+            randIdiom(false);
 
             return true;
 
@@ -767,7 +780,7 @@ public class CustomTextView extends View {
     private boolean selectWordForAll = true;
 
 
-    private boolean selectIdiomStudent;
+    private boolean selectIdiomStudent = false;
     private boolean selectIdiomForAll = true;
 
 
@@ -951,8 +964,8 @@ public class CustomTextView extends View {
 
         List<String> rows = new ArrayList<>();
 
-        for (int n = 0; n < 5; n++) {
-            rows.add(randIdiom(selectIdiomStudent));
+        for (String item : showIdioms) {
+            rows.add(item);
         }
 
         int textLines = rows.size();
