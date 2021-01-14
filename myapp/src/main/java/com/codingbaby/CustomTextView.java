@@ -3,6 +3,7 @@ package com.codingbaby;
 import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,6 +11,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
+import android.media.MediaPlayer;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.KeyEvent;
@@ -22,6 +24,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -220,7 +223,6 @@ public class CustomTextView extends View {
     }
 
 
-
     private void randIdiom(boolean students) {
         List<String> list = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
@@ -254,13 +256,15 @@ public class CustomTextView extends View {
     }
 
 
+    private AssetManager assets;
+
     public CustomTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
 
         animatorMeta = new AnimatorMeta(moonMap, rainMap, grassMap, boatMap, sunMap, snowMap, autumn, spring, peach, cloudMap, xiyangMap, lianMap, meiMap, zhuMap, this);
 
-        final AssetManager assets = context.getAssets();
+        assets = context.getAssets();
 
         poems.addAll(FileReader.loadPoem(assets));
         poems_students.addAll(FileReader.loadStudentPoem(assets));
@@ -1046,6 +1050,21 @@ public class CustomTextView extends View {
 
         float abs = Math.abs(ascent + descent);
         float centerBaselineY = abs / 2;
+
+        if (!functionAnimator.isRunning()) {
+
+            AssetFileDescriptor fd = null;
+            try {
+                fd = assets.openFd("mp3/ago.mp3");
+                MediaPlayer mediaPlayer = new MediaPlayer();
+                mediaPlayer.setDataSource(fd.getFileDescriptor(), fd.getStartOffset(), fd.getLength());
+                mediaPlayer.prepare();
+                mediaPlayer.start();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
 
 
         for (int i = 0; i < textLines; i++) {
