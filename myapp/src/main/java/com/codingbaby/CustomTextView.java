@@ -126,6 +126,8 @@ public class CustomTextView extends View {
 
     private List<Character> words = new ArrayList<>();
     private List<Character> words_students = new ArrayList<>();
+    private List<Character> words_primary = new ArrayList<>();
+    private List<Character> words_senior = new ArrayList<>();
     private Map<Character, String> word = new LinkedHashMap<>();
 
     private static Map<Character, List<String>> english = new LinkedHashMap<>();
@@ -188,9 +190,26 @@ public class CustomTextView extends View {
     private Character randChineseWord() {
 
         Character word = randomWord();
+
+        Random rand = new Random();
+
         if (selectWordForStudent) {
-            word = randomStudentsWord();
+            int index = rand.nextInt(words_students.size());
+            word = words_students.get(index);
         }
+
+        if (selectWordForPrimary) {
+            int index = rand.nextInt(words_primary.size());
+            word = words_primary.get(index);
+        }
+
+
+        if (selectWordForSenior) {
+            int index = rand.nextInt(words_senior.size());
+            word = words_senior.get(index);
+        }
+
+
         return word;
     }
 
@@ -200,11 +219,6 @@ public class CustomTextView extends View {
         return words.get(index);
     }
 
-    private Character randomStudentsWord() {
-        Random rand = new Random();
-        int index = rand.nextInt(words_students.size());
-        return words_students.get(index);
-    }
 
 
     private void randIdiom(boolean students) {
@@ -298,7 +312,11 @@ public class CustomTextView extends View {
                     e.printStackTrace();
                 }
 
-                words_students.addAll(FileReader.freqChinese(assets));
+
+                words_students.addAll(FileReader.freqChinese(assets, "freqChinese.txt"));
+                words_primary.addAll(FileReader.freqChinese(assets, "freqChinese2.txt"));
+                words_senior.addAll(FileReader.freqChinese(assets, "freqChinese3.txt"));
+
 
             }
         }).start();
@@ -528,7 +546,7 @@ public class CustomTextView extends View {
 
             n = 1;
 
-            paint.setColor(selectWordForAll ? Color.BLUE : Color.GRAY);
+            paint.setColor(selectWordForPrimary ? Color.BLUE : Color.GRAY);
             canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
             paint.setColor(Color.WHITE);
             paint.setTextSize(40);
@@ -536,7 +554,7 @@ public class CustomTextView extends View {
 
             n = 2;
 
-            paint.setColor(selectWordForAll ? Color.BLUE : Color.GRAY);
+            paint.setColor(selectWordForSenior ? Color.BLUE : Color.GRAY);
             canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
             paint.setColor(Color.WHITE);
             paint.setTextSize(40);
@@ -838,6 +856,8 @@ public class CustomTextView extends View {
                 selectWordForPrimary = false;
                 selectWordForSenior = false;
                 selectWordForAll = false;
+                randChineseWord();
+
             }
 
             if (selectIdiom) {
@@ -862,6 +882,8 @@ public class CustomTextView extends View {
                 selectWordForPrimary = true;
                 selectWordForSenior = false;
                 selectWordForAll = false;
+                randChineseWord();
+
             }
 
             if (selectIdiom) {
@@ -881,6 +903,7 @@ public class CustomTextView extends View {
                 selectWordForPrimary = false;
                 selectWordForSenior = true;
                 selectWordForAll = false;
+                randChineseWord();
             }
 
             return true;
@@ -894,6 +917,8 @@ public class CustomTextView extends View {
                 selectWordForPrimary = false;
                 selectWordForSenior = false;
                 selectWordForAll = true;
+                randChineseWord();
+
             }
 
             return true;

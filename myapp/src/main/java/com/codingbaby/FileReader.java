@@ -117,11 +117,11 @@ public class FileReader {
     }
 
 
-    public static List<Character> freqChinese(AssetManager assets) {
+    public static List<Character> freqChinese(AssetManager assets,String file) {
 
         List<Character> list = new ArrayList<>();
 
-        try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("freqChinese.txt")))) {
+        try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open(file)))) {
             String line;
             while ((line = bf.readLine()) != null) {
                 if (!line.trim().equals("")) {
