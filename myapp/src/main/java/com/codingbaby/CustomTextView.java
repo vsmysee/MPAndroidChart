@@ -114,6 +114,10 @@ public class CustomTextView extends View {
         });
     }
 
+    //汉字动画
+    private ValueAnimator wordAnimator;
+
+
     private List<LinePoint> drawLinePoint = new ArrayList<>();
 
 
@@ -143,16 +147,17 @@ public class CustomTextView extends View {
 
     private List<String> showIdioms;
 
+    private String englishWord;
+
     private static String time;
     private static String author;
     private static String title;
 
+    private List<LinePoint> linePoints = new ArrayList<>();
 
     private Stack<String> history = new Stack<>();
 
-
     private boolean longPress = false;
-
 
     private boolean selectPoem = true;
     private boolean selectWord = false;
@@ -180,12 +185,13 @@ public class CustomTextView extends View {
     }
 
 
-    private void randChineseWord() {
+    private Character randChineseWord() {
 
-        chineseWord = randomWord();
+        Character word = randomWord();
         if (selectWordForStudent) {
-            chineseWord = randomStudentsWord();
+            word = randomStudentsWord();
         }
+        return word;
     }
 
     private Character randomWord() {
@@ -219,7 +225,7 @@ public class CustomTextView extends View {
         return shortEnglish.get(index);
     }
 
-    private String randEnglish() {
+    private void randEnglish() {
         Random rand = new Random();
         Set<Character> characters = english.keySet();
         List<Character> keyList = new ArrayList<>();
@@ -230,12 +236,13 @@ public class CustomTextView extends View {
         Character character = keyList.get(index);
         List<String> wordList = english.get(character);
         rand = new Random();
-        return wordList.get(rand.nextInt(wordList.size()));
+        englishWord = wordList.get(rand.nextInt(wordList.size()));
     }
 
 
     public CustomTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
+
 
         animatorMeta = new AnimatorMeta(moonMap, rainMap, grassMap, boatMap, sunMap, snowMap, autumn, spring, peach, cloudMap, xiyangMap, lianMap, meiMap, zhuMap, this);
 
@@ -304,6 +311,7 @@ public class CustomTextView extends View {
                 idioms_students.addAll(FileReader.loadStudentIdiom(assets));
                 shortEnglish.addAll(FileReader.loadCet4Short(assets));
                 english.putAll(FileReader.loadEnglishWord(assets));
+                FileReader.freqEnglish(assets);
 
             }
         }).start();
@@ -339,8 +347,40 @@ public class CustomTextView extends View {
 
     }
 
+
     @Override
     public void draw(Canvas canvas) {
+
+        if (wordAnimator == null) {
+            wordAnimator = ValueAnimator.ofInt(0, getWidth());
+            wordAnimator.setDuration(1000);
+            wordAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                    invalidate();
+                }
+            });
+            wordAnimator.addListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    chineseWord = randChineseWord();
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {
+
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animation) {
+
+                }
+            });
+        }
 
         setFocusable(true);
         setFocusableInTouchMode(true);
@@ -492,6 +532,23 @@ public class CustomTextView extends View {
             canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
             paint.setColor(Color.WHITE);
             paint.setTextSize(40);
+            canvas.drawText("中", 80 + n * 100, bottomY + 12, paint);
+
+            n = 2;
+
+            paint.setColor(selectWordForAll ? Color.BLUE : Color.GRAY);
+            canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
+            paint.setColor(Color.WHITE);
+            paint.setTextSize(40);
+            canvas.drawText("高", 80 + n * 100, bottomY + 12, paint);
+
+
+            n = 3;
+
+            paint.setColor(selectWordForAll ? Color.BLUE : Color.GRAY);
+            canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
+            paint.setColor(Color.WHITE);
+            paint.setTextSize(40);
             canvas.drawText("全", 80 + n * 100, bottomY + 12, paint);
         }
 
@@ -514,6 +571,27 @@ public class CustomTextView extends View {
             paint.setTextSize(40);
             canvas.drawText("全", 80 + n * 100, bottomY + 12, paint);
         }
+
+
+        if (selectEnglishWord) {
+
+            int n = 0;
+
+            paint.setColor(selectEnglishStudent ? Color.BLUE : Color.GRAY);
+            canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
+            paint.setColor(Color.WHITE);
+            paint.setTextSize(40);
+            canvas.drawText("学", 80 + n * 100, bottomY + 12, paint);
+
+            n = 1;
+
+            paint.setColor(selectEnglishForAll ? Color.BLUE : Color.GRAY);
+            canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
+            paint.setColor(Color.WHITE);
+            paint.setTextSize(40);
+            canvas.drawText("全", 80 + n * 100, bottomY + 12, paint);
+        }
+
     }
 
 
@@ -577,11 +655,9 @@ public class CustomTextView extends View {
     }
 
 
+    //触摸屏幕
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-
-
-        //选择大功能start
 
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
 
@@ -624,7 +700,7 @@ public class CustomTextView extends View {
             }
 
 
-            if (checkTouch(y, x)) {
+            if (longPress && checkTouch(y, x)) {
                 invalidate();
                 return super.onTouchEvent(event);
             }
@@ -641,11 +717,17 @@ public class CustomTextView extends View {
             }
 
             if (selectWord) {
-                randChineseWord();
+                if (!wordAnimator.isStarted()) {
+                    wordAnimator.start();
+                }
             }
 
             if (selectIdiom) {
                 randIdiom(selectIdiomStudent);
+            }
+
+            if (selectEnglishWord) {
+                randEnglish();
             }
 
             invalidate();
@@ -656,6 +738,13 @@ public class CustomTextView extends View {
     }
 
 
+    /**
+     * 检查是否点击了按钮
+     *
+     * @param y
+     * @param x
+     * @return
+     */
     private boolean checkTouch(float y, float x) {
 
         int topButtonX = textSize;
@@ -680,7 +769,7 @@ public class CustomTextView extends View {
             selectIdiom = false;
             selectEnglishWord = false;
 
-            randChineseWord();
+            chineseWord = randChineseWord();
 
             return true;
 
@@ -712,6 +801,7 @@ public class CustomTextView extends View {
             selectWord = false;
             selectPoem = false;
 
+            randEnglish();
 
             return true;
 
@@ -735,14 +825,18 @@ public class CustomTextView extends View {
 
         //选择大功能end
 
+        n = 0;
+        if (x > 60 + 100 * n && y > getHeight() - 140 && y < getHeight() - 60 && x < 140 + 100 * n) {
 
-        if (x > 60 && y > getHeight() - 140 && y < getHeight() - 60 && x < 140) {
             if (selectPoem) {
                 selectPoemForStudent = true;
                 selectPoemForAll = false;
             }
+
             if (selectWord) {
                 selectWordForStudent = true;
+                selectWordForPrimary = false;
+                selectWordForSenior = false;
                 selectWordForAll = false;
             }
 
@@ -750,16 +844,24 @@ public class CustomTextView extends View {
                 selectIdiomStudent = true;
                 selectIdiomForAll = false;
             }
+
+            return true;
+
+
         }
 
-        if (x > 60 + 100 && y > getHeight() - 140 && y < getHeight() - 60 && x < 140 + 100) {
+
+        n = 1;
+        if (x > 60 + 100 * n && y > getHeight() - 140 && y < getHeight() - 60 && x < 140 + 100 * n) {
             if (selectPoem) {
                 selectPoemForAll = true;
                 selectPoemForStudent = false;
             }
             if (selectWord) {
                 selectWordForStudent = false;
-                selectWordForAll = true;
+                selectWordForPrimary = true;
+                selectWordForSenior = false;
+                selectWordForAll = false;
             }
 
             if (selectIdiom) {
@@ -767,6 +869,34 @@ public class CustomTextView extends View {
                 selectIdiomForAll = true;
             }
 
+            return true;
+
+        }
+
+        n = 2;
+        if (x > 60 + 100 * n && y > getHeight() - 140 && y < getHeight() - 60 && x < 140 + 100 * n) {
+
+            if (selectWord) {
+                selectWordForStudent = false;
+                selectWordForPrimary = false;
+                selectWordForSenior = true;
+                selectWordForAll = false;
+            }
+
+            return true;
+        }
+
+        n = 3;
+        if (x > 60 + 100 * n && y > getHeight() - 140 && y < getHeight() - 60 && x < 140 + 100 * n) {
+
+            if (selectWord) {
+                selectWordForStudent = false;
+                selectWordForPrimary = false;
+                selectWordForSenior = false;
+                selectWordForAll = true;
+            }
+
+            return true;
         }
 
 
@@ -778,12 +908,17 @@ public class CustomTextView extends View {
     private boolean selectPoemForAll = true;
 
     private boolean selectWordForStudent;
+    private boolean selectWordForPrimary;
+    private boolean selectWordForSenior;
     private boolean selectWordForAll = true;
 
 
     private boolean selectIdiomStudent = false;
     private boolean selectIdiomForAll = true;
 
+
+    private boolean selectEnglishStudent = false;
+    private boolean selectEnglishForAll = true;
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -795,7 +930,8 @@ public class CustomTextView extends View {
                 animatorMeta.stop();
 
                 cache.clear();
-                reset();
+                cursor = 0;
+
                 drawLinePoint.clear();
 
 
@@ -834,7 +970,7 @@ public class CustomTextView extends View {
                 }
 
                 if (selectWord) {
-                    randChineseWord();
+                    chineseWord = randChineseWord();
                 }
 
                 invalidate();
@@ -860,10 +996,6 @@ public class CustomTextView extends View {
     }
 
 
-    private void reset() {
-        cursor = 0;
-    }
-
     private void drawEnglishWord(Canvas canvas) {
 
         paint.setTextSize(sp2px(30));
@@ -872,8 +1004,6 @@ public class CustomTextView extends View {
 
         // 文本高度
         float textHeight = fontMetrics.bottom - fontMetrics.top;
-
-        String englishWord = randEnglish();
 
         List<String> rows = new ArrayList<>();
         int start = englishWord.indexOf("[");
@@ -995,6 +1125,7 @@ public class CustomTextView extends View {
 
 
     private void drawWord(Canvas canvas) {
+
         paint.setColor(DEFAULT_COLOR);
         paint.setTextSize(sp2px(80));
 
@@ -1003,17 +1134,6 @@ public class CustomTextView extends View {
         // 文本高度
         float textHeight = fontMetrics.bottom - fontMetrics.top;
 
-        List<String> rows = new ArrayList<>();
-
-        rows.add(word.get(chineseWord));
-        String w = String.valueOf(chineseWord);
-        rows.add(w);
-        if (!oldWord.get(w).equals(w)) {
-            rows.add(oldWord.get(w));
-        }
-
-        int textLines = rows.size();
-
         // 中间文本的baseline
         float ascent = paint.ascent();
         float descent = paint.descent();
@@ -1021,8 +1141,31 @@ public class CustomTextView extends View {
         float abs = Math.abs(ascent + descent);
         float centerBaselineY = abs / 2;
 
-        float max = 0;
 
+        if (!wordAnimator.isStarted()) {
+            drawWord(canvas, textHeight, descent, centerBaselineY, chineseWord, 0);
+        } else {
+            int offset = (int) wordAnimator.getAnimatedValue();
+            drawWord(canvas, textHeight, descent, centerBaselineY, chineseWord, -offset);
+        }
+
+    }
+
+
+    private void drawWord(Canvas canvas, float textHeight, float descent, float centerBaselineY, Character wordParam, int offset) {
+        List<String> rows = new ArrayList<>();
+        rows.add(word.get(wordParam));
+        String w = String.valueOf(wordParam);
+        rows.add(w);
+        if (!w.equals(oldWord.get(w))) {
+            rows.add(oldWord.get(w));
+        }
+
+
+        int textLines = rows.size();
+
+
+        float max = 0;
         for (int i = 0; i < textLines; i++) {
 
             float baseY = centerBaselineY + (i - (textLines - 1) / 2.0f) * textHeight;
@@ -1040,11 +1183,9 @@ public class CustomTextView extends View {
                 paint.setColor(DEFAULT_COLOR);
             }
 
-            canvas.drawText(content, -textWidth / 2, baseY, paint);
-            canvas.drawLine(-max, baseY + descent, max, baseY + descent, paint);
+            canvas.drawText(content, -textWidth / 2 + offset, baseY, paint);
+            canvas.drawLine(-max + offset, baseY + descent, max + offset, baseY + descent, paint);
         }
-
-
     }
 
 
@@ -1074,7 +1215,7 @@ public class CustomTextView extends View {
 
         if (cache.size() == 0) {
 
-            reset();
+            cursor = 0;
 
             if (rows.size() * textHeight > getHeight() - dp2px(200)) {
 
@@ -1122,7 +1263,7 @@ public class CustomTextView extends View {
                 rows = padding;
 
                 cache.clear();
-                reset();
+                cursor = 0;
             }
         }
 
@@ -1203,7 +1344,6 @@ public class CustomTextView extends View {
         canvas.drawText(author, maxWidth / 2 - endTextWidth + timeWidth + 20, endY + textHeight, paint);
     }
 
-    private List<LinePoint> linePoints = new ArrayList<>();
 
     /**
      * dp转px
