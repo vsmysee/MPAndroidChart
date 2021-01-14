@@ -83,7 +83,21 @@ public class FileReader {
         return list;
     }
 
+    public static List<String> freqEnglish(AssetManager assets) {
 
+        List<String> list = new ArrayList<>();
+
+        try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("cet4/freq.txt")))) {
+            String line;
+            while ((line = bf.readLine()) != null) {
+                list.add(line);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
 
 
     public static List<String> loadCet4Short(AssetManager assets) {
