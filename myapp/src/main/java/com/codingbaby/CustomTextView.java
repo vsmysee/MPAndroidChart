@@ -41,6 +41,8 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 import java.util.Stack;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 public class CustomTextView extends View {
@@ -49,6 +51,11 @@ public class CustomTextView extends View {
 
     private static int DEFAULT_COLOR = Color.BLACK;
 
+
+    private ExecutorService executorService = Executors.newFixedThreadPool(2);
+
+
+    private Bitmap mountainMap = BitmapFactory.decodeResource(getResources(), R.drawable.mountain);
     private Bitmap moonMap = BitmapFactory.decodeResource(getResources(), R.drawable.moon);
     private Bitmap grassMap = BitmapFactory.decodeResource(getResources(), R.drawable.grass);
     private Bitmap rainMap = BitmapFactory.decodeResource(getResources(), R.drawable.rain);
@@ -63,6 +70,9 @@ public class CustomTextView extends View {
     private Bitmap lianMap = BitmapFactory.decodeResource(getResources(), R.drawable.lian);
     private Bitmap meiMap = BitmapFactory.decodeResource(getResources(), R.drawable.mei);
     private Bitmap zhuMap = BitmapFactory.decodeResource(getResources(), R.drawable.zhu);
+    private Bitmap duckMap = BitmapFactory.decodeResource(getResources(), R.drawable.duck);
+    private Bitmap frogMap = BitmapFactory.decodeResource(getResources(), R.drawable.frog);
+    private Bitmap wireMap = BitmapFactory.decodeResource(getResources(), R.drawable.wire);
 
     private AnimatorMeta animatorMeta;
 
@@ -261,6 +271,11 @@ public class CustomTextView extends View {
         List<String> wordList = english.get(character);
         rand = new Random();
         englishWord = wordList.get(rand.nextInt(wordList.size()));
+
+        if (selectEnglishStudent) {
+            index = rand.nextInt(english_primary.size());
+            englishWord = english_primary.get(index);
+        }
     }
 
 
@@ -270,7 +285,7 @@ public class CustomTextView extends View {
         super(context, attrs);
 
 
-        animatorMeta = new AnimatorMeta(moonMap, rainMap, grassMap, boatMap, sunMap, snowMap, autumn, spring, peach, cloudMap, xiyangMap, lianMap, meiMap, zhuMap, this);
+        animatorMeta = new AnimatorMeta(moonMap, rainMap, grassMap, boatMap, sunMap, snowMap, autumn, spring, peach, cloudMap, xiyangMap, lianMap, meiMap, zhuMap, duckMap, frogMap, mountainMap,wireMap, this);
 
         assets = context.getAssets();
 
@@ -881,6 +896,12 @@ public class CustomTextView extends View {
                 selectIdiomForAll = false;
             }
 
+            if (selectEnglishWord) {
+                selectEnglishStudent = true;
+                selectEnglishForAll = false;
+            }
+
+
             return true;
 
 
@@ -905,6 +926,11 @@ public class CustomTextView extends View {
             if (selectIdiom) {
                 selectIdiomStudent = false;
                 selectIdiomForAll = true;
+            }
+
+            if (selectEnglishWord) {
+                selectEnglishStudent = false;
+                selectEnglishForAll = true;
             }
 
             return true;
@@ -1047,15 +1073,35 @@ public class CustomTextView extends View {
         float textHeight = fontMetrics.bottom - fontMetrics.top;
 
         List<String> rows = new ArrayList<>();
+
+
+        String theWord = englishWord;
         int start = englishWord.indexOf("[");
 
-        final String theWord = englishWord.substring(0, start);
-        rows.add(theWord);
+        if (start == -1) {
+            String first = theWord.substring(0, 1);
+            char c = first.toUpperCase().charAt(0);
+            List<String> strings = english.get(c);
+            for (String string : strings) {
+                String w = string.substring(0, string.indexOf(" "));
+                if (w.equals(theWord)) {
+                    englishWord = string;
+                    break;
+                }
+            }
+        }
 
-        int end = englishWord.indexOf("]");
-        rows.add(englishWord.substring(start, end + 1));
-        rows.add(englishWord.substring(end + 1));
+        start = englishWord.indexOf("[");
+        if (start != -1) {
+            theWord = englishWord.substring(0, start);
+            rows.add(theWord);
 
+            int end = englishWord.indexOf("]");
+            rows.add(englishWord.substring(start, end + 1));
+            rows.add(englishWord.substring(end + 1));
+        } else {
+            rows.add(theWord);
+        }
 
         int textLines = rows.size();
 
@@ -1066,7 +1112,9 @@ public class CustomTextView extends View {
         float abs = Math.abs(ascent + descent);
         float centerBaselineY = abs / 2;
 
-        new Thread(new Runnable() {
+
+        final String voice = theWord.trim();
+        executorService.execute(new Runnable() {
             @Override
             public void run() {
                 if (!functionAnimator.isRunning()) {
@@ -1078,10 +1126,10 @@ public class CustomTextView extends View {
                             dir.mkdir();
                         }
 
-                        File file = new File(dir, theWord + ".mp3");
+                        File file = new File(dir, voice + ".mp3");
                         if (!file.exists()) {
                             file.createNewFile();
-                            URLConnection conn = new URL(mp3Url + theWord).openConnection();
+                            URLConnection conn = new URL(mp3Url + voice).openConnection();
                             InputStream is = conn.getInputStream();
                             OutputStream outstream = new FileOutputStream(file);
                             byte[] buffer = new byte[4096];
@@ -1102,8 +1150,7 @@ public class CustomTextView extends View {
                     }
                 }
             }
-        }).start();
-
+        });
 
         for (int i = 0; i < textLines; i++) {
 

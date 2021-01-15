@@ -56,7 +56,8 @@ public class AnimatorMeta {
     public AnimatorMeta(final Bitmap moonMap, final Bitmap rainMap, final Bitmap grassMap,
                         final Bitmap boatMap, final Bitmap sunMap, final Bitmap snowMap, final Bitmap autumnMap,
                         final Bitmap springMap, final Bitmap peachMap, final Bitmap cloudMap, final Bitmap xiyangMap,
-                        final Bitmap lianMap, final Bitmap meiMap, final Bitmap zhuMap, final View view) {
+                        final Bitmap lianMap, final Bitmap meiMap, final Bitmap zhuMap, final Bitmap duckMap,
+                        final Bitmap frogMap, final Bitmap mountainMap, final Bitmap wireMap, final View view) {
 
         this.view = view;
 
@@ -77,7 +78,7 @@ public class AnimatorMeta {
             }
         });
 
-        keyWords.put("梅", buildRepeatAnimator(800, 10 * 1000));
+        keyWords.put("梅", buildRepeatAnimator(700, 10 * 1000));
         actions.put("梅", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
@@ -286,13 +287,57 @@ public class AnimatorMeta {
         });
 
 
+        keyWords.put("蛙", buildRepeatAnimator(100, 5 * 1000));
+        actions.put("蛙", new AnimatorAction() {
+            @Override
+            public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
+                canvas.drawBitmap(frogMap, -width / 2 - frogMap.getWidth() + value, height / 2 - frogMap.getHeight() * 2, paint);
+            }
+        });
+
+        keyWords.put("酒", buildRepeatAnimator(400, 5 * 1000));
+        actions.put("酒", new AnimatorAction() {
+            @Override
+            public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
+                canvas.drawBitmap(wireMap, -width / 2 - wireMap.getWidth() + value, height / 2 - wireMap.getHeight() -100, paint);
+            }
+        });
+
+        keyWords.put("山", buildRepeatAnimator(1200, 15 * 1000));
+        actions.put("山", new AnimatorAction() {
+            @Override
+            public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
+                canvas.drawBitmap(mountainMap, -width / 2, height / 2 + mountainMap.getHeight() - value, paint);
+            }
+        });
+
+        ValueAnimator duckVa = buildRepeatAnimator(1300, 20 * 1000);
+
+        keyWords.put("鸭", duckVa);
+        actions.put("鸭", new AnimatorAction() {
+            @Override
+            public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
+                canvas.drawBitmap(duckMap, width / 2 + duckMap.getWidth() - value, height / 2 - duckMap.getHeight(), paint);
+            }
+        });
+
+
+        keyWords.put("鹅", duckVa);
+        actions.put("鹅", new AnimatorAction() {
+            @Override
+            public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
+                canvas.drawBitmap(duckMap, width / 2 + duckMap.getWidth() - value, height / 2 - duckMap.getHeight(), paint);
+            }
+        });
+
+
         ValueAnimator boatVa = buildRepeatAnimator(1300, 20 * 1000);
 
         keyWords.put("船", boatVa);
         actions.put("船", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(boatMap, -width / 2 - boatMap.getWidth() + value, height / 2, paint);
+                canvas.drawBitmap(boatMap, -width / 2 - boatMap.getWidth() + value, height / 2 - boatMap.getHeight(), paint);
             }
         });
 
