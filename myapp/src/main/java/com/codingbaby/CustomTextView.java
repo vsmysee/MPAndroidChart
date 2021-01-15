@@ -3,7 +3,6 @@ package com.codingbaby;
 import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -12,6 +11,8 @@ import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.media.MediaPlayer;
+import android.net.Uri;
+import android.os.Environment;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.KeyEvent;
@@ -24,8 +25,13 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.IOException;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -38,6 +44,8 @@ import java.util.Stack;
 
 
 public class CustomTextView extends View {
+
+    private static String mp3Url = "http://dict.youdao.com/dictvoice?type=1&audio=";
 
     private static int DEFAULT_COLOR = Color.BLACK;
 
@@ -87,7 +95,6 @@ public class CustomTextView extends View {
     {
         functionAnimator = ValueAnimator.ofInt(0, 500);
         functionAnimator.setDuration(2000);
-        functionAnimator.setStartDelay(4000);
         functionAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
@@ -134,6 +141,7 @@ public class CustomTextView extends View {
     private Map<Character, String> word = new LinkedHashMap<>();
 
     private static Map<Character, List<String>> english = new LinkedHashMap<>();
+    private static List<String> english_primary = new ArrayList<>();
     private List<String> shortEnglish = new ArrayList<>();
 
 
@@ -333,7 +341,7 @@ public class CustomTextView extends View {
                 idioms_students.addAll(FileReader.loadStudentIdiom(assets));
                 shortEnglish.addAll(FileReader.loadCet4Short(assets));
                 english.putAll(FileReader.loadEnglishWord(assets));
-                FileReader.freqEnglish(assets);
+                english_primary.addAll(FileReader.freqEnglish(assets));
 
             }
         }).start();
@@ -345,9 +353,7 @@ public class CustomTextView extends View {
 
                 longPress = !longPress;
 
-                if (longPress) {
-                    functionAnimator.start();
-                } else {
+                if (longPress && functionAnimator.isRunning()) {
                     functionAnimator.cancel();
                 }
 
@@ -723,7 +729,13 @@ public class CustomTextView extends View {
 
 
             if (longPress && checkTouch(y, x)) {
+
+                if (!functionAnimator.isStarted()) {
+                    functionAnimator.start();
+                }
+
                 invalidate();
+
                 return super.onTouchEvent(event);
             }
 
@@ -1036,7 +1048,10 @@ public class CustomTextView extends View {
 
         List<String> rows = new ArrayList<>();
         int start = englishWord.indexOf("[");
-        rows.add(englishWord.substring(0, start));
+
+        final String theWord = englishWord.substring(0, start);
+        rows.add(theWord);
+
         int end = englishWord.indexOf("]");
         rows.add(englishWord.substring(start, end + 1));
         rows.add(englishWord.substring(end + 1));
@@ -1051,21 +1066,43 @@ public class CustomTextView extends View {
         float abs = Math.abs(ascent + descent);
         float centerBaselineY = abs / 2;
 
-        if (!functionAnimator.isRunning()) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (!functionAnimator.isRunning()) {
+                    try {
 
-            //"http://dict.youdao.com/dictvoice?type=1&audio="
-            AssetFileDescriptor fd = null;
-            try {
-                fd = assets.openFd("mp3/ago.mp3");
-                MediaPlayer mediaPlayer = new MediaPlayer();
-                mediaPlayer.setDataSource(fd.getFileDescriptor(), fd.getStartOffset(), fd.getLength());
-                mediaPlayer.prepare();
-                mediaPlayer.start();
-            } catch (IOException e) {
-                e.printStackTrace();
+                        File sdCard = Environment.getExternalStorageDirectory();
+                        File dir = new File(sdCard.getAbsolutePath() + "/poem");
+                        if (!dir.exists()) {
+                            dir.mkdir();
+                        }
+
+                        File file = new File(dir, theWord + ".mp3");
+                        if (!file.exists()) {
+                            file.createNewFile();
+                            URLConnection conn = new URL(mp3Url + theWord).openConnection();
+                            InputStream is = conn.getInputStream();
+                            OutputStream outstream = new FileOutputStream(file);
+                            byte[] buffer = new byte[4096];
+                            int len;
+                            while ((len = is.read(buffer)) > 0) {
+                                outstream.write(buffer, 0, len);
+                            }
+                            outstream.close();
+                        }
+
+                        final MediaPlayer mediaPlayer = new MediaPlayer();
+                        mediaPlayer.setDataSource(getContext(), Uri.parse("file:" + file.getAbsolutePath()));
+                        mediaPlayer.prepare();
+                        mediaPlayer.start();
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
             }
-
-        }
+        }).start();
 
 
         for (int i = 0; i < textLines; i++) {
