@@ -87,7 +87,7 @@ public class FileReader {
 
         List<String> list = new ArrayList<>();
 
-        try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("cet4/freq.txt")))) {
+        try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("cet4/freq1.txt")))) {
             String line;
             while ((line = bf.readLine()) != null) {
                 list.add(line);
@@ -117,7 +117,7 @@ public class FileReader {
     }
 
 
-    public static List<Character> freqChinese(AssetManager assets,String file) {
+    public static List<Character> freqChinese(AssetManager assets, String file) {
 
         List<Character> list = new ArrayList<>();
 
