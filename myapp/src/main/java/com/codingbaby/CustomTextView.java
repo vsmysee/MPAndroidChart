@@ -1053,6 +1053,7 @@ public class CustomTextView extends View {
 
         if (!functionAnimator.isRunning()) {
 
+            //"http://dict.youdao.com/dictvoice?type=1&audio="
             AssetFileDescriptor fd = null;
             try {
                 fd = assets.openFd("mp3/ago.mp3");
