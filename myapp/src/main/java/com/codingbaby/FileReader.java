@@ -83,11 +83,11 @@ public class FileReader {
         return list;
     }
 
-    public static List<String> freqEnglish(AssetManager assets) {
+    public static List<String> freqEnglish(AssetManager assets, String file) {
 
         List<String> list = new ArrayList<>();
 
-        try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("cet4/freq1.txt")))) {
+        try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open(file)))) {
             String line;
             while ((line = bf.readLine()) != null) {
                 list.add(line);
