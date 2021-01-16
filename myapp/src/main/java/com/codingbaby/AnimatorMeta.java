@@ -1,10 +1,8 @@
 package com.codingbaby;
 
 import android.animation.ValueAnimator;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.view.View;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,7 +13,7 @@ public class AnimatorMeta {
 
     private AnimatorStatus animatorStatus = new AnimatorStatus();
 
-    private View view;
+    private CustomTextView view;
 
     private ValueAnimator buildRepeatAnimator(int number, int duration) {
 
@@ -53,11 +51,7 @@ public class AnimatorMeta {
         return animator;
     }
 
-    public AnimatorMeta(final Bitmap moonMap, final Bitmap rainMap, final Bitmap grassMap,
-                        final Bitmap boatMap, final Bitmap sunMap, final Bitmap snowMap, final Bitmap autumnMap,
-                        final Bitmap springMap, final Bitmap peachMap, final Bitmap cloudMap, final Bitmap xiyangMap,
-                        final Bitmap lianMap, final Bitmap meiMap, final Bitmap zhuMap, final Bitmap duckMap,
-                        final Bitmap frogMap, final Bitmap mountainMap, final Bitmap wireMap, final View view) {
+    public AnimatorMeta(final CustomTextView view) {
 
         this.view = view;
 
@@ -66,7 +60,7 @@ public class AnimatorMeta {
         actions.put("月", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(moonMap, width / 2 - value, -height / 2, paint);
+                canvas.drawBitmap(view.moonMap, width / 2 - value, -height / 2, paint);
             }
         });
 
@@ -74,7 +68,7 @@ public class AnimatorMeta {
         actions.put("竹", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(zhuMap, -width / 2 - zhuMap.getWidth() + value, height / 2 - zhuMap.getHeight(), paint);
+                canvas.drawBitmap(view.zhuMap, -width / 2 - view.zhuMap.getWidth() + value, height / 2 - view.zhuMap.getHeight(), paint);
             }
         });
 
@@ -82,7 +76,7 @@ public class AnimatorMeta {
         actions.put("梅", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(meiMap, -width / 2 - meiMap.getWidth() + value, height / 2 - meiMap.getHeight(), paint);
+                canvas.drawBitmap(view.meiMap, -width / 2 - view.meiMap.getWidth() + value, height / 2 - view.meiMap.getHeight(), paint);
             }
         });
 
@@ -93,7 +87,7 @@ public class AnimatorMeta {
         actions.put("日出", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(sunMap, -width / 2 - sunMap.getWidth() + value, -height / 2, paint);
+                canvas.drawBitmap(view.sunMap, -width / 2 - view.sunMap.getWidth() + value, -height / 2, paint);
             }
         });
 
@@ -102,18 +96,16 @@ public class AnimatorMeta {
         actions.put("白日", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(sunMap, -width / 2 - sunMap.getWidth() + value, -height / 2, paint);
+                canvas.drawBitmap(view.sunMap, -width / 2 - view.sunMap.getWidth() + value, -height / 2, paint);
             }
         });
 
 
-        ValueAnimator rainVa = buildAnimator(600, 10 * 1000);
-
-        keyWords.put("雨", rainVa);
+        keyWords.put("雨", buildAnimator(600, 10 * 1000));
         actions.put("雨", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(rainMap, -width / 2, -height / 2 - rainMap.getHeight() + value, paint);
+                canvas.drawBitmap(view.rainMap, -width / 2, -height / 2 - view.rainMap.getHeight() + value, paint);
             }
         });
 
@@ -124,7 +116,7 @@ public class AnimatorMeta {
         actions.put("夕阳", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(xiyangMap, -width / 2, -height / 2 - xiyangMap.getHeight() + value, paint);
+                canvas.drawBitmap(view.xiyangMap, -width / 2, -height / 2 - view.xiyangMap.getHeight() + value, paint);
             }
         });
 
@@ -132,7 +124,7 @@ public class AnimatorMeta {
         actions.put("落日", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(xiyangMap, -width / 2, -height / 2 - xiyangMap.getHeight() + value, paint);
+                canvas.drawBitmap(view.xiyangMap, -width / 2, -height / 2 - view.xiyangMap.getHeight() + value, paint);
             }
         });
 
@@ -141,7 +133,7 @@ public class AnimatorMeta {
         actions.put("黄昏", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(xiyangMap, -width / 2, -height / 2 - xiyangMap.getHeight() + value, paint);
+                canvas.drawBitmap(view.xiyangMap, -width / 2, -height / 2 - view.xiyangMap.getHeight() + value, paint);
             }
         });
 
@@ -149,7 +141,7 @@ public class AnimatorMeta {
         actions.put("日暮", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(xiyangMap, -width / 2, -height / 2 - xiyangMap.getHeight() + value, paint);
+                canvas.drawBitmap(view.xiyangMap, -width / 2, -height / 2 - view.xiyangMap.getHeight() + value, paint);
             }
         });
 
@@ -157,7 +149,7 @@ public class AnimatorMeta {
         actions.put("残阳", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(xiyangMap, -width / 2, -height / 2 - xiyangMap.getHeight() + value, paint);
+                canvas.drawBitmap(view.xiyangMap, -width / 2, -height / 2 - view.xiyangMap.getHeight() + value, paint);
             }
         });
 
@@ -168,7 +160,7 @@ public class AnimatorMeta {
         actions.put("雪", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(snowMap, -width / 2, -height / 2 - snowMap.getHeight() + value, paint);
+                canvas.drawBitmap(view.snowMap, -width / 2, -height / 2 - view.snowMap.getHeight() + value, paint);
             }
         });
 
@@ -176,7 +168,7 @@ public class AnimatorMeta {
         actions.put("霜", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(snowMap, -width / 2, -height / 2 - snowMap.getHeight() + value, paint);
+                canvas.drawBitmap(view.snowMap, -width / 2, -height / 2 - view.snowMap.getHeight() + value, paint);
             }
         });
 
@@ -184,7 +176,7 @@ public class AnimatorMeta {
         actions.put("冬", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(snowMap, -width / 2, -height / 2 - snowMap.getHeight() + value, paint);
+                canvas.drawBitmap(view.snowMap, -width / 2, -height / 2 - view.snowMap.getHeight() + value, paint);
             }
         });
 
@@ -195,7 +187,7 @@ public class AnimatorMeta {
         actions.put("秋", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(autumnMap, -width / 2 - 50, height / 2 - value, paint);
+                canvas.drawBitmap(view.autumnMap, -width / 2 - 50, height / 2 - value, paint);
             }
         });
 
@@ -203,7 +195,7 @@ public class AnimatorMeta {
         actions.put("黄叶", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(autumnMap, -width / 2 - 50, height / 2 - value, paint);
+                canvas.drawBitmap(view.autumnMap, -width / 2 - 50, height / 2 - value, paint);
             }
         });
 
@@ -211,40 +203,58 @@ public class AnimatorMeta {
         actions.put("叶红", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(autumnMap, -width / 2 - 50, height / 2 - value, paint);
+                canvas.drawBitmap(view.autumnMap, -width / 2 - 50, height / 2 - value, paint);
             }
         });
 
 
-        ValueAnimator springVa = buildRepeatAnimator(300, 6 * 1000);
-
-        keyWords.put("春", springVa);
+        keyWords.put("春", buildRepeatAnimator(300, 6 * 1000));
         actions.put("春", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(springMap, -width / 2, height / 2 - value, paint);
+                canvas.drawBitmap(view.springMap, -width / 2, height / 2 - value, paint);
             }
         });
 
 
         ValueAnimator peachVa = buildAnimator(600, 15 * 1000);
-
         keyWords.put("桃", peachVa);
         actions.put("桃", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(peachMap, width / 2 - value, height / 2 - peachMap.getHeight(), paint);
+                canvas.drawBitmap(view.peachMap, width / 2 - value, height / 2 - view.peachMap.getHeight(), paint);
+            }
+        });
+
+        ValueAnimator fishVa = buildAnimator(700, 15 * 1000);
+        keyWords.put("鱼", fishVa);
+        actions.put("鱼", new AnimatorAction() {
+            @Override
+            public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
+                canvas.drawBitmap(view.fishMap, width / 2 - value, -100 + view.fishMap.getHeight() + value, paint);
+            }
+        });
+        keyWords.put("渔", fishVa);
+        actions.put("渔", new AnimatorAction() {
+            @Override
+            public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
+                canvas.drawBitmap(view.fishMap, width / 2 - value, -100 + view.fishMap.getHeight() + value, paint);
+            }
+        });
+        keyWords.put("钓", fishVa);
+        actions.put("钓", new AnimatorAction() {
+            @Override
+            public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
+                canvas.drawBitmap(view.fishMap, width / 2 - value, -100 + view.fishMap.getHeight() + value, paint);
             }
         });
 
 
-        ValueAnimator cloudVa = buildRepeatAnimator(500, 10 * 1000);
-
-        keyWords.put("云", cloudVa);
+        keyWords.put("云", buildRepeatAnimator(500, 10 * 1000));
         actions.put("云", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(cloudMap, -width / 2, -height / 2 - cloudMap.getHeight() + value, paint);
+                canvas.drawBitmap(view.cloudMap, -width / 2, -height / 2 - view.cloudMap.getHeight() + value, paint);
             }
         });
 
@@ -255,7 +265,7 @@ public class AnimatorMeta {
         actions.put("草", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(grassMap, -width / 2, height / 2 + grassMap.getHeight() - value, paint);
+                canvas.drawBitmap(view.grassMap, -width / 2, height / 2 + view.grassMap.getHeight() - value, paint);
             }
         });
 
@@ -263,7 +273,7 @@ public class AnimatorMeta {
         actions.put("花", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(grassMap, -width / 2, height / 2 + grassMap.getHeight() - value, paint);
+                canvas.drawBitmap(view.grassMap, -width / 2, height / 2 + view.grassMap.getHeight() - value, paint);
             }
         });
 
@@ -274,7 +284,7 @@ public class AnimatorMeta {
         actions.put("莲", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(lianMap, 0, height / 2 - value, paint);
+                canvas.drawBitmap(view.lianMap, 0, height / 2 - value, paint);
             }
         });
 
@@ -282,7 +292,7 @@ public class AnimatorMeta {
         actions.put("荷", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(lianMap, 0, height / 2 - value, paint);
+                canvas.drawBitmap(view.lianMap, 0, height / 2 - value, paint);
             }
         });
 
@@ -291,7 +301,7 @@ public class AnimatorMeta {
         actions.put("蛙", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(frogMap, -width / 2 - frogMap.getWidth() + value, height / 2 - frogMap.getHeight() * 2, paint);
+                canvas.drawBitmap(view.frogMap, -width / 2 - view.frogMap.getWidth() + value, height / 2 - view.frogMap.getHeight() * 2, paint);
             }
         });
 
@@ -299,7 +309,7 @@ public class AnimatorMeta {
         actions.put("酒", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(wireMap, -width / 2 - wireMap.getWidth() + value, height / 2 - wireMap.getHeight() -100, paint);
+                canvas.drawBitmap(view.wireMap, -width / 2 - view.wireMap.getWidth() + value, height / 2 - view.wireMap.getHeight() - 100, paint);
             }
         });
 
@@ -307,7 +317,7 @@ public class AnimatorMeta {
         actions.put("山", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(mountainMap, -width / 2, height / 2 + mountainMap.getHeight() - value, paint);
+                canvas.drawBitmap(view.mountainMap, -width / 2, height / 2 + view.mountainMap.getHeight() - value, paint);
             }
         });
 
@@ -317,7 +327,7 @@ public class AnimatorMeta {
         actions.put("鸭", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(duckMap, width / 2 + duckMap.getWidth() - value, height / 2 - duckMap.getHeight(), paint);
+                canvas.drawBitmap(view.duckMap, width / 2 + view.duckMap.getWidth() - value, height / 2 - view.duckMap.getHeight(), paint);
             }
         });
 
@@ -326,7 +336,7 @@ public class AnimatorMeta {
         actions.put("鹅", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(duckMap, width / 2 + duckMap.getWidth() - value, height / 2 - duckMap.getHeight(), paint);
+                canvas.drawBitmap(view.duckMap, width / 2 + view.duckMap.getWidth() - value, height / 2 - view.duckMap.getHeight(), paint);
             }
         });
 
@@ -337,7 +347,7 @@ public class AnimatorMeta {
         actions.put("船", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(boatMap, -width / 2 - boatMap.getWidth() + value, height / 2 - boatMap.getHeight(), paint);
+                canvas.drawBitmap(view.boatMap, -width / 2 - view.boatMap.getWidth() + value, height / 2 - view.boatMap.getHeight(), paint);
             }
         });
 
@@ -345,7 +355,7 @@ public class AnimatorMeta {
         actions.put("舟", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(boatMap, -width / 2 - boatMap.getWidth() + value, height / 2 - boatMap.getHeight(), paint);
+                canvas.drawBitmap(view.boatMap, -width / 2 - view.boatMap.getWidth() + value, height / 2 - view.boatMap.getHeight(), paint);
             }
         });
 
@@ -353,7 +363,7 @@ public class AnimatorMeta {
         actions.put("小艇", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(boatMap, -width / 2 - boatMap.getWidth() + value, height / 2 - boatMap.getHeight(), paint);
+                canvas.drawBitmap(view.boatMap, -width / 2 - view.boatMap.getWidth() + value, height / 2 - view.boatMap.getHeight(), paint);
             }
         });
 
@@ -361,7 +371,7 @@ public class AnimatorMeta {
         actions.put("帆", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(boatMap, -width / 2 - boatMap.getWidth() + value, height / 2 - boatMap.getHeight(), paint);
+                canvas.drawBitmap(view.boatMap, -width / 2 - view.boatMap.getWidth() + value, height / 2 - view.boatMap.getHeight(), paint);
             }
         });
 

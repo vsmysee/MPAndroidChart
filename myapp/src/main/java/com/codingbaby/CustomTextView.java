@@ -55,24 +55,26 @@ public class CustomTextView extends View {
     private ExecutorService executorService = Executors.newFixedThreadPool(2);
 
 
-    private Bitmap mountainMap = BitmapFactory.decodeResource(getResources(), R.drawable.mountain);
-    private Bitmap moonMap = BitmapFactory.decodeResource(getResources(), R.drawable.moon);
-    private Bitmap grassMap = BitmapFactory.decodeResource(getResources(), R.drawable.grass);
-    private Bitmap rainMap = BitmapFactory.decodeResource(getResources(), R.drawable.rain);
-    private Bitmap boatMap = BitmapFactory.decodeResource(getResources(), R.drawable.boat);
-    private Bitmap sunMap = BitmapFactory.decodeResource(getResources(), R.drawable.sun);
-    private Bitmap snowMap = BitmapFactory.decodeResource(getResources(), R.drawable.snow);
-    private Bitmap autumn = BitmapFactory.decodeResource(getResources(), R.drawable.autumn);
-    private Bitmap spring = BitmapFactory.decodeResource(getResources(), R.drawable.spring);
-    private Bitmap peach = BitmapFactory.decodeResource(getResources(), R.drawable.peach);
-    private Bitmap cloudMap = BitmapFactory.decodeResource(getResources(), R.drawable.cloud);
-    private Bitmap xiyangMap = BitmapFactory.decodeResource(getResources(), R.drawable.xiyang);
-    private Bitmap lianMap = BitmapFactory.decodeResource(getResources(), R.drawable.lian);
-    private Bitmap meiMap = BitmapFactory.decodeResource(getResources(), R.drawable.mei);
-    private Bitmap zhuMap = BitmapFactory.decodeResource(getResources(), R.drawable.zhu);
-    private Bitmap duckMap = BitmapFactory.decodeResource(getResources(), R.drawable.duck);
-    private Bitmap frogMap = BitmapFactory.decodeResource(getResources(), R.drawable.frog);
-    private Bitmap wireMap = BitmapFactory.decodeResource(getResources(), R.drawable.wire);
+    public Bitmap mountainMap = BitmapFactory.decodeResource(getResources(), R.drawable.mountain);
+    public Bitmap moonMap = BitmapFactory.decodeResource(getResources(), R.drawable.moon);
+    public Bitmap grassMap = BitmapFactory.decodeResource(getResources(), R.drawable.grass);
+    public Bitmap rainMap = BitmapFactory.decodeResource(getResources(), R.drawable.rain);
+    public Bitmap boatMap = BitmapFactory.decodeResource(getResources(), R.drawable.boat);
+    public Bitmap sunMap = BitmapFactory.decodeResource(getResources(), R.drawable.sun);
+    public Bitmap snowMap = BitmapFactory.decodeResource(getResources(), R.drawable.snow);
+    public Bitmap autumnMap = BitmapFactory.decodeResource(getResources(), R.drawable.autumn);
+    public Bitmap springMap = BitmapFactory.decodeResource(getResources(), R.drawable.spring);
+    public Bitmap peachMap = BitmapFactory.decodeResource(getResources(), R.drawable.peach);
+    public Bitmap cloudMap = BitmapFactory.decodeResource(getResources(), R.drawable.cloud);
+    public Bitmap xiyangMap = BitmapFactory.decodeResource(getResources(), R.drawable.xiyang);
+    public Bitmap lianMap = BitmapFactory.decodeResource(getResources(), R.drawable.lian);
+    public Bitmap meiMap = BitmapFactory.decodeResource(getResources(), R.drawable.mei);
+    public Bitmap zhuMap = BitmapFactory.decodeResource(getResources(), R.drawable.zhu);
+    public Bitmap duckMap = BitmapFactory.decodeResource(getResources(), R.drawable.duck);
+    public Bitmap frogMap = BitmapFactory.decodeResource(getResources(), R.drawable.frog);
+    public Bitmap wireMap = BitmapFactory.decodeResource(getResources(), R.drawable.wire);
+    public Bitmap fishMap = BitmapFactory.decodeResource(getResources(), R.drawable.fish);
+
 
     private AnimatorMeta animatorMeta;
 
@@ -284,8 +286,7 @@ public class CustomTextView extends View {
     public CustomTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-
-        animatorMeta = new AnimatorMeta(moonMap, rainMap, grassMap, boatMap, sunMap, snowMap, autumn, spring, peach, cloudMap, xiyangMap, lianMap, meiMap, zhuMap, duckMap, frogMap, mountainMap,wireMap, this);
+        animatorMeta = new AnimatorMeta(this);
 
         assets = context.getAssets();
 
@@ -743,7 +744,9 @@ public class CustomTextView extends View {
             }
 
 
-            if (longPress && checkTouch(y, x)) {
+            if (longPress) {
+
+                checkTouch(y, x);
 
                 if (!functionAnimator.isStarted()) {
                     functionAnimator.start();
@@ -996,29 +999,32 @@ public class CustomTextView extends View {
 
                 animatorMeta.stop();
 
-                cache.clear();
-                cursor = 0;
+                if (selectPoem) {
 
-                drawLinePoint.clear();
+                    cache.clear();
+                    cursor = 0;
 
+                    drawLinePoint.clear();
 
-                try {
-                    String pop = history.pop();
-                    if (pop.equals(poem)) {
-                        poem = history.pop();
-                    } else {
-                        poem = pop;
+                    try {
+                        String pop = history.pop();
+                        if (pop.equals(poem)) {
+                            poem = history.pop();
+                        } else {
+                            poem = pop;
+                        }
+                    } catch (Exception e) {
+                        randomPoem();
                     }
 
-                } catch (Exception e) {
-                    randomPoem();
+
+                    buildRows();
+                    animatorMeta.start(poem);
+
+                    invalidate();
+
                 }
 
-                buildRows();
-
-                animatorMeta.start(poem);
-
-                invalidate();
                 return true;
 
 
@@ -1037,7 +1043,19 @@ public class CustomTextView extends View {
                 }
 
                 if (selectWord) {
-                    chineseWord = randChineseWord();
+                    if (!wordAnimator.isStarted()) {
+                        wordAnimator.start();
+                    }
+                }
+
+
+                if (selectIdiom) {
+                    randIdiom(selectIdiomStudent);
+                }
+
+
+                if (selectEnglishWord) {
+                    randEnglish();
                 }
 
                 invalidate();
