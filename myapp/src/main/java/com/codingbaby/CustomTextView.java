@@ -42,7 +42,9 @@ import java.util.Random;
 import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 
 public class CustomTextView extends View {
@@ -51,9 +53,9 @@ public class CustomTextView extends View {
 
     private static int DEFAULT_COLOR = Color.BLACK;
 
-
-    private ExecutorService executorService = Executors.newFixedThreadPool(2);
-
+    private ExecutorService executorService = new ThreadPoolExecutor(1, 1,
+            0L, TimeUnit.MILLISECONDS,
+            new LinkedBlockingQueue<Runnable>(1), new ThreadPoolExecutor.DiscardPolicy());
 
     public Bitmap mountainMap = BitmapFactory.decodeResource(getResources(), R.drawable.mountain);
     public Bitmap moonMap = BitmapFactory.decodeResource(getResources(), R.drawable.moon);
@@ -116,7 +118,6 @@ public class CustomTextView extends View {
         functionAnimator.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
-
             }
 
             @Override
@@ -154,6 +155,7 @@ public class CustomTextView extends View {
 
     private static Map<Character, List<String>> english = new LinkedHashMap<>();
     private static List<String> english_primary = new ArrayList<>();
+    private static List<String> english_senior = new ArrayList<>();
     private List<String> shortEnglish = new ArrayList<>();
 
 
@@ -278,6 +280,12 @@ public class CustomTextView extends View {
             index = rand.nextInt(english_primary.size());
             englishWord = english_primary.get(index);
         }
+
+        if (selectEnglishPrimary) {
+            index = rand.nextInt(english_senior.size());
+            englishWord = english_senior.get(index);
+        }
+
     }
 
 
@@ -357,7 +365,8 @@ public class CustomTextView extends View {
                 idioms_students.addAll(FileReader.loadStudentIdiom(assets));
                 shortEnglish.addAll(FileReader.loadCet4Short(assets));
                 english.putAll(FileReader.loadEnglishWord(assets));
-                english_primary.addAll(FileReader.freqEnglish(assets));
+                english_primary.addAll(FileReader.freqEnglish(assets, "cet4/freq1.txt"));
+                english_senior.addAll(FileReader.freqEnglish(assets, "cet4/freq.txt"));
 
             }
         }).start();
@@ -457,7 +466,7 @@ public class CustomTextView extends View {
             if (animatorMeta.isOpen()) {
                 for (AnimatorMeta.ValuePair v : animatorMeta.current) {
                     ValueAnimator valueAnimator = v.getValueAnimator();
-                    if (valueAnimator.isRunning()) {
+                    if (valueAnimator.isRunning() || animatorMeta.isStop(v.getKey())) {
                         int value = (int) valueAnimator.getAnimatedValue();
                         animatorMeta.action(v.getKey()).draw(valueAnimator, canvas, paint, getHeight(), getWidth(), value);
                     }
@@ -471,8 +480,7 @@ public class CustomTextView extends View {
                 }
                 drawPoem(canvas, true);
             } else {
-                boolean reDraw = animatorMeta.hasAnimator() && animatorMeta.isOpen();
-                drawPoem(canvas, reDraw);
+                drawPoem(canvas, animatorMeta.isOpen());
             }
 
         }
@@ -633,6 +641,15 @@ public class CustomTextView extends View {
             canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
             paint.setColor(Color.WHITE);
             paint.setTextSize(40);
+            canvas.drawText("初", 80 + n * 100, bottomY + 12, paint);
+
+
+            n = 2;
+
+            paint.setColor(selectEnglishForAll ? Color.BLUE : Color.GRAY);
+            canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
+            paint.setColor(Color.WHITE);
+            paint.setTextSize(40);
             canvas.drawText("全", 80 + n * 100, bottomY + 12, paint);
         }
 
@@ -752,16 +769,12 @@ public class CustomTextView extends View {
                     functionAnimator.start();
                 }
 
-                invalidate();
-
-                return super.onTouchEvent(event);
             }
 
 
             if (selectPoem && cursor == 0) {
 
                 randomPoem();
-
                 buildRows();
 
                 animatorMeta.start(poem);
@@ -901,6 +914,7 @@ public class CustomTextView extends View {
 
             if (selectEnglishWord) {
                 selectEnglishStudent = true;
+                selectWordForPrimary = false;
                 selectEnglishForAll = false;
             }
 
@@ -933,7 +947,8 @@ public class CustomTextView extends View {
 
             if (selectEnglishWord) {
                 selectEnglishStudent = false;
-                selectEnglishForAll = true;
+                selectEnglishPrimary = true;
+                selectEnglishForAll = false;
             }
 
             return true;
@@ -949,6 +964,12 @@ public class CustomTextView extends View {
                 selectWordForSenior = true;
                 selectWordForAll = false;
                 randChineseWord();
+            }
+
+            if (selectEnglishWord) {
+                selectEnglishStudent = false;
+                selectEnglishPrimary = false;
+                selectEnglishForAll = true;
             }
 
             return true;
@@ -988,6 +1009,7 @@ public class CustomTextView extends View {
 
 
     private boolean selectEnglishStudent = false;
+    private boolean selectEnglishPrimary = false;
     private boolean selectEnglishForAll = true;
 
     @Override
@@ -1034,8 +1056,8 @@ public class CustomTextView extends View {
                 drawLinePoint.clear();
 
                 if (selectPoem && cursor == 0) {
-                    randomPoem();
 
+                    randomPoem();
                     buildRows();
 
                     animatorMeta.start(poem);
@@ -1080,6 +1102,8 @@ public class CustomTextView extends View {
         }
     }
 
+
+    final MediaPlayer mediaPlayer = new MediaPlayer();
 
     private void drawEnglishWord(Canvas canvas) {
 
@@ -1158,10 +1182,10 @@ public class CustomTextView extends View {
                             outstream.close();
                         }
 
-                        final MediaPlayer mediaPlayer = new MediaPlayer();
                         mediaPlayer.setDataSource(getContext(), Uri.parse("file:" + file.getAbsolutePath()));
                         mediaPlayer.prepare();
                         mediaPlayer.start();
+                        mediaPlayer.reset();
 
                     } catch (Exception e) {
                         e.printStackTrace();
