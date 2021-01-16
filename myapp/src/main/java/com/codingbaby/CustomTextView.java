@@ -4,8 +4,6 @@ import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.AssetManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
@@ -57,25 +55,7 @@ public class CustomTextView extends View {
             0L, TimeUnit.MILLISECONDS,
             new LinkedBlockingQueue<Runnable>(1), new ThreadPoolExecutor.DiscardPolicy());
 
-    public Bitmap mountainMap = BitmapFactory.decodeResource(getResources(), R.drawable.mountain);
-    public Bitmap moonMap = BitmapFactory.decodeResource(getResources(), R.drawable.moon);
-    public Bitmap grassMap = BitmapFactory.decodeResource(getResources(), R.drawable.grass);
-    public Bitmap rainMap = BitmapFactory.decodeResource(getResources(), R.drawable.rain);
-    public Bitmap boatMap = BitmapFactory.decodeResource(getResources(), R.drawable.boat);
-    public Bitmap sunMap = BitmapFactory.decodeResource(getResources(), R.drawable.sun);
-    public Bitmap snowMap = BitmapFactory.decodeResource(getResources(), R.drawable.snow);
-    public Bitmap autumnMap = BitmapFactory.decodeResource(getResources(), R.drawable.autumn);
-    public Bitmap springMap = BitmapFactory.decodeResource(getResources(), R.drawable.spring);
-    public Bitmap peachMap = BitmapFactory.decodeResource(getResources(), R.drawable.peach);
-    public Bitmap cloudMap = BitmapFactory.decodeResource(getResources(), R.drawable.cloud);
-    public Bitmap xiyangMap = BitmapFactory.decodeResource(getResources(), R.drawable.xiyang);
-    public Bitmap lianMap = BitmapFactory.decodeResource(getResources(), R.drawable.lian);
-    public Bitmap meiMap = BitmapFactory.decodeResource(getResources(), R.drawable.mei);
-    public Bitmap zhuMap = BitmapFactory.decodeResource(getResources(), R.drawable.zhu);
-    public Bitmap duckMap = BitmapFactory.decodeResource(getResources(), R.drawable.duck);
-    public Bitmap frogMap = BitmapFactory.decodeResource(getResources(), R.drawable.frog);
-    public Bitmap wireMap = BitmapFactory.decodeResource(getResources(), R.drawable.wire);
-    public Bitmap fishMap = BitmapFactory.decodeResource(getResources(), R.drawable.fish);
+    private BitMapHolder bitMapHolder;
 
 
     private AnimatorMeta animatorMeta;
@@ -294,7 +274,9 @@ public class CustomTextView extends View {
     public CustomTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        animatorMeta = new AnimatorMeta(this);
+        bitMapHolder = new BitMapHolder(getResources());
+
+        animatorMeta = new AnimatorMeta(this, bitMapHolder);
 
         assets = context.getAssets();
 
@@ -637,7 +619,7 @@ public class CustomTextView extends View {
 
             n = 1;
 
-            paint.setColor(selectEnglishForAll ? Color.BLUE : Color.GRAY);
+            paint.setColor(selectEnglishPrimary ? Color.BLUE : Color.GRAY);
             canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
             paint.setColor(Color.WHITE);
             paint.setTextSize(40);
@@ -914,7 +896,7 @@ public class CustomTextView extends View {
 
             if (selectEnglishWord) {
                 selectEnglishStudent = true;
-                selectWordForPrimary = false;
+                selectEnglishPrimary = false;
                 selectEnglishForAll = false;
             }
 
@@ -1182,10 +1164,10 @@ public class CustomTextView extends View {
                             outstream.close();
                         }
 
+                        mediaPlayer.reset();
                         mediaPlayer.setDataSource(getContext(), Uri.parse("file:" + file.getAbsolutePath()));
                         mediaPlayer.prepare();
                         mediaPlayer.start();
-                        mediaPlayer.reset();
 
                     } catch (Exception e) {
                         e.printStackTrace();
