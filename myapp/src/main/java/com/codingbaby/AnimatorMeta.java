@@ -1,19 +1,49 @@
 package com.codingbaby;
 
+import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class AnimatorMeta {
 
     private AnimatorStatus animatorStatus = new AnimatorStatus();
 
     private CustomTextView view;
+
+    private Map<String, ValueAnimator> keyWords = new HashMap<>();
+    private Map<String, AnimatorAction> actions = new HashMap<>();
+
+    public List<ValuePair> current = new ArrayList<>();
+
+    private static Set<String> stopKey = new HashSet<>();
+
+    static {
+        stopKey.add("云");
+        stopKey.add("山");
+        stopKey.add("酒");
+        stopKey.add("莲");
+        stopKey.add("荷");
+    }
+
+    public boolean isStop(String k) {
+        return stopKey.contains(k);
+    }
+
+    public void stop() {
+        animatorStatus.close();
+        for (ValueAnimator value : keyWords.values()) {
+            value.cancel();
+        }
+    }
+
 
     private ValueAnimator buildRepeatAnimator(int number, int duration) {
 
@@ -24,30 +54,41 @@ public class AnimatorMeta {
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                if (animatorStatus.isOpen() && valueAnimator.isRunning()) {
-                    view.invalidate();
-                }
-
+                view.invalidate();
             }
         });
-        animator.setStartDelay(1000);
+        //animator.setStartDelay(1000);
         return animator;
     }
 
     private ValueAnimator buildAnimator(int number, int duration) {
 
-        ValueAnimator animator = ValueAnimator.ofInt(0, number);
+        final ValueAnimator animator = ValueAnimator.ofInt(0, number);
         animator.setDuration(duration);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                if (animatorStatus.isOpen() && valueAnimator.isRunning()) {
-                    view.invalidate();
-                }
-
+                view.invalidate();
             }
         });
-        animator.setStartDelay(1000);
+        animator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+            }
+        });
+        //animator.setStartDelay(1000);
         return animator;
     }
 
@@ -250,7 +291,7 @@ public class AnimatorMeta {
         });
 
 
-        keyWords.put("云", buildRepeatAnimator(500, 10 * 1000));
+        keyWords.put("云", buildAnimator(500, 10 * 1000));
         actions.put("云", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
@@ -278,7 +319,7 @@ public class AnimatorMeta {
         });
 
 
-        ValueAnimator lianVa = buildRepeatAnimator(350, 8 * 1000);
+        ValueAnimator lianVa = buildAnimator(350, 8 * 1000);
 
         keyWords.put("莲", lianVa);
         actions.put("莲", new AnimatorAction() {
@@ -305,15 +346,15 @@ public class AnimatorMeta {
             }
         });
 
-        keyWords.put("酒", buildRepeatAnimator(400, 5 * 1000));
+        keyWords.put("酒", buildAnimator(200, 5 * 1000));
         actions.put("酒", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(view.wireMap, -width / 2 - view.wireMap.getWidth() + value, height / 2 - view.wireMap.getHeight() - 100, paint);
+                canvas.drawBitmap(view.wireMap, -width / 2 - view.wireMap.getWidth() + value, height / 2 - view.wireMap.getHeight() - 50, paint);
             }
         });
 
-        keyWords.put("山", buildRepeatAnimator(1200, 15 * 1000));
+        keyWords.put("山", buildAnimator(1000, 15 * 1000));
         actions.put("山", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
@@ -383,18 +424,6 @@ public class AnimatorMeta {
         return actions.get(key);
     }
 
-
-    private Map<String, ValueAnimator> keyWords = new HashMap<>();
-    private Map<String, AnimatorAction> actions = new HashMap<>();
-
-    public List<ValuePair> current = new ArrayList<>();
-
-    public void stop() {
-        animatorStatus.close();
-        for (ValueAnimator value : keyWords.values()) {
-            value.cancel();
-        }
-    }
 
     public boolean hasAnimator() {
         boolean res = false;
