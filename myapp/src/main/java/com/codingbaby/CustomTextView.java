@@ -3,7 +3,6 @@ package com.codingbaby;
 import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.content.res.AssetManager;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
@@ -17,28 +16,15 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.github.promeg.pinyinhelper.Pinyin;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Random;
-import java.util.Set;
-import java.util.Stack;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -124,28 +110,6 @@ public class CustomTextView extends View {
     private List<LinePoint> drawLinePoint = new ArrayList<>();
 
 
-    private List<String> poems = new ArrayList<>();
-    private List<String> poems_students = new ArrayList<>();
-
-    private List<Character> words = new ArrayList<>();
-    private List<Character> words_students = new ArrayList<>();
-    private List<Character> words_primary = new ArrayList<>();
-    private List<Character> words_senior = new ArrayList<>();
-    private Map<Character, String> word = new LinkedHashMap<>();
-
-    private static Map<Character, List<String>> english = new LinkedHashMap<>();
-    private static List<String> english_primary = new ArrayList<>();
-    private static List<String> english_senior = new ArrayList<>();
-    private List<String> shortEnglish = new ArrayList<>();
-
-
-    private List<String> idioms = new ArrayList<>();
-    private List<String> idioms_students = new ArrayList<>();
-
-    private Map<String, String> pinyin = new HashMap<>();
-    private Map<String, String> oldWord = new HashMap<>();
-
-
     private String poem;
     private static List<String> cache = new ArrayList<>();
     private static int cursor = 0;
@@ -162,7 +126,6 @@ public class CustomTextView extends View {
 
     private List<LinePoint> linePoints = new ArrayList<>();
 
-    private Stack<String> history = new Stack<>();
 
     private boolean longPress = false;
 
@@ -172,104 +135,8 @@ public class CustomTextView extends View {
     private boolean selectEnglishWord = false;
     private boolean selectShortEnglish = false;
 
+    public static DataHolder dataHolder;
 
-    private void randomPoem() {
-        Random rand = new Random();
-
-        if (selectPoemForStudent) {
-            int index = rand.nextInt(poems_students.size());
-            poem = poems_students.get(index);
-            history.push(poem);
-            return;
-        }
-
-        if (selectPoemForAll) {
-            int index = rand.nextInt(poems.size());
-            poem = poems.get(index);
-            history.push(poem);
-        }
-
-    }
-
-
-    private Character randChineseWord() {
-
-        Character word = randomWord();
-
-        Random rand = new Random();
-
-        if (selectWordForStudent) {
-            int index = rand.nextInt(words_students.size());
-            word = words_students.get(index);
-        }
-
-        if (selectWordForPrimary) {
-            int index = rand.nextInt(words_primary.size());
-            word = words_primary.get(index);
-        }
-
-
-        if (selectWordForSenior) {
-            int index = rand.nextInt(words_senior.size());
-            word = words_senior.get(index);
-        }
-
-
-        return word;
-    }
-
-    private Character randomWord() {
-        Random rand = new Random();
-        int index = rand.nextInt(words.size());
-        return words.get(index);
-    }
-
-
-    private void randIdiom(boolean students) {
-        List<String> list = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
-
-            Random rand = new Random();
-            int index = rand.nextInt(students ? idioms_students.size() : idioms.size());
-            list.add(students ? idioms_students.get(index) : idioms.get(index));
-        }
-        showIdioms = list;
-    }
-
-
-    private String randShortEnglish() {
-        Random rand = new Random();
-        int index = rand.nextInt(shortEnglish.size());
-        return shortEnglish.get(index);
-    }
-
-    private void randEnglish() {
-        Random rand = new Random();
-        Set<Character> characters = english.keySet();
-        List<Character> keyList = new ArrayList<>();
-        for (Character character : characters) {
-            keyList.add(character);
-        }
-        int index = rand.nextInt(keyList.size());
-        Character character = keyList.get(index);
-        List<String> wordList = english.get(character);
-        rand = new Random();
-        englishWord = wordList.get(rand.nextInt(wordList.size()));
-
-        if (selectEnglishStudent) {
-            index = rand.nextInt(english_primary.size());
-            englishWord = english_primary.get(index);
-        }
-
-        if (selectEnglishPrimary) {
-            index = rand.nextInt(english_senior.size());
-            englishWord = english_senior.get(index);
-        }
-
-    }
-
-
-    private AssetManager assets;
 
     public CustomTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -278,80 +145,9 @@ public class CustomTextView extends View {
 
         animatorMeta = new AnimatorMeta(this, bitMapHolder);
 
-        assets = context.getAssets();
 
-        poems.addAll(FileReader.loadPoem(assets));
-        poems_students.addAll(FileReader.loadStudentPoem(assets));
-
-        randomPoem();
+        poem = dataHolder.randomPoem(selectPoemForStudent, selectPoemForAll);
         buildRows();
-
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                // load chinese word meta data
-                try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("word.json")))) {
-                    StringBuffer sb = new StringBuffer();
-                    String line;
-                    while ((line = bf.readLine()) != null) {
-                        sb.append(line);
-                    }
-
-                    JSONArray jsonArray = new JSONArray(sb.toString());
-                    for (int i = 0; i < jsonArray.length(); i++) {
-                        JSONObject jsonObject = jsonArray.getJSONObject(i);
-                        pinyin.put(jsonObject.getString("word"), jsonObject.getString("pinyin"));
-                        oldWord.put(jsonObject.getString("word"), jsonObject.getString("oldword"));
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                // load chinese word
-                try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("chinese.txt")))) {
-                    String line;
-                    while ((line = bf.readLine()) != null) {
-                        if (!line.trim().equals("")) {
-                            for (char c : line.toCharArray()) {
-                                if (Pinyin.isChinese(c)) {
-                                    words.add(c);
-                                    if (pinyin.get(String.valueOf(c)) == null) {
-                                        word.put(c, Pinyin.toPinyin(c));
-                                    } else {
-                                        word.put(c, pinyin.get(String.valueOf(c)));
-                                    }
-                                }
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-
-                words_students.addAll(FileReader.freqChinese(assets, "freqChinese.txt"));
-                words_primary.addAll(FileReader.freqChinese(assets, "freqChinese2.txt"));
-                words_senior.addAll(FileReader.freqChinese(assets, "freqChinese3.txt"));
-
-
-            }
-        }).start();
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                idioms.addAll(FileReader.loadIdiom(assets));
-                idioms_students.addAll(FileReader.loadStudentIdiom(assets));
-                shortEnglish.addAll(FileReader.loadCet4Short(assets));
-                english.putAll(FileReader.loadEnglishWord(assets));
-                english_primary.addAll(FileReader.freqEnglish(assets, "cet4/freq1.txt"));
-                english_senior.addAll(FileReader.freqEnglish(assets, "cet4/freq.txt"));
-
-            }
-        }).start();
 
 
         setOnLongClickListener(new OnLongClickListener() {
@@ -402,7 +198,7 @@ public class CustomTextView extends View {
 
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    chineseWord = randChineseWord();
+                    chineseWord = dataHolder.randChineseWord(selectWordForStudent, selectWordForPrimary, selectWordForSenior);
                 }
 
                 @Override
@@ -756,7 +552,7 @@ public class CustomTextView extends View {
 
             if (selectPoem && cursor == 0) {
 
-                randomPoem();
+                poem = dataHolder.randomPoem(selectPoemForStudent, selectPoemForAll);
                 buildRows();
 
                 animatorMeta.start(poem);
@@ -770,11 +566,11 @@ public class CustomTextView extends View {
             }
 
             if (selectIdiom) {
-                randIdiom(selectIdiomStudent);
+                showIdioms = dataHolder.randIdiom(selectIdiomStudent);
             }
 
             if (selectEnglishWord) {
-                randEnglish();
+                englishWord = dataHolder.randEnglish(selectEnglishStudent, selectEnglishPrimary);
             }
 
             invalidate();
@@ -816,7 +612,8 @@ public class CustomTextView extends View {
             selectIdiom = false;
             selectEnglishWord = false;
 
-            chineseWord = randChineseWord();
+            chineseWord = dataHolder.randChineseWord(selectWordForStudent, selectWordForPrimary, selectWordForSenior);
+
 
             return true;
 
@@ -832,7 +629,7 @@ public class CustomTextView extends View {
             selectPoem = false;
             selectEnglishWord = false;
 
-            randIdiom(false);
+            showIdioms = dataHolder.randIdiom(false);
 
             return true;
 
@@ -848,7 +645,7 @@ public class CustomTextView extends View {
             selectWord = false;
             selectPoem = false;
 
-            randEnglish();
+            englishWord = dataHolder.randEnglish(selectEnglishStudent, selectEnglishPrimary);
 
             return true;
 
@@ -885,7 +682,8 @@ public class CustomTextView extends View {
                 selectWordForPrimary = false;
                 selectWordForSenior = false;
                 selectWordForAll = false;
-                randChineseWord();
+                chineseWord = dataHolder.randChineseWord(selectWordForStudent, selectWordForPrimary, selectWordForSenior);
+
 
             }
 
@@ -918,7 +716,8 @@ public class CustomTextView extends View {
                 selectWordForPrimary = true;
                 selectWordForSenior = false;
                 selectWordForAll = false;
-                randChineseWord();
+                chineseWord = dataHolder.randChineseWord(selectWordForStudent, selectWordForPrimary, selectWordForSenior);
+
 
             }
 
@@ -945,7 +744,8 @@ public class CustomTextView extends View {
                 selectWordForPrimary = false;
                 selectWordForSenior = true;
                 selectWordForAll = false;
-                randChineseWord();
+                chineseWord = dataHolder.randChineseWord(selectWordForStudent, selectWordForPrimary, selectWordForSenior);
+
             }
 
             if (selectEnglishWord) {
@@ -965,7 +765,8 @@ public class CustomTextView extends View {
                 selectWordForPrimary = false;
                 selectWordForSenior = false;
                 selectWordForAll = true;
-                randChineseWord();
+                chineseWord = dataHolder.randChineseWord(selectWordForStudent, selectWordForPrimary, selectWordForSenior);
+
 
             }
 
@@ -1011,14 +812,14 @@ public class CustomTextView extends View {
                     drawLinePoint.clear();
 
                     try {
-                        String pop = history.pop();
+                        String pop = dataHolder.pop();
                         if (pop.equals(poem)) {
-                            poem = history.pop();
+                            poem = dataHolder.pop();
                         } else {
                             poem = pop;
                         }
                     } catch (Exception e) {
-                        randomPoem();
+                        poem = dataHolder.randomPoem(selectPoemForStudent, selectPoemForAll);
                     }
 
 
@@ -1039,7 +840,7 @@ public class CustomTextView extends View {
 
                 if (selectPoem && cursor == 0) {
 
-                    randomPoem();
+                    poem = dataHolder.randomPoem(selectPoemForStudent, selectPoemForAll);
                     buildRows();
 
                     animatorMeta.start(poem);
@@ -1054,12 +855,12 @@ public class CustomTextView extends View {
 
 
                 if (selectIdiom) {
-                    randIdiom(selectIdiomStudent);
+                    showIdioms = dataHolder.randIdiom(selectIdiomStudent);
                 }
 
 
                 if (selectEnglishWord) {
-                    randEnglish();
+                    englishWord = dataHolder.randEnglish(selectEnglishStudent, selectEnglishPrimary);
                 }
 
                 invalidate();
@@ -1105,7 +906,7 @@ public class CustomTextView extends View {
         if (start == -1) {
             String first = theWord.substring(0, 1);
             char c = first.toUpperCase().charAt(0);
-            List<String> strings = english.get(c);
+            List<String> strings = dataHolder.getByChar(c);
             for (String string : strings) {
                 String w = string.substring(0, string.indexOf(" "));
                 if (w.equals(theWord)) {
@@ -1212,7 +1013,7 @@ public class CustomTextView extends View {
         List<String> rows = new ArrayList<>();
 
         for (int n = 0; n < 10; n++) {
-            rows.add(randShortEnglish());
+            rows.add(dataHolder.randShortEnglish());
         }
 
         int textLines = rows.size();
@@ -1307,11 +1108,12 @@ public class CustomTextView extends View {
 
     private void drawWord(Canvas canvas, float textHeight, float descent, float centerBaselineY, Character wordParam, int offset) {
         List<String> rows = new ArrayList<>();
-        rows.add(word.get(wordParam));
+
+        rows.add(dataHolder.wordPinMap.get(wordParam));
         String w = String.valueOf(wordParam);
         rows.add(w);
-        if (!w.equals(oldWord.get(w))) {
-            rows.add(oldWord.get(w));
+        if (!w.equals(dataHolder.oldWord.get(w))) {
+            rows.add(dataHolder.oldWord.get(w));
         }
 
 

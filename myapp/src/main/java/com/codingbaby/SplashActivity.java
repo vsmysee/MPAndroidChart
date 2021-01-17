@@ -19,6 +19,7 @@ public class SplashActivity extends AppCompatActivity {
 
     private final int SPLASH_DISPLAY_LENGHT = 3000;
 
+    public DataHolder dataHolder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,11 +32,14 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void onResult(boolean allGranted, List<String> grantedList, List<String> deniedList) {
                 if (!allGranted) {
-                    Toast.makeText(SplashActivity.this, "你拒绝了权限，将不能播放mp3", Toast.LENGTH_LONG).show();
+                    Toast.makeText(SplashActivity.this, "你拒绝了权限，将不能朗读单词", Toast.LENGTH_LONG).show();
                 }
             }
         });
 
+        dataHolder = new DataHolder(this);
+
+        CustomTextView.dataHolder = dataHolder;
 
         new Handler().postDelayed(new Runnable() {
             public void run() {
