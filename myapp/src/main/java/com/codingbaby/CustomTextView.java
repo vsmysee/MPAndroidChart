@@ -117,6 +117,7 @@ public class CustomTextView extends View {
     private Character chineseWord;
 
     private List<String> showIdioms;
+    private List<String> shortEnglish;
 
     private String englishWord;
 
@@ -284,37 +285,21 @@ public class CustomTextView extends View {
     }
 
     private void drawBottomButton(Canvas canvas) {
-        int radius = 40;
 
+        int radius = 40;
         int bottomY = getHeight() - 100;
+        paint.setTextSize(40);
+
+
 
         if (functionAnimator.isRunning()) {
             bottomY = bottomY + (int) functionAnimator.getAnimatedValue();
         }
 
 
-        if (selectEnglishWord) {
-
-            paint.setTextSize(40);
-
-
-            paint.setColor(Color.GRAY);
-            canvas.drawCircle(100, bottomY, radius, paint);
-            paint.setColor(Color.WHITE);
-            canvas.drawText("四", 80, bottomY + 12, paint);
-
-
-            paint.setColor(Color.GRAY);
-            canvas.drawCircle(100 + 100, bottomY, radius, paint);
-            paint.setColor(Color.WHITE);
-            canvas.drawText("六", 80 + 100, bottomY + 12, paint);
-        }
-
-
         if (selectPoem) {
 
             int n = 0;
-            paint.setTextSize(40);
 
 
             paint.setColor(selectPoemForStudent ? Color.BLUE : Color.GRAY);
@@ -329,19 +314,6 @@ public class CustomTextView extends View {
             paint.setColor(Color.WHITE);
             canvas.drawText("全", 80 + n * 100, bottomY + 12, paint);
 
-            n = 2;
-
-            paint.setColor(Color.GRAY);
-            canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
-            paint.setColor(Color.WHITE);
-            canvas.drawText("唐", 80 + n * 100, bottomY + 12, paint);
-
-            n = 3;
-
-            paint.setColor(Color.GRAY);
-            canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
-            paint.setColor(Color.WHITE);
-            canvas.drawText("宋", 80 + n * 100, bottomY + 12, paint);
 
         }
 
@@ -352,7 +324,6 @@ public class CustomTextView extends View {
             paint.setColor(selectWordForStudent ? Color.BLUE : Color.GRAY);
             canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
             paint.setColor(Color.WHITE);
-            paint.setTextSize(40);
             canvas.drawText("学", 80 + n * 100, bottomY + 12, paint);
 
 
@@ -361,7 +332,6 @@ public class CustomTextView extends View {
             paint.setColor(selectWordForPrimary ? Color.BLUE : Color.GRAY);
             canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
             paint.setColor(Color.WHITE);
-            paint.setTextSize(40);
             canvas.drawText("中", 80 + n * 100, bottomY + 12, paint);
 
             n = 2;
@@ -369,7 +339,6 @@ public class CustomTextView extends View {
             paint.setColor(selectWordForSenior ? Color.BLUE : Color.GRAY);
             canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
             paint.setColor(Color.WHITE);
-            paint.setTextSize(40);
             canvas.drawText("高", 80 + n * 100, bottomY + 12, paint);
 
 
@@ -378,7 +347,6 @@ public class CustomTextView extends View {
             paint.setColor(selectWordForAll ? Color.BLUE : Color.GRAY);
             canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
             paint.setColor(Color.WHITE);
-            paint.setTextSize(40);
             canvas.drawText("全", 80 + n * 100, bottomY + 12, paint);
         }
 
@@ -390,7 +358,6 @@ public class CustomTextView extends View {
             paint.setColor(selectIdiomStudent ? Color.BLUE : Color.GRAY);
             canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
             paint.setColor(Color.WHITE);
-            paint.setTextSize(40);
             canvas.drawText("学", 80 + n * 100, bottomY + 12, paint);
 
             n = 1;
@@ -398,7 +365,6 @@ public class CustomTextView extends View {
             paint.setColor(selectIdiomForAll ? Color.BLUE : Color.GRAY);
             canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
             paint.setColor(Color.WHITE);
-            paint.setTextSize(40);
             canvas.drawText("全", 80 + n * 100, bottomY + 12, paint);
         }
 
@@ -410,7 +376,6 @@ public class CustomTextView extends View {
             paint.setColor(selectEnglishStudent ? Color.BLUE : Color.GRAY);
             canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
             paint.setColor(Color.WHITE);
-            paint.setTextSize(40);
             canvas.drawText("学", 80 + n * 100, bottomY + 12, paint);
 
             n = 1;
@@ -418,7 +383,6 @@ public class CustomTextView extends View {
             paint.setColor(selectEnglishPrimary ? Color.BLUE : Color.GRAY);
             canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
             paint.setColor(Color.WHITE);
-            paint.setTextSize(40);
             canvas.drawText("初", 80 + n * 100, bottomY + 12, paint);
 
 
@@ -427,7 +391,6 @@ public class CustomTextView extends View {
             paint.setColor(selectEnglishForAll ? Color.BLUE : Color.GRAY);
             canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
             paint.setColor(Color.WHITE);
-            paint.setTextSize(40);
             canvas.drawText("全", 80 + n * 100, bottomY + 12, paint);
         }
 
@@ -500,42 +463,43 @@ public class CustomTextView extends View {
 
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
 
-            if (selectPoem) {
-                animatorMeta.stop();
-            }
-
-
             float y = event.getY();
             float x = event.getX();
 
 
-            int centerX = getWidth() / 2;
-            int centerY = getHeight() / 2;
-            float clickX = x - centerX;
+            if (selectPoem) {
 
-            boolean touchPoemItem = false;
+                animatorMeta.stop();
 
-            for (LinePoint linePoint : linePoints) {
-                if (clickX > linePoint.sx && clickX < linePoint.ex) {
-                    if (linePoint.ey + centerY - poemWordHeight < y && y < linePoint.ey + centerY) {
-                        if (drawLinePoint.contains(linePoint)) {
-                            drawLinePoint.remove(linePoint);
-                        } else {
-                            drawLinePoint.add(linePoint);
+                int centerX = getWidth() / 2;
+                int centerY = getHeight() / 2;
+                float clickX = x - centerX;
+
+                boolean touchPoemItem = false;
+
+                for (LinePoint linePoint : linePoints) {
+                    if (clickX > linePoint.sx && clickX < linePoint.ex) {
+                        if (linePoint.ey + centerY - poemWordHeight < y && y < linePoint.ey + centerY) {
+                            if (drawLinePoint.contains(linePoint)) {
+                                drawLinePoint.remove(linePoint);
+                            } else {
+                                drawLinePoint.add(linePoint);
+                            }
+                            touchPoemItem = true;
+                            break;
                         }
-                        touchPoemItem = true;
-                        break;
                     }
                 }
-            }
 
-            if (touchPoemItem) {
-                invalidate();
-                return super.onTouchEvent(event);
-            }
+                if (touchPoemItem) {
+                    invalidate();
+                    return super.onTouchEvent(event);
+                }
 
-            if (!touchPoemItem) {
-                drawLinePoint.clear();
+
+                if (!touchPoemItem) {
+                    drawLinePoint.clear();
+                }
             }
 
 
@@ -571,6 +535,10 @@ public class CustomTextView extends View {
 
             if (selectEnglishWord) {
                 englishWord = dataHolder.randEnglish(selectEnglishStudent, selectEnglishPrimary);
+            }
+
+            if (selectShortEnglish) {
+                shortEnglish = dataHolder.randShortEnglish();
             }
 
             invalidate();
@@ -661,6 +629,8 @@ public class CustomTextView extends View {
             selectIdiom = false;
             selectWord = false;
             selectPoem = false;
+
+            shortEnglish = dataHolder.randShortEnglish();
 
 
             return true;
@@ -1012,9 +982,10 @@ public class CustomTextView extends View {
 
         List<String> rows = new ArrayList<>();
 
-        for (int n = 0; n < 10; n++) {
-            rows.add(dataHolder.randShortEnglish());
+        for (String english : shortEnglish) {
+            rows.add(english);
         }
+
 
         int textLines = rows.size();
 

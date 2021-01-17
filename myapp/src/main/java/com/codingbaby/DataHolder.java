@@ -125,10 +125,14 @@ public class DataHolder {
     }
 
 
-    public String randShortEnglish() {
-        Random rand = new Random();
-        int index = rand.nextInt(shortEnglish.size());
-        return shortEnglish.get(index);
+    public List<String> randShortEnglish() {
+        List<String> list = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            Random rand = new Random();
+            int index = rand.nextInt(shortEnglish.size());
+            list.add(shortEnglish.get(index));
+        }
+        return list;
     }
 
     public String randEnglish(boolean selectEnglishStudent, boolean selectEnglishPrimary) {
