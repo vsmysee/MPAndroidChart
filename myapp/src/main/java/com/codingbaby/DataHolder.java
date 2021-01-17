@@ -23,6 +23,7 @@ public class DataHolder {
 
     private List<String> poems = new ArrayList<>();
     private List<String> poems_students = new ArrayList<>();
+    private List<String> poems_primary = new ArrayList<>();
 
     private List<Character> words = new ArrayList<>();
     private List<Character> words_students = new ArrayList<>();
@@ -58,7 +59,7 @@ public class DataHolder {
     }
 
 
-    public String randomPoem(boolean selectPoemForStudent, boolean selectPoemForAll) {
+    public String randomPoem(boolean selectPoemForStudent, boolean selectPoemForPrimary,boolean selectPoemForAll) {
         Random rand = new Random();
 
         String poem = "";
@@ -68,6 +69,13 @@ public class DataHolder {
             poem = poems_students.get(index);
             history.push(poem);
         }
+
+        if (selectPoemForPrimary) {
+            int index = rand.nextInt(poems_primary.size());
+            poem = poems_primary.get(index);
+            history.push(poem);
+        }
+
 
         if (selectPoemForAll) {
             int index = rand.nextInt(poems.size());
@@ -168,6 +176,7 @@ public class DataHolder {
 
         poems.addAll(FileReader.loadPoem(assets));
         poems_students.addAll(FileReader.loadStudentPoem(assets));
+        poems_primary.addAll(FileReader.loadPrimaryPoem(assets));
 
         new Thread(new Runnable() {
             @Override

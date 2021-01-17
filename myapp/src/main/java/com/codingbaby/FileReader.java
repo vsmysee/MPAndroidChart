@@ -67,6 +67,23 @@ public class FileReader {
     }
 
 
+    public static List<String> loadPrimaryPoem(AssetManager assets) {
+
+        List<String> list = new ArrayList<>();
+
+        try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("poem-students2.txt")))) {
+            String line;
+            while ((line = bf.readLine()) != null) {
+                list.add(line);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
+
     public static List<String> loadStudentPoem(AssetManager assets) {
 
         List<String> list = new ArrayList<>();

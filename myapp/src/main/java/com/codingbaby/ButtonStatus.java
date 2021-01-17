@@ -26,8 +26,9 @@ public class ButtonStatus {
     public boolean selectShortEnglish = false;
 
 
-    public boolean selectPoemForStudent;
-    public boolean selectPoemForAll = true;
+    public boolean selectPoemForStudent = true;
+    public boolean selectPoemForPrimary = false;
+    public boolean selectPoemForAll = false;
 
 
     public boolean selectWordForStudent;
@@ -205,10 +206,17 @@ public class ButtonStatus {
 
             n = 1;
 
+            paint.setColor(selectPoemForPrimary ? Color.BLUE : Color.GRAY);
+            canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
+            paint.setColor(Color.WHITE);
+            canvas.drawText("初", 80 + n * 100, bottomY + 12, paint);
+
+            n = 2;
+
             paint.setColor(selectPoemForAll ? Color.BLUE : Color.GRAY);
             canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
             paint.setColor(Color.WHITE);
-            canvas.drawText("全", 80 + n * 100, bottomY + 12, paint);
+            canvas.drawText("高", 80 + n * 100, bottomY + 12, paint);
 
 
         }
@@ -378,6 +386,7 @@ public class ButtonStatus {
 
             if (selectPoem) {
                 selectPoemForStudent = true;
+                selectPoemForPrimary = false;
                 selectPoemForAll = false;
             }
 
@@ -405,10 +414,13 @@ public class ButtonStatus {
 
         n = 1;
         if (x > 60 + 100 * n && y > height - 140 && y < height - 60 && x < 140 + 100 * n) {
+
             if (selectPoem) {
-                selectPoemForAll = true;
+                selectPoemForAll = false;
+                selectPoemForPrimary = true;
                 selectPoemForStudent = false;
             }
+
             if (selectWord) {
                 selectWordForStudent = false;
                 selectWordForPrimary = true;
@@ -434,6 +446,12 @@ public class ButtonStatus {
 
         n = 2;
         if (x > 60 + 100 * n && y > height - 140 && y < height - 60 && x < 140 + 100 * n) {
+
+            if (selectPoem) {
+                selectPoemForAll = true;
+                selectPoemForPrimary = false;
+                selectPoemForStudent = false;
+            }
 
             if (selectWord) {
                 selectWordForStudent = false;

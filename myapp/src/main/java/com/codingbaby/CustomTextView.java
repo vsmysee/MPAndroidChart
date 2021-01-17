@@ -111,7 +111,7 @@ public class CustomTextView extends View {
         buttonStatus = new ButtonStatus(context, this, dataHolder);
 
 
-        poem = dataHolder.randomPoem(buttonStatus.selectPoemForStudent, buttonStatus.selectPoemForAll);
+        poem = dataHolder.randomPoem(buttonStatus.selectPoemForStudent, buttonStatus.selectPoemForPrimary, buttonStatus.selectPoemForAll);
         buildRows();
 
 
@@ -292,7 +292,7 @@ public class CustomTextView extends View {
 
             if (buttonStatus.selectPoem && cursor == 0) {
 
-                poem = dataHolder.randomPoem(buttonStatus.selectPoemForStudent, buttonStatus.selectPoemForAll);
+                poem = dataHolder.randomPoem(buttonStatus.selectPoemForStudent, buttonStatus.selectPoemForPrimary, buttonStatus.selectPoemForAll);
                 buildRows();
 
                 animatorMeta.start(poem);
@@ -349,7 +349,8 @@ public class CustomTextView extends View {
                             poem = pop;
                         }
                     } catch (Exception e) {
-                        poem = dataHolder.randomPoem(buttonStatus.selectPoemForStudent, buttonStatus.selectPoemForAll);
+                        poem = dataHolder.randomPoem(buttonStatus.selectPoemForStudent, buttonStatus.selectPoemForPrimary, buttonStatus.selectPoemForAll);
+
                     }
 
 
@@ -370,7 +371,8 @@ public class CustomTextView extends View {
 
                 if (buttonStatus.selectPoem && cursor == 0) {
 
-                    poem = dataHolder.randomPoem(buttonStatus.selectPoemForStudent, buttonStatus.selectPoemForAll);
+                    poem = dataHolder.randomPoem(buttonStatus.selectPoemForStudent, buttonStatus.selectPoemForPrimary, buttonStatus.selectPoemForAll);
+
                     buildRows();
 
                     animatorMeta.start(poem);
