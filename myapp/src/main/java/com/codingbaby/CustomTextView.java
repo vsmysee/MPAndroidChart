@@ -69,39 +69,6 @@ public class CustomTextView extends View {
         virtualLineBlue.setPathEffect(new DashPathEffect(new float[]{4, 4}, 0));
     }
 
-    //功能按钮动画
-    private ValueAnimator functionAnimator;
-
-    {
-        functionAnimator = ValueAnimator.ofInt(0, 500);
-        functionAnimator.setDuration(2000);
-        functionAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                invalidate();
-            }
-        });
-        functionAnimator.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                longPress = false;
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-
-            }
-        });
-    }
 
     //汉字动画
     private ValueAnimator wordAnimator;
@@ -128,15 +95,10 @@ public class CustomTextView extends View {
     private List<LinePoint> linePoints = new ArrayList<>();
 
 
-    private boolean longPress = false;
-
-    private boolean selectPoem = true;
-    private boolean selectWord = false;
-    private boolean selectIdiom = false;
-    private boolean selectEnglishWord = false;
-    private boolean selectShortEnglish = false;
-
     public static DataHolder dataHolder;
+
+
+    private ButtonStatus buttonStatus;
 
 
     public CustomTextView(Context context, AttributeSet attrs) {
@@ -146,8 +108,10 @@ public class CustomTextView extends View {
 
         animatorMeta = new AnimatorMeta(this, bitMapHolder);
 
+        buttonStatus = new ButtonStatus(context, this, dataHolder);
 
-        poem = dataHolder.randomPoem(selectPoemForStudent, selectPoemForAll);
+
+        poem = dataHolder.randomPoem(buttonStatus.selectPoemForStudent, buttonStatus.selectPoemForAll);
         buildRows();
 
 
@@ -155,11 +119,7 @@ public class CustomTextView extends View {
             @Override
             public boolean onLongClick(View view) {
 
-                longPress = !longPress;
-
-                if (longPress && functionAnimator.isRunning()) {
-                    functionAnimator.cancel();
-                }
+                buttonStatus.onLongClick();
 
                 animatorMeta.stop();
 
@@ -199,7 +159,7 @@ public class CustomTextView extends View {
 
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    chineseWord = dataHolder.randChineseWord(selectWordForStudent, selectWordForPrimary, selectWordForSenior);
+                    chineseWord = dataHolder.randChineseWord(buttonStatus.selectWordForStudent, buttonStatus.selectWordForPrimary, buttonStatus.selectWordForSenior);
                 }
 
                 @Override
@@ -226,20 +186,16 @@ public class CustomTextView extends View {
 
 
         //draw button
-        if (longPress) {
-            drawButton(canvas);
-        }
+        buttonStatus.drawButton(canvas, paint);
 
 
         initPint();
 
-        if (longPress) {
-            drawBottomButton(canvas);
-        }
+        buttonStatus.drawBottomButton(canvas, paint, getHeight());
 
         canvas.translate(getWidth() / 2, getHeight() / 2);
 
-        if (selectPoem) {
+        if (buttonStatus.selectPoem) {
 
             //渲染动画
             if (animatorMeta.isOpen()) {
@@ -264,196 +220,24 @@ public class CustomTextView extends View {
 
         }
 
-        if (selectWord) {
+        if (buttonStatus.selectWord) {
             drawWord(canvas);
         }
 
-        if (selectIdiom) {
+        if (buttonStatus.selectIdiom) {
             drawIdiom(canvas);
         }
 
-        if (selectEnglishWord) {
+        if (buttonStatus.selectEnglishWord) {
             drawEnglishWord(canvas);
         }
 
-        if (selectShortEnglish) {
+        if (buttonStatus.selectShortEnglish) {
             drawShortEnglish(canvas);
         }
 
         super.draw(canvas);
 
-    }
-
-    private void drawBottomButton(Canvas canvas) {
-
-        int radius = 40;
-        int bottomY = getHeight() - 100;
-        paint.setTextSize(40);
-
-
-
-        if (functionAnimator.isRunning()) {
-            bottomY = bottomY + (int) functionAnimator.getAnimatedValue();
-        }
-
-
-        if (selectPoem) {
-
-            int n = 0;
-
-
-            paint.setColor(selectPoemForStudent ? Color.BLUE : Color.GRAY);
-            canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
-            paint.setColor(Color.WHITE);
-            canvas.drawText("学", 80 + n * 100, bottomY + 12, paint);
-
-            n = 1;
-
-            paint.setColor(selectPoemForAll ? Color.BLUE : Color.GRAY);
-            canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
-            paint.setColor(Color.WHITE);
-            canvas.drawText("全", 80 + n * 100, bottomY + 12, paint);
-
-
-        }
-
-        if (selectWord) {
-
-            int n = 0;
-
-            paint.setColor(selectWordForStudent ? Color.BLUE : Color.GRAY);
-            canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
-            paint.setColor(Color.WHITE);
-            canvas.drawText("学", 80 + n * 100, bottomY + 12, paint);
-
-
-            n = 1;
-
-            paint.setColor(selectWordForPrimary ? Color.BLUE : Color.GRAY);
-            canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
-            paint.setColor(Color.WHITE);
-            canvas.drawText("中", 80 + n * 100, bottomY + 12, paint);
-
-            n = 2;
-
-            paint.setColor(selectWordForSenior ? Color.BLUE : Color.GRAY);
-            canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
-            paint.setColor(Color.WHITE);
-            canvas.drawText("高", 80 + n * 100, bottomY + 12, paint);
-
-
-            n = 3;
-
-            paint.setColor(selectWordForAll ? Color.BLUE : Color.GRAY);
-            canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
-            paint.setColor(Color.WHITE);
-            canvas.drawText("全", 80 + n * 100, bottomY + 12, paint);
-        }
-
-
-        if (selectIdiom) {
-
-            int n = 0;
-
-            paint.setColor(selectIdiomStudent ? Color.BLUE : Color.GRAY);
-            canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
-            paint.setColor(Color.WHITE);
-            canvas.drawText("学", 80 + n * 100, bottomY + 12, paint);
-
-            n = 1;
-
-            paint.setColor(selectIdiomForAll ? Color.BLUE : Color.GRAY);
-            canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
-            paint.setColor(Color.WHITE);
-            canvas.drawText("全", 80 + n * 100, bottomY + 12, paint);
-        }
-
-
-        if (selectEnglishWord) {
-
-            int n = 0;
-
-            paint.setColor(selectEnglishStudent ? Color.BLUE : Color.GRAY);
-            canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
-            paint.setColor(Color.WHITE);
-            canvas.drawText("学", 80 + n * 100, bottomY + 12, paint);
-
-            n = 1;
-
-            paint.setColor(selectEnglishPrimary ? Color.BLUE : Color.GRAY);
-            canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
-            paint.setColor(Color.WHITE);
-            canvas.drawText("初", 80 + n * 100, bottomY + 12, paint);
-
-
-            n = 2;
-
-            paint.setColor(selectEnglishForAll ? Color.BLUE : Color.GRAY);
-            canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
-            paint.setColor(Color.WHITE);
-            canvas.drawText("全", 80 + n * 100, bottomY + 12, paint);
-        }
-
-    }
-
-
-    int gap = sp2px(40);
-    int textSize = sp2px(15);
-
-    private void drawButton(Canvas canvas) {
-
-        int wordY = sp2px(35);
-
-        if (functionAnimator.isRunning()) {
-            wordY = wordY - (int) functionAnimator.getAnimatedValue();
-        }
-
-        int radius = sp2px(15);
-        int fromX = sp2px(30);
-        int fromY = sp2px(30);
-
-        if (functionAnimator.isRunning()) {
-            fromY = fromY - (int) functionAnimator.getAnimatedValue();
-        }
-
-        int wordFrom = sp2px(22);
-
-        paint.setColor(selectPoem ? Color.BLUE : Color.GRAY);
-        canvas.drawCircle(fromX, fromY, radius, paint);
-        paint.setColor(Color.WHITE);
-        paint.setTextSize(textSize);
-        canvas.drawText("诗", wordFrom, wordY, paint);
-
-        int n = 1;
-
-        paint.setColor(selectWord ? Color.BLUE : Color.GRAY);
-        canvas.drawCircle(fromX + n * gap, fromY, radius, paint);
-        paint.setColor(Color.WHITE);
-        paint.setTextSize(textSize);
-        canvas.drawText("字", wordFrom + n * gap, wordY, paint);
-
-        n = 2;
-
-        paint.setColor(selectIdiom ? Color.BLUE : Color.GRAY);
-        canvas.drawCircle(fromX + n * gap, fromY, radius, paint);
-        paint.setColor(Color.WHITE);
-        paint.setTextSize(textSize);
-        canvas.drawText("成", wordFrom + n * gap, wordY, paint);
-
-        n = 3;
-        paint.setColor(selectEnglishWord ? Color.BLUE : Color.GRAY);
-        canvas.drawCircle(fromX + n * gap, fromY, radius, paint);
-        paint.setColor(Color.WHITE);
-        paint.setTextSize(textSize);
-        canvas.drawText("英", wordFrom + n * gap, wordY, paint);
-
-
-        n = 4;
-        paint.setColor(selectShortEnglish ? Color.BLUE : Color.GRAY);
-        canvas.drawCircle(fromX + n * gap, fromY, radius, paint);
-        paint.setColor(Color.WHITE);
-        paint.setTextSize(textSize);
-        canvas.drawText("短", wordFrom + n * gap, wordY, paint);
     }
 
 
@@ -467,7 +251,7 @@ public class CustomTextView extends View {
             float x = event.getX();
 
 
-            if (selectPoem) {
+            if (buttonStatus.selectPoem) {
 
                 animatorMeta.stop();
 
@@ -503,41 +287,33 @@ public class CustomTextView extends View {
             }
 
 
-            if (longPress) {
-
-                checkTouch(y, x);
-
-                if (!functionAnimator.isStarted()) {
-                    functionAnimator.start();
-                }
-
-            }
+            buttonStatus.checkTouch(y, x, getHeight());
 
 
-            if (selectPoem && cursor == 0) {
+            if (buttonStatus.selectPoem && cursor == 0) {
 
-                poem = dataHolder.randomPoem(selectPoemForStudent, selectPoemForAll);
+                poem = dataHolder.randomPoem(buttonStatus.selectPoemForStudent, buttonStatus.selectPoemForAll);
                 buildRows();
 
                 animatorMeta.start(poem);
 
             }
 
-            if (selectWord) {
+            if (buttonStatus.selectWord) {
                 if (!wordAnimator.isStarted()) {
                     wordAnimator.start();
                 }
             }
 
-            if (selectIdiom) {
-                showIdioms = dataHolder.randIdiom(selectIdiomStudent);
+            if (buttonStatus.selectIdiom) {
+                showIdioms = dataHolder.randIdiom(buttonStatus.selectIdiomStudent);
             }
 
-            if (selectEnglishWord) {
-                englishWord = dataHolder.randEnglish(selectEnglishStudent, selectEnglishPrimary);
+            if (buttonStatus.selectEnglishWord) {
+                englishWord = dataHolder.randEnglish(buttonStatus.selectEnglishStudent, buttonStatus.selectEnglishPrimary);
             }
 
-            if (selectShortEnglish) {
+            if (buttonStatus.selectShortEnglish) {
                 shortEnglish = dataHolder.randShortEnglish();
             }
 
@@ -549,222 +325,6 @@ public class CustomTextView extends View {
     }
 
 
-    /**
-     * 检查是否点击了按钮
-     *
-     * @param y
-     * @param x
-     * @return
-     */
-    private boolean checkTouch(float y, float x) {
-
-        int topButtonX = textSize;
-        if (y >= topButtonX && y <= 3 * topButtonX && x >= topButtonX && x <= 3 * topButtonX) {
-
-            selectPoem = true;
-            selectWord = false;
-            selectShortEnglish = false;
-            selectIdiom = false;
-            selectEnglishWord = false;
-
-            return true;
-        }
-
-        int n = 1;
-
-        if (y >= topButtonX && y <= 3 * topButtonX && x >= topButtonX + n * gap && x <= 3 * topButtonX + n * gap) {
-
-            selectWord = true;
-            selectPoem = false;
-            selectShortEnglish = false;
-            selectIdiom = false;
-            selectEnglishWord = false;
-
-            chineseWord = dataHolder.randChineseWord(selectWordForStudent, selectWordForPrimary, selectWordForSenior);
-
-
-            return true;
-
-        }
-
-        n = 2;
-
-        if (y >= topButtonX && y <= 3 * topButtonX && x >= topButtonX + n * gap && x <= 3 * topButtonX + n * gap) {
-
-            selectIdiom = true;
-            selectWord = false;
-            selectShortEnglish = false;
-            selectPoem = false;
-            selectEnglishWord = false;
-
-            showIdioms = dataHolder.randIdiom(false);
-
-            return true;
-
-        }
-
-        n = 3;
-
-        if (y >= topButtonX && y <= 3 * topButtonX && x >= topButtonX + n * gap && x <= 3 * topButtonX + n * gap) {
-
-            selectEnglishWord = true;
-            selectShortEnglish = false;
-            selectIdiom = false;
-            selectWord = false;
-            selectPoem = false;
-
-            englishWord = dataHolder.randEnglish(selectEnglishStudent, selectEnglishPrimary);
-
-            return true;
-
-        }
-
-
-        n = 4;
-
-        if (y >= topButtonX && y <= 3 * topButtonX && x >= topButtonX + n * gap && x <= 3 * topButtonX + n * gap) {
-
-            selectShortEnglish = true;
-            selectEnglishWord = false;
-            selectIdiom = false;
-            selectWord = false;
-            selectPoem = false;
-
-            shortEnglish = dataHolder.randShortEnglish();
-
-
-            return true;
-
-        }
-
-        //选择大功能end
-
-        n = 0;
-        if (x > 60 + 100 * n && y > getHeight() - 140 && y < getHeight() - 60 && x < 140 + 100 * n) {
-
-            if (selectPoem) {
-                selectPoemForStudent = true;
-                selectPoemForAll = false;
-            }
-
-            if (selectWord) {
-                selectWordForStudent = true;
-                selectWordForPrimary = false;
-                selectWordForSenior = false;
-                selectWordForAll = false;
-                chineseWord = dataHolder.randChineseWord(selectWordForStudent, selectWordForPrimary, selectWordForSenior);
-
-
-            }
-
-            if (selectIdiom) {
-                selectIdiomStudent = true;
-                selectIdiomForAll = false;
-            }
-
-            if (selectEnglishWord) {
-                selectEnglishStudent = true;
-                selectEnglishPrimary = false;
-                selectEnglishForAll = false;
-            }
-
-
-            return true;
-
-
-        }
-
-
-        n = 1;
-        if (x > 60 + 100 * n && y > getHeight() - 140 && y < getHeight() - 60 && x < 140 + 100 * n) {
-            if (selectPoem) {
-                selectPoemForAll = true;
-                selectPoemForStudent = false;
-            }
-            if (selectWord) {
-                selectWordForStudent = false;
-                selectWordForPrimary = true;
-                selectWordForSenior = false;
-                selectWordForAll = false;
-                chineseWord = dataHolder.randChineseWord(selectWordForStudent, selectWordForPrimary, selectWordForSenior);
-
-
-            }
-
-            if (selectIdiom) {
-                selectIdiomStudent = false;
-                selectIdiomForAll = true;
-            }
-
-            if (selectEnglishWord) {
-                selectEnglishStudent = false;
-                selectEnglishPrimary = true;
-                selectEnglishForAll = false;
-            }
-
-            return true;
-
-        }
-
-        n = 2;
-        if (x > 60 + 100 * n && y > getHeight() - 140 && y < getHeight() - 60 && x < 140 + 100 * n) {
-
-            if (selectWord) {
-                selectWordForStudent = false;
-                selectWordForPrimary = false;
-                selectWordForSenior = true;
-                selectWordForAll = false;
-                chineseWord = dataHolder.randChineseWord(selectWordForStudent, selectWordForPrimary, selectWordForSenior);
-
-            }
-
-            if (selectEnglishWord) {
-                selectEnglishStudent = false;
-                selectEnglishPrimary = false;
-                selectEnglishForAll = true;
-            }
-
-            return true;
-        }
-
-        n = 3;
-        if (x > 60 + 100 * n && y > getHeight() - 140 && y < getHeight() - 60 && x < 140 + 100 * n) {
-
-            if (selectWord) {
-                selectWordForStudent = false;
-                selectWordForPrimary = false;
-                selectWordForSenior = false;
-                selectWordForAll = true;
-                chineseWord = dataHolder.randChineseWord(selectWordForStudent, selectWordForPrimary, selectWordForSenior);
-
-
-            }
-
-            return true;
-        }
-
-
-        return false;
-    }
-
-
-    private boolean selectPoemForStudent;
-    private boolean selectPoemForAll = true;
-
-    private boolean selectWordForStudent;
-    private boolean selectWordForPrimary;
-    private boolean selectWordForSenior;
-    private boolean selectWordForAll = true;
-
-
-    private boolean selectIdiomStudent = false;
-    private boolean selectIdiomForAll = true;
-
-
-    private boolean selectEnglishStudent = false;
-    private boolean selectEnglishPrimary = false;
-    private boolean selectEnglishForAll = true;
-
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
 
@@ -774,7 +334,7 @@ public class CustomTextView extends View {
 
                 animatorMeta.stop();
 
-                if (selectPoem) {
+                if (buttonStatus.selectPoem) {
 
                     cache.clear();
                     cursor = 0;
@@ -789,7 +349,7 @@ public class CustomTextView extends View {
                             poem = pop;
                         }
                     } catch (Exception e) {
-                        poem = dataHolder.randomPoem(selectPoemForStudent, selectPoemForAll);
+                        poem = dataHolder.randomPoem(buttonStatus.selectPoemForStudent, buttonStatus.selectPoemForAll);
                     }
 
 
@@ -808,29 +368,29 @@ public class CustomTextView extends View {
                 animatorMeta.stop();
                 drawLinePoint.clear();
 
-                if (selectPoem && cursor == 0) {
+                if (buttonStatus.selectPoem && cursor == 0) {
 
-                    poem = dataHolder.randomPoem(selectPoemForStudent, selectPoemForAll);
+                    poem = dataHolder.randomPoem(buttonStatus.selectPoemForStudent, buttonStatus.selectPoemForAll);
                     buildRows();
 
                     animatorMeta.start(poem);
 
                 }
 
-                if (selectWord) {
+                if (buttonStatus.selectWord) {
                     if (!wordAnimator.isStarted()) {
                         wordAnimator.start();
                     }
                 }
 
 
-                if (selectIdiom) {
-                    showIdioms = dataHolder.randIdiom(selectIdiomStudent);
+                if (buttonStatus.selectIdiom) {
+                    showIdioms = dataHolder.randIdiom(buttonStatus.selectIdiomStudent);
                 }
 
 
-                if (selectEnglishWord) {
-                    englishWord = dataHolder.randEnglish(selectEnglishStudent, selectEnglishPrimary);
+                if (buttonStatus.selectEnglishWord) {
+                    englishWord = dataHolder.randEnglish(buttonStatus.selectEnglishStudent, buttonStatus.selectEnglishPrimary);
                 }
 
                 invalidate();
@@ -859,6 +419,10 @@ public class CustomTextView extends View {
     final MediaPlayer mediaPlayer = new MediaPlayer();
 
     private void drawEnglishWord(Canvas canvas) {
+
+        if (englishWord == null) {
+            englishWord = dataHolder.randEnglish(buttonStatus.selectEnglishStudent, buttonStatus.selectEnglishPrimary);
+        }
 
         paint.setTextSize(sp2px(30));
 
@@ -912,7 +476,7 @@ public class CustomTextView extends View {
         executorService.execute(new Runnable() {
             @Override
             public void run() {
-                if (!functionAnimator.isRunning()) {
+                if (!buttonStatus.isRunAnimation()) {
                     try {
 
                         File sdCard = Environment.getExternalStorageDirectory();
@@ -971,6 +535,11 @@ public class CustomTextView extends View {
     }
 
     private void drawShortEnglish(Canvas canvas) {
+
+        if (shortEnglish == null) {
+            shortEnglish = dataHolder.randShortEnglish();
+        }
+
         paint.setColor(DEFAULT_COLOR);
 
         paint.setTextSize(sp2px(18));
@@ -1010,6 +579,11 @@ public class CustomTextView extends View {
 
 
     private void drawIdiom(Canvas canvas) {
+
+        if (showIdioms == null) {
+            showIdioms = dataHolder.randIdiom(buttonStatus.selectIdiomStudent);
+        }
+
         paint.setColor(DEFAULT_COLOR);
 
         paint.setTextSize(sp2px(35));
@@ -1050,6 +624,10 @@ public class CustomTextView extends View {
 
 
     private void drawWord(Canvas canvas) {
+
+        if (chineseWord == null) {
+            chineseWord = dataHolder.randChineseWord(buttonStatus.selectWordForStudent, buttonStatus.selectWordForPrimary, buttonStatus.selectWordForSenior);
+        }
 
         paint.setColor(DEFAULT_COLOR);
         paint.setTextSize(sp2px(80));
