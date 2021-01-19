@@ -17,7 +17,7 @@ import java.util.List;
 
 public class SplashActivity extends AppCompatActivity {
 
-    private final int SPLASH_DISPLAY_LENGHT = 3000;
+    private final int SPLASH_DISPLAY = 3000;
 
     public DataHolder dataHolder;
 
@@ -51,6 +51,6 @@ public class SplashActivity extends AppCompatActivity {
                 SplashActivity.this.finish();
             }
 
-        }, SPLASH_DISPLAY_LENGHT);
+        }, SPLASH_DISPLAY);
     }
 }
