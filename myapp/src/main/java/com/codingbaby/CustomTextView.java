@@ -43,7 +43,6 @@ public class CustomTextView extends View {
 
     private BitMapHolder bitMapHolder;
 
-
     private AnimatorMeta animatorMeta;
 
     // 画笔
@@ -82,6 +81,7 @@ public class CustomTextView extends View {
     private static int cursor = 0;
 
     private Character chineseWord;
+    private Character nextChineseWord;
 
     private List<String> showIdioms;
     private List<String> shortEnglish;
@@ -108,7 +108,7 @@ public class CustomTextView extends View {
 
         animatorMeta = new AnimatorMeta(this, bitMapHolder);
 
-        buttonStatus = new ButtonStatus(context, this, dataHolder);
+        buttonStatus = new ButtonStatus(context, this);
 
 
         poem = dataHolder.randomPoem(buttonStatus.selectPoemForStudent, buttonStatus.selectPoemForPrimary, buttonStatus.selectPoemForAll);
@@ -144,8 +144,9 @@ public class CustomTextView extends View {
     public void draw(Canvas canvas) {
 
         if (wordAnimator == null) {
+
             wordAnimator = ValueAnimator.ofInt(0, getWidth());
-            wordAnimator.setDuration(1000);
+            wordAnimator.setDuration(600);
             wordAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 @Override
                 public void onAnimationUpdate(ValueAnimator valueAnimator) {
@@ -159,7 +160,7 @@ public class CustomTextView extends View {
 
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    chineseWord = dataHolder.randChineseWord(buttonStatus.selectWordForStudent, buttonStatus.selectWordForPrimary, buttonStatus.selectWordForSenior);
+                    chineseWord = nextChineseWord;
                 }
 
                 @Override
@@ -187,7 +188,6 @@ public class CustomTextView extends View {
 
         //draw button
         buttonStatus.drawButton(canvas, paint);
-
 
         initPint();
 
@@ -281,25 +281,30 @@ public class CustomTextView extends View {
                 }
 
 
-                if (!touchPoemItem) {
-                    drawLinePoint.clear();
+                drawLinePoint.clear();
+
+                if (cursor == 0) {
+                    poem = dataHolder.randomPoem(buttonStatus.selectPoemForStudent, buttonStatus.selectPoemForPrimary, buttonStatus.selectPoemForAll);
+                    buildRows();
+
+                    animatorMeta.start(poem);
                 }
             }
 
 
-            buttonStatus.checkTouch(y, x, getHeight());
-
-
-            if (buttonStatus.selectPoem && cursor == 0) {
-
-                poem = dataHolder.randomPoem(buttonStatus.selectPoemForStudent, buttonStatus.selectPoemForPrimary, buttonStatus.selectPoemForAll);
-                buildRows();
-
-                animatorMeta.start(poem);
-
+            if (buttonStatus.checkFuncTouch(y, x)) {
+                buttonStatus.startAnimation();
             }
 
+            if (buttonStatus.checkBottomTouch(y, x, getHeight())) {
+                buttonStatus.startAnimation();
+            }
+
+
             if (buttonStatus.selectWord) {
+
+                nextChineseWord = dataHolder.randChineseWord(buttonStatus.selectWordForStudent, buttonStatus.selectWordForPrimary, buttonStatus.selectWordForSenior);
+
                 if (!wordAnimator.isStarted()) {
                     wordAnimator.start();
                 }
@@ -310,12 +315,13 @@ public class CustomTextView extends View {
             }
 
             if (buttonStatus.selectEnglishWord) {
-                englishWord = dataHolder.randEnglish(buttonStatus.selectEnglishStudent, buttonStatus.selectEnglishPrimary);
+                englishWord = dataHolder.randEnglish(buttonStatus);
             }
 
             if (buttonStatus.selectShortEnglish) {
                 shortEnglish = dataHolder.randShortEnglish();
             }
+
 
             invalidate();
 
@@ -342,15 +348,14 @@ public class CustomTextView extends View {
                     drawLinePoint.clear();
 
                     try {
-                        String pop = dataHolder.pop();
+                        String pop = dataHolder.popPoem();
                         if (pop.equals(poem)) {
-                            poem = dataHolder.pop();
+                            poem = dataHolder.popPoem();
                         } else {
                             poem = pop;
                         }
                     } catch (Exception e) {
                         poem = dataHolder.randomPoem(buttonStatus.selectPoemForStudent, buttonStatus.selectPoemForPrimary, buttonStatus.selectPoemForAll);
-
                     }
 
 
@@ -360,6 +365,42 @@ public class CustomTextView extends View {
                     invalidate();
 
                 }
+
+                if (buttonStatus.selectWord) {
+
+                    try {
+                        nextChineseWord = dataHolder.popChinese();
+                        if (nextChineseWord.equals(chineseWord)) {
+                            nextChineseWord = dataHolder.popChinese();
+                        }
+                    } catch (Exception e) {
+                        nextChineseWord = dataHolder.randChineseWord(buttonStatus.selectWordForStudent, buttonStatus.selectWordForPrimary, buttonStatus.selectWordForSenior);
+                    }
+
+                    if (!wordAnimator.isStarted()) {
+                        wordAnimator.start();
+                    }
+
+                    invalidate();
+
+                }
+
+                if (buttonStatus.selectEnglishWord) {
+
+                    try {
+                        String englishWordPop = dataHolder.popEnglish();
+                        if (englishWordPop.equals(englishWord)) {
+                            englishWord = dataHolder.popEnglish();
+                        } else {
+                            englishWord = englishWordPop;
+                        }
+                    } catch (Exception e) {
+                        englishWord = dataHolder.randEnglish(buttonStatus);
+                    }
+
+                    invalidate();
+                }
+
 
                 return true;
 
@@ -392,8 +433,13 @@ public class CustomTextView extends View {
 
 
                 if (buttonStatus.selectEnglishWord) {
-                    englishWord = dataHolder.randEnglish(buttonStatus.selectEnglishStudent, buttonStatus.selectEnglishPrimary);
+                    englishWord = dataHolder.randEnglish(buttonStatus);
                 }
+
+                if (buttonStatus.selectShortEnglish) {
+                    shortEnglish = dataHolder.randShortEnglish();
+                }
+
 
                 invalidate();
                 return true;
@@ -423,7 +469,7 @@ public class CustomTextView extends View {
     private void drawEnglishWord(Canvas canvas) {
 
         if (englishWord == null) {
-            englishWord = dataHolder.randEnglish(buttonStatus.selectEnglishStudent, buttonStatus.selectEnglishPrimary);
+            englishWord = dataHolder.randEnglish(buttonStatus);
         }
 
         paint.setTextSize(sp2px(30));
