@@ -15,8 +15,6 @@ public class ButtonStatus {
 
     private View view;
 
-    private DataHolder dataHolder;
-
 
     public boolean selectPoem = true;
 
@@ -41,8 +39,13 @@ public class ButtonStatus {
     public boolean selectIdiomForAll = true;
 
 
-    public boolean selectEnglishStudent = false;
-    public boolean selectEnglishPrimary = false;
+    public boolean english1 = false;
+    public boolean english2 = false;
+    public boolean english3 = false;
+    public boolean english4 = false;
+    public boolean english5 = false;
+    public boolean english6 = false;
+
     public boolean selectEnglishForAll = true;
 
 
@@ -83,10 +86,9 @@ public class ButtonStatus {
         });
     }
 
-    public ButtonStatus(Context context, View view, DataHolder dataHolder) {
+    public ButtonStatus(Context context, View view) {
         this.context = context;
         this.view = view;
-        this.dataHolder = dataHolder;
     }
 
     public void cancelAnimation() {
@@ -108,20 +110,19 @@ public class ButtonStatus {
 
     public void onLongClick() {
         longPress = !longPress;
-        if (longPress) {
-            cancelAnimation();
-        }
     }
 
 
     public void drawButton(Canvas canvas, Paint paint) {
 
-        int gap = sp2px(40);
-        int textSize = sp2px(15);
-
         if (!longPress) {
             return;
         }
+
+
+        int gap = sp2px(40);
+        int textSize = sp2px(15);
+
 
         int wordY = sp2px(35);
 
@@ -139,13 +140,15 @@ public class ButtonStatus {
 
         int wordFrom = sp2px(22);
 
+        int n = 0;
+
         paint.setColor(selectPoem ? Color.BLUE : Color.GRAY);
-        canvas.drawCircle(fromX, fromY, radius, paint);
+        canvas.drawCircle(fromX + n * gap, fromY, radius, paint);
         paint.setColor(Color.WHITE);
         paint.setTextSize(textSize);
         canvas.drawText("诗", wordFrom, wordY, paint);
 
-        int n = 1;
+        n = 1;
 
         paint.setColor(selectWord ? Color.BLUE : Color.GRAY);
         canvas.drawCircle(fromX + n * gap, fromY, radius, paint);
@@ -197,7 +200,6 @@ public class ButtonStatus {
         if (selectPoem) {
 
             int n = 0;
-
 
             paint.setColor(selectPoemForStudent ? Color.BLUE : Color.GRAY);
             canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
@@ -277,20 +279,48 @@ public class ButtonStatus {
 
             int n = 0;
 
-            paint.setColor(selectEnglishStudent ? Color.BLUE : Color.GRAY);
+            paint.setColor(english1 ? Color.BLUE : Color.GRAY);
             canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
             paint.setColor(Color.WHITE);
-            canvas.drawText("学", 80 + n * 100, bottomY + 12, paint);
+            canvas.drawText("一", 80 + n * 100, bottomY + 12, paint);
 
             n = 1;
 
-            paint.setColor(selectEnglishPrimary ? Color.BLUE : Color.GRAY);
+            paint.setColor(english2 ? Color.BLUE : Color.GRAY);
             canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
             paint.setColor(Color.WHITE);
-            canvas.drawText("初", 80 + n * 100, bottomY + 12, paint);
+            canvas.drawText("二", 80 + n * 100, bottomY + 12, paint);
 
 
             n = 2;
+
+            paint.setColor(english3 ? Color.BLUE : Color.GRAY);
+            canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
+            paint.setColor(Color.WHITE);
+            canvas.drawText("三", 80 + n * 100, bottomY + 12, paint);
+
+            n = 3;
+
+            paint.setColor(english4 ? Color.BLUE : Color.GRAY);
+            canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
+            paint.setColor(Color.WHITE);
+            canvas.drawText("四", 80 + n * 100, bottomY + 12, paint);
+
+            n = 4;
+
+            paint.setColor(english5 ? Color.BLUE : Color.GRAY);
+            canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
+            paint.setColor(Color.WHITE);
+            canvas.drawText("五", 80 + n * 100, bottomY + 12, paint);
+
+            n = 5;
+
+            paint.setColor(english6 ? Color.BLUE : Color.GRAY);
+            canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
+            paint.setColor(Color.WHITE);
+            canvas.drawText("六", 80 + n * 100, bottomY + 12, paint);
+
+            n = 6;
 
             paint.setColor(selectEnglishForAll ? Color.BLUE : Color.GRAY);
             canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
@@ -307,13 +337,13 @@ public class ButtonStatus {
      * @param x
      * @return
      */
-    public void checkTouch(float y, float x, int height) {
+    public boolean checkFuncTouch(float y, float x) {
 
         int gap = sp2px(40);
         int textSize = sp2px(15);
 
         if (!longPress) {
-            return;
+            return false;
         }
 
         int topButtonX = textSize;
@@ -325,6 +355,7 @@ public class ButtonStatus {
             selectIdiom = false;
             selectEnglishWord = false;
 
+            return true;
         }
 
         int n = 1;
@@ -337,6 +368,8 @@ public class ButtonStatus {
             selectIdiom = false;
             selectEnglishWord = false;
 
+            return true;
+
         }
 
         n = 2;
@@ -348,6 +381,7 @@ public class ButtonStatus {
             selectShortEnglish = false;
             selectPoem = false;
             selectEnglishWord = false;
+            return true;
 
 
         }
@@ -361,6 +395,7 @@ public class ButtonStatus {
             selectIdiom = false;
             selectWord = false;
             selectPoem = false;
+            return true;
 
 
         }
@@ -375,13 +410,22 @@ public class ButtonStatus {
             selectIdiom = false;
             selectWord = false;
             selectPoem = false;
-
+            return true;
 
         }
 
-        //选择大功能end
 
-        n = 0;
+        return false;
+    }
+
+
+    public boolean checkBottomTouch(float y, float x, int height) {
+
+        if (!longPress) {
+            return false;
+        }
+
+        int n = 0;
         if (x > 60 + 100 * n && y > height - 140 && y < height - 60 && x < 140 + 100 * n) {
 
             if (selectPoem) {
@@ -403,11 +447,16 @@ public class ButtonStatus {
             }
 
             if (selectEnglishWord) {
-                selectEnglishStudent = true;
-                selectEnglishPrimary = false;
+                english1 = true;
+                english2 = false;
+                english3 = false;
+                english4 = false;
+                english5 = false;
+                english6 = false;
                 selectEnglishForAll = false;
             }
 
+            return true;
 
         }
 
@@ -436,10 +485,15 @@ public class ButtonStatus {
             }
 
             if (selectEnglishWord) {
-                selectEnglishStudent = false;
-                selectEnglishPrimary = true;
+                english1 = false;
+                english2 = true;
+                english3 = false;
+                english4 = false;
+                english5 = false;
+                english6 = false;
                 selectEnglishForAll = false;
             }
+            return true;
 
 
         }
@@ -462,10 +516,15 @@ public class ButtonStatus {
             }
 
             if (selectEnglishWord) {
-                selectEnglishStudent = false;
-                selectEnglishPrimary = false;
-                selectEnglishForAll = true;
+                english1 = false;
+                english2 = false;
+                english3 = true;
+                english4 = false;
+                english5 = false;
+                english6 = false;
+                selectEnglishForAll = false;
             }
+            return true;
 
         }
 
@@ -477,13 +536,81 @@ public class ButtonStatus {
                 selectWordForPrimary = false;
                 selectWordForSenior = false;
                 selectWordForAll = true;
-
-
             }
+
+            if (selectEnglishWord) {
+                english1 = false;
+                english2 = false;
+                english3 = false;
+                english4 = true;
+                english5 = false;
+                english6 = false;
+                selectEnglishForAll = false;
+            }
+
+            return true;
 
         }
 
-        startAnimation();
+        n = 4;
+        if (x > 60 + 100 * n && y > height - 140 && y < height - 60 && x < 140 + 100 * n) {
+
+
+            if (selectEnglishWord) {
+                english1 = false;
+                english2 = false;
+                english3 = false;
+                english4 = false;
+                english5 = true;
+                english6 = false;
+                selectEnglishForAll = false;
+            }
+
+            return true;
+
+        }
+
+
+        n = 5;
+        if (x > 60 + 100 * n && y > height - 140 && y < height - 60 && x < 140 + 100 * n) {
+
+
+            if (selectEnglishWord) {
+                english1 = false;
+                english2 = false;
+                english3 = false;
+                english4 = false;
+                english5 = false;
+                english6 = true;
+
+                selectEnglishForAll = false;
+            }
+
+            return true;
+
+        }
+
+
+        n = 6;
+        if (x > 60 + 100 * n && y > height - 140 && y < height - 60 && x < 140 + 100 * n) {
+
+
+            if (selectEnglishWord) {
+                english1 = false;
+                english2 = false;
+                english3 = false;
+                english4 = false;
+                english5 = false;
+                english6 = false;
+
+                selectEnglishForAll = true;
+            }
+
+            return true;
+
+        }
+
+        return false;
 
     }
 
