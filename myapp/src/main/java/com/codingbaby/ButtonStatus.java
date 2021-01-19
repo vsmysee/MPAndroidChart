@@ -123,6 +123,8 @@ public class ButtonStatus {
         int gap = sp2px(40);
         int textSize = sp2px(15);
 
+        paint.setTextSize(textSize);
+
 
         int wordY = sp2px(35);
 
@@ -145,7 +147,6 @@ public class ButtonStatus {
         paint.setColor(selectPoem ? Color.BLUE : Color.GRAY);
         canvas.drawCircle(fromX + n * gap, fromY, radius, paint);
         paint.setColor(Color.WHITE);
-        paint.setTextSize(textSize);
         canvas.drawText("诗", wordFrom, wordY, paint);
 
         n = 1;
@@ -153,7 +154,6 @@ public class ButtonStatus {
         paint.setColor(selectWord ? Color.BLUE : Color.GRAY);
         canvas.drawCircle(fromX + n * gap, fromY, radius, paint);
         paint.setColor(Color.WHITE);
-        paint.setTextSize(textSize);
         canvas.drawText("字", wordFrom + n * gap, wordY, paint);
 
         n = 2;
@@ -161,14 +161,12 @@ public class ButtonStatus {
         paint.setColor(selectIdiom ? Color.BLUE : Color.GRAY);
         canvas.drawCircle(fromX + n * gap, fromY, radius, paint);
         paint.setColor(Color.WHITE);
-        paint.setTextSize(textSize);
         canvas.drawText("成", wordFrom + n * gap, wordY, paint);
 
         n = 3;
         paint.setColor(selectEnglishWord ? Color.BLUE : Color.GRAY);
         canvas.drawCircle(fromX + n * gap, fromY, radius, paint);
         paint.setColor(Color.WHITE);
-        paint.setTextSize(textSize);
         canvas.drawText("英", wordFrom + n * gap, wordY, paint);
 
 
@@ -176,7 +174,6 @@ public class ButtonStatus {
         paint.setColor(selectShortEnglish ? Color.BLUE : Color.GRAY);
         canvas.drawCircle(fromX + n * gap, fromY, radius, paint);
         paint.setColor(Color.WHITE);
-        paint.setTextSize(textSize);
         canvas.drawText("短", wordFrom + n * gap, wordY, paint);
     }
 
@@ -187,14 +184,26 @@ public class ButtonStatus {
             return;
         }
 
-        int radius = 40;
-        int bottomY = height - 100;
-        paint.setTextSize(40);
+        int gap = sp2px(40);
+        int textSize = sp2px(15);
+        paint.setTextSize(textSize);
 
+
+        int wordY = height - sp2px(25);
 
         if (functionAnimator.isRunning()) {
-            bottomY = bottomY + (int) functionAnimator.getAnimatedValue();
+            wordY = wordY + (int) functionAnimator.getAnimatedValue();
         }
+
+        int radius = sp2px(15);
+        int fromX = sp2px(30);
+        int fromY = height - sp2px(30);
+
+        if (functionAnimator.isRunning()) {
+            fromY = fromY + (int) functionAnimator.getAnimatedValue();
+        }
+
+        int wordFrom = sp2px(22);
 
 
         if (selectPoem) {
@@ -202,23 +211,23 @@ public class ButtonStatus {
             int n = 0;
 
             paint.setColor(selectPoemForStudent ? Color.BLUE : Color.GRAY);
-            canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
+            canvas.drawCircle(fromX + n * gap, fromY, radius, paint);
             paint.setColor(Color.WHITE);
-            canvas.drawText("学", 80 + n * 100, bottomY + 12, paint);
+            canvas.drawText("学", wordFrom, wordY, paint);
 
             n = 1;
 
             paint.setColor(selectPoemForPrimary ? Color.BLUE : Color.GRAY);
-            canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
+            canvas.drawCircle(fromX + n * gap, fromY, radius, paint);
             paint.setColor(Color.WHITE);
-            canvas.drawText("初", 80 + n * 100, bottomY + 12, paint);
+            canvas.drawText("初", wordFrom + n * gap, wordY, paint);
 
             n = 2;
 
             paint.setColor(selectPoemForAll ? Color.BLUE : Color.GRAY);
-            canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
+            canvas.drawCircle(fromX + n * gap, fromY, radius, paint);
             paint.setColor(Color.WHITE);
-            canvas.drawText("高", 80 + n * 100, bottomY + 12, paint);
+            canvas.drawText("高", wordFrom + n * gap, wordY, paint);
 
 
         }
@@ -228,32 +237,32 @@ public class ButtonStatus {
             int n = 0;
 
             paint.setColor(selectWordForStudent ? Color.BLUE : Color.GRAY);
-            canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
+            canvas.drawCircle(fromX + n * gap, fromY, radius, paint);
             paint.setColor(Color.WHITE);
-            canvas.drawText("学", 80 + n * 100, bottomY + 12, paint);
+            canvas.drawText("学", wordFrom, wordY, paint);
 
 
             n = 1;
 
             paint.setColor(selectWordForPrimary ? Color.BLUE : Color.GRAY);
-            canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
+            canvas.drawCircle(fromX + n * gap, fromY, radius, paint);
             paint.setColor(Color.WHITE);
-            canvas.drawText("中", 80 + n * 100, bottomY + 12, paint);
+            canvas.drawText("中", wordFrom + n * gap, wordY, paint);
 
             n = 2;
 
             paint.setColor(selectWordForSenior ? Color.BLUE : Color.GRAY);
-            canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
+            canvas.drawCircle(fromX + n * gap, fromY, radius, paint);
             paint.setColor(Color.WHITE);
-            canvas.drawText("高", 80 + n * 100, bottomY + 12, paint);
+            canvas.drawText("高", wordFrom + n * gap, wordY, paint);
 
 
             n = 3;
 
             paint.setColor(selectWordForAll ? Color.BLUE : Color.GRAY);
-            canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
+            canvas.drawCircle(fromX + n * gap, fromY, radius, paint);
             paint.setColor(Color.WHITE);
-            canvas.drawText("全", 80 + n * 100, bottomY + 12, paint);
+            canvas.drawText("全", wordFrom + n * gap, wordY, paint);
         }
 
 
@@ -262,16 +271,16 @@ public class ButtonStatus {
             int n = 0;
 
             paint.setColor(selectIdiomStudent ? Color.BLUE : Color.GRAY);
-            canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
+            canvas.drawCircle(fromX + n * gap, fromY, radius, paint);
             paint.setColor(Color.WHITE);
-            canvas.drawText("学", 80 + n * 100, bottomY + 12, paint);
+            canvas.drawText("学", wordFrom, wordY, paint);
 
             n = 1;
 
             paint.setColor(selectIdiomForAll ? Color.BLUE : Color.GRAY);
-            canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
+            canvas.drawCircle(fromX + n * gap, fromY, radius, paint);
             paint.setColor(Color.WHITE);
-            canvas.drawText("全", 80 + n * 100, bottomY + 12, paint);
+            canvas.drawText("全", wordFrom + n * gap, wordY, paint);
         }
 
 
@@ -280,52 +289,52 @@ public class ButtonStatus {
             int n = 0;
 
             paint.setColor(english1 ? Color.BLUE : Color.GRAY);
-            canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
+            canvas.drawCircle(fromX + n * gap, fromY, radius, paint);
             paint.setColor(Color.WHITE);
-            canvas.drawText("一", 80 + n * 100, bottomY + 12, paint);
+            canvas.drawText("一", wordFrom, wordY, paint);
 
             n = 1;
 
             paint.setColor(english2 ? Color.BLUE : Color.GRAY);
-            canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
+            canvas.drawCircle(fromX + n * gap, fromY, radius, paint);
             paint.setColor(Color.WHITE);
-            canvas.drawText("二", 80 + n * 100, bottomY + 12, paint);
+            canvas.drawText("二", wordFrom + n * gap, wordY, paint);
 
 
             n = 2;
 
             paint.setColor(english3 ? Color.BLUE : Color.GRAY);
-            canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
+            canvas.drawCircle(fromX + n * gap, fromY, radius, paint);
             paint.setColor(Color.WHITE);
-            canvas.drawText("三", 80 + n * 100, bottomY + 12, paint);
+            canvas.drawText("三", wordFrom + n * gap, wordY, paint);
 
             n = 3;
 
             paint.setColor(english4 ? Color.BLUE : Color.GRAY);
-            canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
+            canvas.drawCircle(fromX + n * gap, fromY, radius, paint);
             paint.setColor(Color.WHITE);
-            canvas.drawText("四", 80 + n * 100, bottomY + 12, paint);
+            canvas.drawText("四", wordFrom + n * gap, wordY, paint);
 
             n = 4;
 
             paint.setColor(english5 ? Color.BLUE : Color.GRAY);
-            canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
+            canvas.drawCircle(fromX + n * gap, fromY, radius, paint);
             paint.setColor(Color.WHITE);
-            canvas.drawText("五", 80 + n * 100, bottomY + 12, paint);
+            canvas.drawText("五", wordFrom + n * gap, wordY, paint);
 
             n = 5;
 
             paint.setColor(english6 ? Color.BLUE : Color.GRAY);
-            canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
+            canvas.drawCircle(fromX + n * gap, fromY, radius, paint);
             paint.setColor(Color.WHITE);
-            canvas.drawText("六", 80 + n * 100, bottomY + 12, paint);
+            canvas.drawText("六", wordFrom + n * gap, wordY, paint);
 
             n = 6;
 
             paint.setColor(selectEnglishForAll ? Color.BLUE : Color.GRAY);
-            canvas.drawCircle(100 + n * 100, bottomY, radius, paint);
+            canvas.drawCircle(fromX + n * gap, fromY, radius, paint);
             paint.setColor(Color.WHITE);
-            canvas.drawText("全", 80 + n * 100, bottomY + 12, paint);
+            canvas.drawText("全", wordFrom + n * gap, wordY, paint);
         }
 
     }
@@ -425,8 +434,14 @@ public class ButtonStatus {
             return false;
         }
 
+        int gap = sp2px(40);
+        int textSize = sp2px(15);
+
+
+        int topButtonX = height - 3 * textSize;
+
         int n = 0;
-        if (x > 60 + 100 * n && y > height - 140 && y < height - 60 && x < 140 + 100 * n) {
+        if (y >= topButtonX && y <= height - textSize && x >= textSize + n * gap && x <= 3 * textSize + n * gap) {
 
             if (selectPoem) {
                 selectPoemForStudent = true;
@@ -462,7 +477,7 @@ public class ButtonStatus {
 
 
         n = 1;
-        if (x > 60 + 100 * n && y > height - 140 && y < height - 60 && x < 140 + 100 * n) {
+        if (y >= topButtonX && y <= height - textSize && x >= textSize + n * gap && x <= 3 * textSize + n * gap) {
 
             if (selectPoem) {
                 selectPoemForAll = false;
@@ -499,7 +514,7 @@ public class ButtonStatus {
         }
 
         n = 2;
-        if (x > 60 + 100 * n && y > height - 140 && y < height - 60 && x < 140 + 100 * n) {
+        if (y >= topButtonX && y <= height - textSize && x >= textSize + n * gap && x <= 3 * textSize + n * gap) {
 
             if (selectPoem) {
                 selectPoemForAll = true;
@@ -529,7 +544,7 @@ public class ButtonStatus {
         }
 
         n = 3;
-        if (x > 60 + 100 * n && y > height - 140 && y < height - 60 && x < 140 + 100 * n) {
+        if (y >= topButtonX && y <= height - textSize && x >= textSize + n * gap && x <= 3 * textSize + n * gap) {
 
             if (selectWord) {
                 selectWordForStudent = false;
@@ -553,7 +568,7 @@ public class ButtonStatus {
         }
 
         n = 4;
-        if (x > 60 + 100 * n && y > height - 140 && y < height - 60 && x < 140 + 100 * n) {
+        if (y >= topButtonX && y <= height - textSize && x >= textSize + n * gap && x <= 3 * textSize + n * gap) {
 
 
             if (selectEnglishWord) {
@@ -572,7 +587,7 @@ public class ButtonStatus {
 
 
         n = 5;
-        if (x > 60 + 100 * n && y > height - 140 && y < height - 60 && x < 140 + 100 * n) {
+        if (y >= topButtonX && y <= height - textSize && x >= textSize + n * gap && x <= 3 * textSize + n * gap) {
 
 
             if (selectEnglishWord) {
@@ -592,7 +607,7 @@ public class ButtonStatus {
 
 
         n = 6;
-        if (x > 60 + 100 * n && y > height - 140 && y < height - 60 && x < 140 + 100 * n) {
+        if (y >= topButtonX && y <= height - textSize && x >= textSize + n * gap && x <= 3 * textSize + n * gap) {
 
 
             if (selectEnglishWord) {
