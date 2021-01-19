@@ -431,3 +431,4 @@ custom [ˈkʌstəm] n.习惯，风俗；海关
 customer [ˈkʌstəmə] n.顾客，主顾
 cut [kʌt] vt.切，割，剪；减少
 cycle [ˈsaikl] n 自行车，循环
+chef [ʃef] n.厨师

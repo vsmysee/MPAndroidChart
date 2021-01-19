@@ -26,6 +26,7 @@ wavelength [ˈweivleŋθ] n.波长
 wax [wæks] n.蜡，蜂蜡
 way [wei] n.路；路线；方向
 we [wiː] pron.(主格)我们
+web [web] n.网；卷筒纸；蹼；织物；圈套
 weak [wiːk] a.弱的；软弱的
 weaken [ˈwiːkən] vt.削弱 vi.变弱
 weakness [ˈwiːknis] n.虚弱，软弱；弱点

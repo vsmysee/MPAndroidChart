@@ -1,3 +1,4 @@
+edit [ˈedɪt] vt.编辑,校订,剪辑n.编辑工作
 each [iːt∫] pron.各，各自 a.各
 eager [ˈiːgə] a.渴望的，热切的
 eagle [ˈiːgl] n.鹰

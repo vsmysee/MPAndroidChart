@@ -1,3 +1,5 @@
+ha [hɑː] 语气；惊讶；怀疑
+hey [heɪ] 嘿
 habit [ˈhæbit] n.习惯；习性
 habitual [həˈbitjuəl] a.习惯性的，惯常的
 hair [heə] n.头发，毛发；毛

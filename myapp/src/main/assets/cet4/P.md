@@ -1,4 +1,5 @@
 pace [peis] n.步，步速 vi.踱步
+peer [pɪə(r)] n.同等地位的人，同龄人；贵族
 pacific [pəˈsifik] a.和平的 n.太平洋
 pack [pæk] vt.捆扎；挤满 n.包
 package [ˈpækidʒ] n.包裹，包，捆

@@ -1,3 +1,4 @@
+grab [ɡræb] v.抢夺,攫取,夺取
 gain [gein] vt.获得；增加 n.增进
 gallery [ˈgæləri] n.长廊，游廊；画廊
 gallon [ˈgælən] n.加仑

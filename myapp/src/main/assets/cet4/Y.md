@@ -16,3 +16,4 @@ yours [jɔːz] pron.你们的(东西)
 yourself [jɔːˈself] pron.你自己；你亲自
 youth [juːθ] n.青春；青年们；青年
 youthful [ˈjuːθful] a.年轻的，青年的
+yeah [jeə] 对

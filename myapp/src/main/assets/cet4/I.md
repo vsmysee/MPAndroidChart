@@ -1,4 +1,5 @@
 I pron.(主格)我
+icon [ˈaɪkɒn] n. 图标；偶像；肖像，画像；圣像
 ice [ais] n.冰，冰块 vt.冰镇
 ice-cream [ˈaiskriːm] n.冰淇淋
 idea [aiˈdiə] n.想法；思想；意见

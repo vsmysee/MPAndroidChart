@@ -1,3 +1,4 @@
+dad [dæd] 爸爸；爹爹
 daily [ˈdeili] a.每日的 n.日报
 dairy [ˈdeəri] n.牛奶场；乳制品
 dam [dæm] n.水坝，水堤；障碍物

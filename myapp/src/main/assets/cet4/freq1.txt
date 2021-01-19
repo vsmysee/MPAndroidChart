@@ -116,7 +116,6 @@ hay
 pat
 its
 pay
-pro
 she
 opt
 fog
@@ -157,7 +156,6 @@ ski
 fan
 her
 far
-rim
 fat
 rip
 pen
@@ -174,7 +172,6 @@ aim
 log
 gut
 dot
-guy
 air
 toe
 our
@@ -209,7 +206,6 @@ lab
 nut
 him
 pie
-hip
 pig
 dam
 hit
@@ -293,7 +289,6 @@ milk
 bill
 coup
 easy
-Arab
 lion
 mill
 exam
@@ -536,7 +531,6 @@ coal
 disc
 evil
 lake
-gear
 heat
 soup
 code
@@ -613,7 +607,6 @@ pump
 silk
 star
 wolf
-riot
 amid
 team
 nest
@@ -635,7 +628,6 @@ grab
 suck
 open
 till
-aide
 jazz
 bomb
 view
@@ -657,7 +649,6 @@ town
 sink
 this
 wash
-AIDS
 bold
 girl
 look
@@ -726,7 +717,6 @@ base
 stem
 play
 tray
-yard
 sack
 palm
 none
@@ -837,8 +827,6 @@ kind
 rail
 tree
 ugly
-plea
-poke
 both
 most
 cord
@@ -893,4 +881,3 @@ glad
 chew
 wild
 user
-snap

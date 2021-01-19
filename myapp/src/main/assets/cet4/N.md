@@ -1,3 +1,4 @@
+norm [nɔːm] n.标准,规范
 nail [neil] n.钉；指甲 vt.钉
 naked [ˈneikid] a.裸体的；无遮敝的
 name [neim] n.名字；名誉 vt.说出

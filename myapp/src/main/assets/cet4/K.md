@@ -26,3 +26,4 @@ knock [nɔk] vi.&vt.&n.敲，击，打
 knot [nɔt] n.(绳的)结，(树的)节
 know [nəu] vt.知道；认识；通晓
 knowledge [ˈnɔlidʒ] n.知识，学识；知道
+kit [kɪt] n.工具箱
