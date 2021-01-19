@@ -13,49 +13,32 @@ import java.util.Map;
 
 public class FileReader {
 
+    public static int length(final CharSequence cs) {
+        return cs == null ? 0 : cs.length();
+    }
 
-    public static List<String> loadIdiom(AssetManager assets) {
-
-        List<String> list = new ArrayList<>();
-
-        try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("idiom.txt")))) {
-            String line;
-            while ((line = bf.readLine()) != null) {
-                list.add(line);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+    public static boolean isBlank(final CharSequence cs) {
+        final int strLen = length(cs);
+        if (strLen == 0) {
+            return true;
         }
-
-        return list;
+        for (int i = 0; i < strLen; i++) {
+            if (!Character.isWhitespace(cs.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 
 
-    public static List<String> loadStudentIdiom(AssetManager assets) {
+    public static List<String> loadIdiom(AssetManager assets, String file) {
 
         List<String> list = new ArrayList<>();
 
-        try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("idiom-students.txt")))) {
+        try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open(file)))) {
             String line;
             while ((line = bf.readLine()) != null) {
-                list.add(line);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return list;
-    }
-
-
-    public static List<String> loadPoem(AssetManager assets) {
-
-        List<String> list = new ArrayList<>();
-
-        try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("poem.txt")))) {
-            String line;
-            while ((line = bf.readLine()) != null) {
-                if (!line.trim().equals("")) {
+                if (!isBlank(line)) {
                     list.add(line);
                 }
             }
@@ -67,14 +50,17 @@ public class FileReader {
     }
 
 
-    public static List<String> loadPrimaryPoem(AssetManager assets) {
+    public static List<String> loadPoem(AssetManager assets, String file) {
 
         List<String> list = new ArrayList<>();
 
-        try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("poem-students2.txt")))) {
+        try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open(file)))) {
             String line;
             while ((line = bf.readLine()) != null) {
-                list.add(line);
+                if (!isBlank(line)) {
+                    list.add(line);
+                }
+
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -83,22 +69,6 @@ public class FileReader {
         return list;
     }
 
-
-    public static List<String> loadStudentPoem(AssetManager assets) {
-
-        List<String> list = new ArrayList<>();
-
-        try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("poem-students.txt")))) {
-            String line;
-            while ((line = bf.readLine()) != null) {
-                list.add(line);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return list;
-    }
 
     public static List<String> freqEnglish(AssetManager assets, String file) {
 
@@ -107,7 +77,10 @@ public class FileReader {
         try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open(file)))) {
             String line;
             while ((line = bf.readLine()) != null) {
-                list.add(line);
+                if (!isBlank(line)) {
+                    list.add(line);
+                }
+
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -124,7 +97,10 @@ public class FileReader {
         try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("cet4/short.txt")))) {
             String line;
             while ((line = bf.readLine()) != null) {
-                list.add(line);
+                if (!isBlank(line)) {
+                    list.add(line);
+                }
+
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -141,7 +117,7 @@ public class FileReader {
         try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open(file)))) {
             String line;
             while ((line = bf.readLine()) != null) {
-                if (!line.trim().equals("")) {
+                if (!isBlank(line)) {
                     for (char c : line.toCharArray()) {
                         if (Pinyin.isChinese(c)) {
                             list.add(c);
@@ -157,14 +133,15 @@ public class FileReader {
     }
 
     public static Map<Character, List<String>> loadEnglishWord(AssetManager assets) {
-        // load english word
         Map<Character, List<String>> english = new HashMap<>();
         for (char ch = 'A'; ch <= 'Z'; ch++) {
             english.put(ch, new ArrayList<String>());
             try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("cet4/" + ch + ".md")))) {
                 String line;
                 while ((line = bf.readLine()) != null) {
-                    english.get(ch).add(line);
+                    if (!isBlank(line)) {
+                        english.get(ch).add(line);
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
