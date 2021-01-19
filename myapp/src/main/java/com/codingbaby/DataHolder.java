@@ -39,27 +39,44 @@ public class DataHolder {
 
 
     private static Map<Character, List<String>> english = new LinkedHashMap<>();
-    private static List<String> english_primary = new ArrayList<>();
-    private static List<String> english_senior = new ArrayList<>();
+    private static List<String> english_primary1 = new ArrayList<>();
+    private static List<String> english_primary2 = new ArrayList<>();
+    private static List<String> english_primary3 = new ArrayList<>();
+    private static List<String> english_primary4 = new ArrayList<>();
+    private static List<String> english_primary5 = new ArrayList<>();
+    private static List<String> english_primary6 = new ArrayList<>();
+
+
     private List<String> shortEnglish = new ArrayList<>();
 
 
     private List<String> idioms = new ArrayList<>();
     private List<String> idioms_students = new ArrayList<>();
 
-    private Stack<String> history = new Stack<>();
+
+    private Stack<String> poemHistory = new Stack<>();
+    private Stack<Character> chineseWordHistory = new Stack<>();
+    private Stack<String> englishWordHistory = new Stack<>();
 
 
     public List<String> getByChar(Character c) {
         return english.get(c);
     }
 
-    public String pop() {
-        return history.pop();
+    public String popPoem() {
+        return poemHistory.pop();
+    }
+
+    public Character popChinese() {
+        return chineseWordHistory.pop();
+    }
+
+    public String popEnglish() {
+        return englishWordHistory.pop();
     }
 
 
-    public String randomPoem(boolean selectPoemForStudent, boolean selectPoemForPrimary,boolean selectPoemForAll) {
+    public String randomPoem(boolean selectPoemForStudent, boolean selectPoemForPrimary, boolean selectPoemForAll) {
         Random rand = new Random();
 
         String poem = "";
@@ -67,20 +84,20 @@ public class DataHolder {
         if (selectPoemForStudent) {
             int index = rand.nextInt(poems_students.size());
             poem = poems_students.get(index);
-            history.push(poem);
+            poemHistory.push(poem);
         }
 
         if (selectPoemForPrimary) {
             int index = rand.nextInt(poems_primary.size());
             poem = poems_primary.get(index);
-            history.push(poem);
+            poemHistory.push(poem);
         }
 
 
         if (selectPoemForAll) {
             int index = rand.nextInt(poems.size());
             poem = poems.get(index);
-            history.push(poem);
+            poemHistory.push(poem);
         }
 
         return poem;
@@ -110,6 +127,7 @@ public class DataHolder {
             word = words_senior.get(index);
         }
 
+        chineseWordHistory.push(word);
 
         return word;
     }
@@ -143,7 +161,7 @@ public class DataHolder {
         return list;
     }
 
-    public String randEnglish(boolean selectEnglishStudent, boolean selectEnglishPrimary) {
+    public String randEnglish(ButtonStatus buttonStatus) {
         String englishWord;
         Random rand = new Random();
         Set<Character> characters = english.keySet();
@@ -157,37 +175,69 @@ public class DataHolder {
         rand = new Random();
         englishWord = wordList.get(rand.nextInt(wordList.size()));
 
-        if (selectEnglishStudent) {
-            index = rand.nextInt(english_primary.size());
-            englishWord = english_primary.get(index);
+        if (buttonStatus.english1) {
+            index = rand.nextInt(english_primary1.size());
+            englishWord = english_primary1.get(index);
         }
 
-        if (selectEnglishPrimary) {
-            index = rand.nextInt(english_senior.size());
-            englishWord = english_senior.get(index);
+        if (buttonStatus.english2) {
+            index = rand.nextInt(english_primary2.size());
+            englishWord = english_primary2.get(index);
         }
+
+
+        if (buttonStatus.english3) {
+            index = rand.nextInt(english_primary3.size());
+            englishWord = english_primary3.get(index);
+        }
+
+        if (buttonStatus.english4) {
+            index = rand.nextInt(english_primary4.size());
+            englishWord = english_primary4.get(index);
+        }
+
+        if (buttonStatus.english5) {
+            index = rand.nextInt(english_primary5.size());
+            englishWord = english_primary5.get(index);
+        }
+
+
+        if (buttonStatus.english6) {
+            index = rand.nextInt(english_primary6.size());
+            englishWord = english_primary6.get(index);
+        }
+
+        englishWordHistory.push(englishWord);
+
         return englishWord;
 
     }
 
 
     public DataHolder(Context context) {
+
         final AssetManager assets = context.getAssets();
 
-        poems.addAll(FileReader.loadPoem(assets));
-        poems_students.addAll(FileReader.loadStudentPoem(assets));
-        poems_primary.addAll(FileReader.loadPrimaryPoem(assets));
+        poems.addAll(FileReader.loadPoem(assets, "poem.txt"));
+        poems_students.addAll(FileReader.loadPoem(assets, "poem-students.txt"));
+        poems_primary.addAll(FileReader.loadPoem(assets, "poem-students2.txt"));
 
         new Thread(new Runnable() {
             @Override
             public void run() {
 
-                idioms.addAll(FileReader.loadIdiom(assets));
-                idioms_students.addAll(FileReader.loadStudentIdiom(assets));
+                idioms.addAll(FileReader.loadIdiom(assets, "idiom.txt"));
+                idioms_students.addAll(FileReader.loadIdiom(assets, "idiom-students.txt"));
+
                 shortEnglish.addAll(FileReader.loadCet4Short(assets));
+
                 english.putAll(FileReader.loadEnglishWord(assets));
-                english_primary.addAll(FileReader.freqEnglish(assets, "cet4/freq1.txt"));
-                english_senior.addAll(FileReader.freqEnglish(assets, "cet4/freq.txt"));
+                english_primary1.addAll(FileReader.freqEnglish(assets, "cet4/freq1.txt"));
+                english_primary2.addAll(FileReader.freqEnglish(assets, "cet4/freq2.txt"));
+                english_primary3.addAll(FileReader.freqEnglish(assets, "cet4/freq3.txt"));
+                english_primary4.addAll(FileReader.freqEnglish(assets, "cet4/freq4.txt"));
+                english_primary5.addAll(FileReader.freqEnglish(assets, "cet4/freq5.txt"));
+                english_primary6.addAll(FileReader.freqEnglish(assets, "cet4/freq.txt"));
 
             }
         }).start();
