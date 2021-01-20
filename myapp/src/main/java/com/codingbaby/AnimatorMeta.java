@@ -45,6 +45,10 @@ public class AnimatorMeta {
         }
     }
 
+    public boolean canDrawUnderLine(String poem) {
+        return poem.contains("临江仙");
+    }
+
 
     private ValueAnimator buildRepeatAnimator(int number, int duration) {
 
