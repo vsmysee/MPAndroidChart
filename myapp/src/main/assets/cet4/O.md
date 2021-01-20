@@ -1,3 +1,4 @@
+odds [ɒdz] 可能性，概率，几率，机会
 oak [əuk] n.栎属植物；栎木
 oar [ɔə] n.浆，橹
 obey [əuˈbei] vt.顺从 vi.服从
