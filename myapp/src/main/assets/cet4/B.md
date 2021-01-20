@@ -1,3 +1,4 @@
+ban [bæn] 取缔; 明令禁止; 禁止
 baby [ˈbeibi] n.婴儿；孩子气的人
 back [bæk] ad.在后；回原处；回
 background [ˈbækgraund] n.背景，后景，经历
