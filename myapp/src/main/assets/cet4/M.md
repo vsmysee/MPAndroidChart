@@ -1,4 +1,6 @@
-may [meɪ] aux.可能,也许,可以,祝,愿n.(May) 五月,能,可能
+myth [mɪθ] 神话; 神话故事; 虚构的东西
+may [meɪ] aux.可能,也许,可以,祝,愿n.五月,能,可能
+mom [mɒm] 妈妈
 math [mæθ] n.数学
 machine [məˈ∫iːn] n.机器；机械
 mad [mæd] a.发疯的；恼火的
