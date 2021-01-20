@@ -101,6 +101,15 @@ public class CustomTextView extends View {
     private ButtonStatus buttonStatus;
 
 
+    final MediaPlayer mediaPlayer = new MediaPlayer();
+    private float poemWordHeight;
+    private List<String> poemRows = new ArrayList<>();
+
+
+    private float englishFirstY = 0;
+    private float englishEndY = 0;
+
+
     public CustomTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -315,7 +324,10 @@ public class CustomTextView extends View {
             }
 
             if (buttonStatus.selectEnglishWord) {
-                englishWord = dataHolder.randEnglish(buttonStatus);
+                float v = y - getHeight() / 2;
+                if (v > englishEndY || v < englishFirstY) {
+                    englishWord = dataHolder.randEnglish(buttonStatus);
+                }
             }
 
             if (buttonStatus.selectShortEnglish) {
@@ -456,15 +468,13 @@ public class CustomTextView extends View {
         author = textsSplit[1];
         title = textsSplit[2];
 
-        rows.clear();
+        poemRows.clear();
 
         for (int i = 3; i < textsSplit.length; i++) {
-            rows.add(textsSplit[i]);
+            poemRows.add(textsSplit[i]);
         }
     }
 
-
-    final MediaPlayer mediaPlayer = new MediaPlayer();
 
     private void drawEnglishWord(Canvas canvas) {
 
@@ -559,6 +569,7 @@ public class CustomTextView extends View {
             }
         });
 
+
         for (int i = 0; i < textLines; i++) {
 
             if (i == 0) {
@@ -569,6 +580,14 @@ public class CustomTextView extends View {
 
             float baseY = centerBaselineY + (i - (textLines - 1) / 2.0f) * textHeight;
 
+            if (i == 0) {
+                englishFirstY = baseY;
+            }
+
+            if (i == textLines - 1) {
+                englishEndY = baseY;
+            }
+
             String content = rows.get(i);
 
             float textWidth = paint.measureText(content);
@@ -578,6 +597,9 @@ public class CustomTextView extends View {
                 canvas.drawLine(-textWidth, baseY + descent, textWidth, baseY + descent, paint);
             }
         }
+
+        canvas.drawLine(-getWidth() / 2, englishFirstY + ascent, getWidth() / 2, englishFirstY + ascent, virtualLineBlue);
+        canvas.drawLine(-getWidth() / 2, englishEndY + 2 * descent, getWidth() / 2, englishEndY + 2 * descent, virtualLineBlue);
 
 
     }
@@ -741,9 +763,6 @@ public class CustomTextView extends View {
     }
 
 
-    private float poemWordHeight;
-    private List<String> rows = new ArrayList<>();
-
     private void drawPoem(final Canvas canvas, boolean reDraw) {
 
         initPint();
@@ -769,18 +788,18 @@ public class CustomTextView extends View {
 
             cursor = 0;
 
-            if (rows.size() * textHeight > getHeight() - dp2px(200)) {
+            if (poemRows.size() * textHeight > getHeight() - dp2px(200)) {
 
-                for (String row : rows) {
+                for (String row : poemRows) {
                     cache.add(row);
                 }
 
-                rows.clear();
+                poemRows.clear();
 
                 int end = cursor + showRow;
 
                 for (int i = cursor; i < end; i++) {
-                    rows.add(cache.get(i));
+                    poemRows.add(cache.get(i));
                     cursor++;
                 }
 
@@ -790,13 +809,13 @@ public class CustomTextView extends View {
 
         if (cache.size() > 0 && cursor > 0 && !reDraw) {
 
-            rows.clear();
+            poemRows.clear();
 
             int end = cursor + showRow;
 
             for (int i = cursor; i < end; i++) {
                 try {
-                    rows.add(cache.get(i));
+                    poemRows.add(cache.get(i));
                     cursor++;
                 } catch (Exception e) {
                     break;
@@ -804,15 +823,15 @@ public class CustomTextView extends View {
             }
 
             //补齐
-            if (rows.size() != showRow) {
+            if (poemRows.size() != showRow) {
                 List<String> padding = new ArrayList<>();
-                int missCount = showRow - rows.size();
-                int from = cache.size() - rows.size() - missCount;
+                int missCount = showRow - poemRows.size();
+                int from = cache.size() - poemRows.size() - missCount;
                 for (int j = 0; j < missCount; j++) {
                     padding.add("w" + cache.get(from + j));
                 }
-                padding.addAll(rows);
-                rows = padding;
+                padding.addAll(poemRows);
+                poemRows = padding;
 
                 cache.clear();
                 cursor = 0;
@@ -820,7 +839,7 @@ public class CustomTextView extends View {
         }
 
 
-        int textLines = rows.size();
+        int textLines = poemRows.size();
 
         float firstY = 0;
         float endY = 0;
@@ -834,7 +853,7 @@ public class CustomTextView extends View {
                 firstY = baseY;
             }
 
-            String content = rows.get(i);
+            String content = poemRows.get(i);
 
             if (content.startsWith("w")) {
                 content = content.replace("w", "");
@@ -850,7 +869,7 @@ public class CustomTextView extends View {
             }
 
 
-            if (i == rows.size() - 1 && endY == 0) {
+            if (i == poemRows.size() - 1 && endY == 0) {
                 endY = baseY;
             }
 
@@ -863,13 +882,16 @@ public class CustomTextView extends View {
 
 
             //分割线
-            int cut = 4;
-            if (cache.size() == 0 && rows.size() > cut && rows.size() % cut == 0 && i > 0 && ((i + 1) % cut == 0) && i + 1 != rows.size()) {
-                //canvas.drawLine(-getWidth() / 2, baseY + descent + 3, getWidth() / 2, baseY + descent + 2, virtualLineBlue);
-            }
-            cut = 5;
-            if (cache.size() == 0 && rows.size() > cut && rows.size() % cut == 0 && i > 0 && ((i + 1) % cut == 0) && i + 1 != rows.size()) {
-                //canvas.drawLine(-getWidth() / 2, baseY + descent + 3, getWidth() / 2, baseY + descent + 2, virtualLineBlue);
+            if (animatorMeta.canDrawUnderLine(poem)) {
+                int cut = 4;
+                if (cache.size() == 0 && poemRows.size() > cut && poemRows.size() % cut == 0 && i > 0 && ((i + 1) % cut == 0) && i + 1 != poemRows.size()) {
+                    canvas.drawLine(-getWidth() / 2, baseY + descent + 3, getWidth() / 2, baseY + descent + 2, virtualLineBlue);
+                }
+                cut = 5;
+                if (cache.size() == 0 && poemRows.size() > cut && poemRows.size() % cut == 0 && i > 0 && ((i + 1) % cut == 0) && i + 1 != poemRows.size()) {
+                    canvas.drawLine(-getWidth() / 2, baseY + descent + 3, getWidth() / 2, baseY + descent + 2, virtualLineBlue);
+                }
+
             }
 
         }
