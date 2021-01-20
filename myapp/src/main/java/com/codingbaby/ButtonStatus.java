@@ -91,11 +91,6 @@ public class ButtonStatus {
         this.view = view;
     }
 
-    public void cancelAnimation() {
-        if (functionAnimator.isRunning()) {
-            functionAnimator.cancel();
-        }
-    }
 
     public void startAnimation() {
         if (!functionAnimator.isStarted()) {
