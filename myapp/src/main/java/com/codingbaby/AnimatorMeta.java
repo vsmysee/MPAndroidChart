@@ -14,6 +14,8 @@ import java.util.Set;
 
 public class AnimatorMeta {
 
+    private static final int lazy = 20 * 000;
+
     private AnimatorStatus animatorStatus = new AnimatorStatus();
 
     private CustomTextView view;
@@ -62,7 +64,7 @@ public class AnimatorMeta {
                 view.invalidate();
             }
         });
-        //animator.setStartDelay(1000);
+        animator.setStartDelay(lazy);
         return animator;
     }
 
@@ -93,7 +95,7 @@ public class AnimatorMeta {
             public void onAnimationRepeat(Animator animation) {
             }
         });
-        //animator.setStartDelay(1000);
+        animator.setStartDelay(lazy);
         return animator;
     }
 
