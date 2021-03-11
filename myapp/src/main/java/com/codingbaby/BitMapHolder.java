@@ -14,7 +14,6 @@ public class BitMapHolder {
     public Bitmap sunMap;
     public Bitmap snowMap;
     public Bitmap autumnMap;
-    public Bitmap springMap;
     public Bitmap peachMap;
     public Bitmap cloudMap;
     public Bitmap xiyangMap;
@@ -37,7 +36,6 @@ public class BitMapHolder {
         sunMap = BitmapFactory.decodeResource(resources, R.drawable.sun);
         snowMap = BitmapFactory.decodeResource(resources, R.drawable.snow);
         autumnMap = BitmapFactory.decodeResource(resources, R.drawable.autumn);
-        springMap = BitmapFactory.decodeResource(resources, R.drawable.spring);
         peachMap = BitmapFactory.decodeResource(resources, R.drawable.peach);
         cloudMap = BitmapFactory.decodeResource(resources, R.drawable.cloud);
         xiyangMap = BitmapFactory.decodeResource(resources, R.drawable.xiyang);

@@ -20,8 +20,6 @@ public class ButtonStatus {
 
     public boolean selectWord = false;
     public boolean selectIdiom = false;
-    public boolean selectEnglishWord = false;
-    public boolean selectShortEnglish = false;
 
 
     public boolean selectPoemForStudent = true;
@@ -38,15 +36,6 @@ public class ButtonStatus {
     public boolean selectIdiomStudent = false;
     public boolean selectIdiomForAll = true;
 
-
-    public boolean english1 = false;
-    public boolean english2 = false;
-    public boolean english3 = false;
-    public boolean english4 = false;
-    public boolean english5 = false;
-    public boolean english6 = false;
-
-    public boolean selectEnglishForAll = true;
 
 
     private boolean longPress = false;
@@ -158,18 +147,6 @@ public class ButtonStatus {
         paint.setColor(Color.WHITE);
         canvas.drawText("成", wordFrom + n * gap, wordY, paint);
 
-        n = 3;
-        paint.setColor(selectEnglishWord ? Color.BLUE : Color.GRAY);
-        canvas.drawCircle(fromX + n * gap, fromY, radius, paint);
-        paint.setColor(Color.WHITE);
-        canvas.drawText("英", wordFrom + n * gap, wordY, paint);
-
-
-        n = 4;
-        paint.setColor(selectShortEnglish ? Color.BLUE : Color.GRAY);
-        canvas.drawCircle(fromX + n * gap, fromY, radius, paint);
-        paint.setColor(Color.WHITE);
-        canvas.drawText("短", wordFrom + n * gap, wordY, paint);
     }
 
 
@@ -279,58 +256,6 @@ public class ButtonStatus {
         }
 
 
-        if (selectEnglishWord) {
-
-            int n = 0;
-
-            paint.setColor(english1 ? Color.BLUE : Color.GRAY);
-            canvas.drawCircle(fromX + n * gap, fromY, radius, paint);
-            paint.setColor(Color.WHITE);
-            canvas.drawText("一", wordFrom, wordY, paint);
-
-            n = 1;
-
-            paint.setColor(english2 ? Color.BLUE : Color.GRAY);
-            canvas.drawCircle(fromX + n * gap, fromY, radius, paint);
-            paint.setColor(Color.WHITE);
-            canvas.drawText("二", wordFrom + n * gap, wordY, paint);
-
-
-            n = 2;
-
-            paint.setColor(english3 ? Color.BLUE : Color.GRAY);
-            canvas.drawCircle(fromX + n * gap, fromY, radius, paint);
-            paint.setColor(Color.WHITE);
-            canvas.drawText("三", wordFrom + n * gap, wordY, paint);
-
-            n = 3;
-
-            paint.setColor(english4 ? Color.BLUE : Color.GRAY);
-            canvas.drawCircle(fromX + n * gap, fromY, radius, paint);
-            paint.setColor(Color.WHITE);
-            canvas.drawText("四", wordFrom + n * gap, wordY, paint);
-
-            n = 4;
-
-            paint.setColor(english5 ? Color.BLUE : Color.GRAY);
-            canvas.drawCircle(fromX + n * gap, fromY, radius, paint);
-            paint.setColor(Color.WHITE);
-            canvas.drawText("五", wordFrom + n * gap, wordY, paint);
-
-            n = 5;
-
-            paint.setColor(english6 ? Color.BLUE : Color.GRAY);
-            canvas.drawCircle(fromX + n * gap, fromY, radius, paint);
-            paint.setColor(Color.WHITE);
-            canvas.drawText("六", wordFrom + n * gap, wordY, paint);
-
-            n = 6;
-
-            paint.setColor(selectEnglishForAll ? Color.BLUE : Color.GRAY);
-            canvas.drawCircle(fromX + n * gap, fromY, radius, paint);
-            paint.setColor(Color.WHITE);
-            canvas.drawText("全", wordFrom + n * gap, wordY, paint);
-        }
 
     }
 
@@ -355,9 +280,7 @@ public class ButtonStatus {
 
             selectPoem = true;
             selectWord = false;
-            selectShortEnglish = false;
             selectIdiom = false;
-            selectEnglishWord = false;
 
             return true;
         }
@@ -368,9 +291,7 @@ public class ButtonStatus {
 
             selectWord = true;
             selectPoem = false;
-            selectShortEnglish = false;
             selectIdiom = false;
-            selectEnglishWord = false;
 
             return true;
 
@@ -382,39 +303,9 @@ public class ButtonStatus {
 
             selectIdiom = true;
             selectWord = false;
-            selectShortEnglish = false;
-            selectPoem = false;
-            selectEnglishWord = false;
-            return true;
-
-
-        }
-
-        n = 3;
-
-        if (y >= topButtonX && y <= 3 * topButtonX && x >= topButtonX + n * gap && x <= 3 * topButtonX + n * gap) {
-
-            selectEnglishWord = true;
-            selectShortEnglish = false;
-            selectIdiom = false;
-            selectWord = false;
             selectPoem = false;
             return true;
 
-
-        }
-
-
-        n = 4;
-
-        if (y >= topButtonX && y <= 3 * topButtonX && x >= topButtonX + n * gap && x <= 3 * topButtonX + n * gap) {
-
-            selectShortEnglish = true;
-            selectEnglishWord = false;
-            selectIdiom = false;
-            selectWord = false;
-            selectPoem = false;
-            return true;
 
         }
 
@@ -456,15 +347,6 @@ public class ButtonStatus {
                 selectIdiomForAll = false;
             }
 
-            if (selectEnglishWord) {
-                english1 = true;
-                english2 = false;
-                english3 = false;
-                english4 = false;
-                english5 = false;
-                english6 = false;
-                selectEnglishForAll = false;
-            }
 
             return true;
 
@@ -494,15 +376,6 @@ public class ButtonStatus {
                 selectIdiomForAll = true;
             }
 
-            if (selectEnglishWord) {
-                english1 = false;
-                english2 = true;
-                english3 = false;
-                english4 = false;
-                english5 = false;
-                english6 = false;
-                selectEnglishForAll = false;
-            }
             return true;
 
 
@@ -525,15 +398,6 @@ public class ButtonStatus {
 
             }
 
-            if (selectEnglishWord) {
-                english1 = false;
-                english2 = false;
-                english3 = true;
-                english4 = false;
-                english5 = false;
-                english6 = false;
-                selectEnglishForAll = false;
-            }
             return true;
 
         }
@@ -548,77 +412,12 @@ public class ButtonStatus {
                 selectWordForAll = true;
             }
 
-            if (selectEnglishWord) {
-                english1 = false;
-                english2 = false;
-                english3 = false;
-                english4 = true;
-                english5 = false;
-                english6 = false;
-                selectEnglishForAll = false;
-            }
-
-            return true;
-
-        }
-
-        n = 4;
-        if (y >= topButtonX && y <= height - textSize && x >= textSize + n * gap && x <= 3 * textSize + n * gap) {
-
-
-            if (selectEnglishWord) {
-                english1 = false;
-                english2 = false;
-                english3 = false;
-                english4 = false;
-                english5 = true;
-                english6 = false;
-                selectEnglishForAll = false;
-            }
 
             return true;
 
         }
 
 
-        n = 5;
-        if (y >= topButtonX && y <= height - textSize && x >= textSize + n * gap && x <= 3 * textSize + n * gap) {
-
-
-            if (selectEnglishWord) {
-                english1 = false;
-                english2 = false;
-                english3 = false;
-                english4 = false;
-                english5 = false;
-                english6 = true;
-
-                selectEnglishForAll = false;
-            }
-
-            return true;
-
-        }
-
-
-        n = 6;
-        if (y >= topButtonX && y <= height - textSize && x >= textSize + n * gap && x <= 3 * textSize + n * gap) {
-
-
-            if (selectEnglishWord) {
-                english1 = false;
-                english2 = false;
-                english3 = false;
-                english4 = false;
-                english5 = false;
-                english6 = false;
-
-                selectEnglishForAll = true;
-            }
-
-            return true;
-
-        }
 
         return false;
 

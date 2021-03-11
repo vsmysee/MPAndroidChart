@@ -7,14 +7,12 @@ import android.graphics.Paint;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class AnimatorMeta {
 
-    private static final int lazy = 20 * 000;
+    private static final int lazy = 30 * 000;
 
     private AnimatorStatus animatorStatus = new AnimatorStatus();
 
@@ -25,20 +23,6 @@ public class AnimatorMeta {
 
     public List<ValuePair> current = new ArrayList<>();
 
-    private static Set<String> stopKey = new HashSet<>();
-
-    static {
-        stopKey.add("云");
-        stopKey.add("山");
-        stopKey.add("酒");
-        stopKey.add("莲");
-        stopKey.add("荷");
-        stopKey.add("日暮");
-    }
-
-    public boolean isStop(String k) {
-        return stopKey.contains(k);
-    }
 
     public void stop() {
         animatorStatus.close();
@@ -54,6 +38,9 @@ public class AnimatorMeta {
 
     private ValueAnimator buildRepeatAnimator(int number, int duration) {
 
+        number = number + 100;
+        duration = duration + 5 * 1000;
+
         ValueAnimator animator = ValueAnimator.ofInt(0, number);
         animator.setDuration(duration);
         animator.setRepeatCount(1);
@@ -68,44 +55,13 @@ public class AnimatorMeta {
         return animator;
     }
 
-    private ValueAnimator buildAnimator(int number, int duration) {
-
-        final ValueAnimator animator = ValueAnimator.ofInt(0, number);
-        animator.setDuration(duration);
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                view.invalidate();
-            }
-        });
-        animator.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-            }
-        });
-        animator.setStartDelay(lazy);
-        return animator;
-    }
 
     public AnimatorMeta(final CustomTextView view, final BitMapHolder bitMapHolder) {
 
         this.view = view;
 
 
-        keyWords.put("月", buildRepeatAnimator(180, 6 * 1000));
-        actions.put("月", new AnimatorAction() {
+        actions.put("夜", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
                 canvas.drawBitmap(bitMapHolder.moonMap, width / 2 - value, -height / 2, paint);
@@ -149,7 +105,7 @@ public class AnimatorMeta {
         });
 
 
-        keyWords.put("雨", buildAnimator(600, 10 * 1000));
+        keyWords.put("雨", buildRepeatAnimator(600, 10 * 1000));
         actions.put("雨", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
@@ -202,7 +158,7 @@ public class AnimatorMeta {
         });
 
 
-        ValueAnimator snowVa = buildAnimator(2500, 20 * 1000);
+        ValueAnimator snowVa = buildRepeatAnimator(2500, 20 * 1000);
 
         keyWords.put("雪", snowVa);
         actions.put("雪", new AnimatorAction() {
@@ -256,16 +212,7 @@ public class AnimatorMeta {
         });
 
 
-        keyWords.put("春", buildRepeatAnimator(300, 6 * 1000));
-        actions.put("春", new AnimatorAction() {
-            @Override
-            public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(bitMapHolder.springMap, -width / 2, height / 2 - value, paint);
-            }
-        });
-
-
-        ValueAnimator peachVa = buildAnimator(600, 15 * 1000);
+        ValueAnimator peachVa = buildRepeatAnimator(600, 15 * 1000);
         keyWords.put("桃", peachVa);
         actions.put("桃", new AnimatorAction() {
             @Override
@@ -274,7 +221,7 @@ public class AnimatorMeta {
             }
         });
 
-        ValueAnimator fishVa = buildAnimator(700, 15 * 1000);
+        ValueAnimator fishVa = buildRepeatAnimator(700, 15 * 1000);
         keyWords.put("鱼", fishVa);
         actions.put("鱼", new AnimatorAction() {
             @Override
@@ -298,7 +245,7 @@ public class AnimatorMeta {
         });
 
 
-        keyWords.put("云", buildAnimator(500, 10 * 1000));
+        keyWords.put("云", buildRepeatAnimator(500, 10 * 1000));
         actions.put("云", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
@@ -335,7 +282,7 @@ public class AnimatorMeta {
         });
 
 
-        ValueAnimator lianVa = buildAnimator(350, 8 * 1000);
+        ValueAnimator lianVa = buildRepeatAnimator(350, 8 * 1000);
 
         keyWords.put("莲", lianVa);
         actions.put("莲", new AnimatorAction() {
@@ -362,7 +309,7 @@ public class AnimatorMeta {
             }
         });
 
-        keyWords.put("酒", buildAnimator(200, 5 * 1000));
+        keyWords.put("酒", buildRepeatAnimator(200, 5 * 1000));
         actions.put("酒", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
@@ -370,7 +317,7 @@ public class AnimatorMeta {
             }
         });
 
-        keyWords.put("山", buildAnimator(1000, 15 * 1000));
+        keyWords.put("山", buildRepeatAnimator(1000, 15 * 1000));
         actions.put("山", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
@@ -473,41 +420,22 @@ public class AnimatorMeta {
             sb.append(split[i]);
         }
 
-        String p = sb.toString();
+        String content = sb.toString();
 
         for (String key : keyWords.keySet()) {
+
             ValueAnimator valueAnimator = keyWords.get(key);
 
-            if (p.contains(key)) {
+            if (content.contains(key)) {
 
-                if (key.equals("月")) {
-                    if (!p.contains("岁月")
-                            && !p.contains("一月")
-                            && !p.contains("二月")
-                            && !p.contains("三月")
-                            && !p.contains("四月")
-                            && !p.contains("五月")
-                            && !p.contains("六月")
-                            && !p.contains("七月")
-                            && !p.contains("八月")
-                            && !p.contains("九月")
-                            && !p.contains("十月")
-                            && !p.contains("十一月")
-                            && !p.contains("十二月")) {
-                        valueAnimator.start();
+                valueAnimator.start();
+                ValuePair vp = new ValuePair();
+                vp.key = key;
+                vp.valueAnimator = valueAnimator;
+                current.add(vp);
 
-                        ValuePair vp = new ValuePair();
-                        vp.key = key;
-                        vp.valueAnimator = valueAnimator;
-                        current.add(vp);
-                    }
-                } else {
-                    valueAnimator.start();
-                    ValuePair vp = new ValuePair();
-                    vp.key = key;
-                    vp.valueAnimator = valueAnimator;
-                    current.add(vp);
-                }
+                break;
+
             }
 
         }
