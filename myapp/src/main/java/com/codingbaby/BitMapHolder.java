@@ -16,15 +16,15 @@ public class BitMapHolder {
     public Bitmap autumnMap;
     public Bitmap peachMap;
     public Bitmap cloudMap;
-    public Bitmap xiyangMap;
+    public Bitmap settingSunMap;
     public Bitmap lianMap;
     public Bitmap meiMap;
-    public Bitmap zhuMap;
+    public Bitmap bambooMap;
     public Bitmap duckMap;
     public Bitmap frogMap;
     public Bitmap wireMap;
     public Bitmap fishMap;
-    public Bitmap juMap;
+    public Bitmap chrysanthemumMap;
 
     public BitMapHolder(Resources resources) {
 
@@ -38,14 +38,14 @@ public class BitMapHolder {
         autumnMap = BitmapFactory.decodeResource(resources, R.drawable.autumn);
         peachMap = BitmapFactory.decodeResource(resources, R.drawable.peach);
         cloudMap = BitmapFactory.decodeResource(resources, R.drawable.cloud);
-        xiyangMap = BitmapFactory.decodeResource(resources, R.drawable.xiyang);
+        settingSunMap = BitmapFactory.decodeResource(resources, R.drawable.xiyang);
         lianMap = BitmapFactory.decodeResource(resources, R.drawable.lian);
         meiMap = BitmapFactory.decodeResource(resources, R.drawable.mei);
-        zhuMap = BitmapFactory.decodeResource(resources, R.drawable.zhu);
+        bambooMap = BitmapFactory.decodeResource(resources, R.drawable.zhu);
         duckMap = BitmapFactory.decodeResource(resources, R.drawable.duck);
         frogMap = BitmapFactory.decodeResource(resources, R.drawable.frog);
         wireMap = BitmapFactory.decodeResource(resources, R.drawable.wire);
         fishMap = BitmapFactory.decodeResource(resources, R.drawable.fish);
-        juMap = BitmapFactory.decodeResource(resources, R.drawable.ju);
+        chrysanthemumMap = BitmapFactory.decodeResource(resources, R.drawable.ju);
     }
 }

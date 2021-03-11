@@ -1,6 +1,5 @@
 package com.codingbaby;
 
-import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -72,7 +71,7 @@ public class AnimatorMeta {
         actions.put("竹", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(bitMapHolder.zhuMap, -width / 2 - bitMapHolder.zhuMap.getWidth() + value, height / 2 - bitMapHolder.zhuMap.getHeight(), paint);
+                canvas.drawBitmap(bitMapHolder.bambooMap, -width / 2 - bitMapHolder.bambooMap.getWidth() + value, height / 2 - bitMapHolder.bambooMap.getHeight(), paint);
             }
         });
 
@@ -120,7 +119,7 @@ public class AnimatorMeta {
         actions.put("夕阳", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(bitMapHolder.xiyangMap, -width / 2, -height / 2 - bitMapHolder.xiyangMap.getHeight() + value, paint);
+                canvas.drawBitmap(bitMapHolder.settingSunMap, -width / 2, -height / 2 - bitMapHolder.settingSunMap.getHeight() + value, paint);
             }
         });
 
@@ -128,7 +127,7 @@ public class AnimatorMeta {
         actions.put("落日", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(bitMapHolder.xiyangMap, -width / 2, -height / 2 - bitMapHolder.xiyangMap.getHeight() + value, paint);
+                canvas.drawBitmap(bitMapHolder.settingSunMap, -width / 2, -height / 2 - bitMapHolder.settingSunMap.getHeight() + value, paint);
             }
         });
 
@@ -137,7 +136,7 @@ public class AnimatorMeta {
         actions.put("黄昏", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(bitMapHolder.xiyangMap, -width / 2, -height / 2 - bitMapHolder.xiyangMap.getHeight() + value, paint);
+                canvas.drawBitmap(bitMapHolder.settingSunMap, -width / 2, -height / 2 - bitMapHolder.settingSunMap.getHeight() + value, paint);
             }
         });
 
@@ -145,7 +144,7 @@ public class AnimatorMeta {
         actions.put("日暮", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(bitMapHolder.xiyangMap, -width / 2, -height / 2 - bitMapHolder.xiyangMap.getHeight() + value, paint);
+                canvas.drawBitmap(bitMapHolder.settingSunMap, -width / 2, -height / 2 - bitMapHolder.settingSunMap.getHeight() + value, paint);
             }
         });
 
@@ -153,7 +152,7 @@ public class AnimatorMeta {
         actions.put("残阳", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(bitMapHolder.xiyangMap, -width / 2, -height / 2 - bitMapHolder.xiyangMap.getHeight() + value, paint);
+                canvas.drawBitmap(bitMapHolder.settingSunMap, -width / 2, -height / 2 - bitMapHolder.settingSunMap.getHeight() + value, paint);
             }
         });
 
@@ -277,7 +276,7 @@ public class AnimatorMeta {
         actions.put("菊", new AnimatorAction() {
             @Override
             public void draw(ValueAnimator va, Canvas canvas, Paint paint, int height, int width, int value) {
-                canvas.drawBitmap(bitMapHolder.juMap, -width / 2, height / 2 - value, paint);
+                canvas.drawBitmap(bitMapHolder.chrysanthemumMap, -width / 2, height / 2 - value, paint);
             }
         });
 
@@ -389,7 +388,9 @@ public class AnimatorMeta {
 
 
     static class ValuePair {
+
         private String key;
+
         private ValueAnimator valueAnimator;
 
         public String getKey() {
