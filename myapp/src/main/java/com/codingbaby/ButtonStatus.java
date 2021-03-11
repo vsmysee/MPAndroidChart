@@ -87,10 +87,6 @@ public class ButtonStatus {
         }
     }
 
-    public boolean isRunAnimation() {
-        return functionAnimator.isRunning();
-    }
-
 
     public void onLongClick() {
         longPress = !longPress;
