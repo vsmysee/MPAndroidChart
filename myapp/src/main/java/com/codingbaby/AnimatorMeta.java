@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class AnimatorMeta {
 
-    private static final int lazy = 30 * 000;
+    private static final int lazy = 30 * 1000;
 
     private AnimatorStatus animatorStatus = new AnimatorStatus();
 
