@@ -16,7 +16,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 import java.util.Stack;
 
 public class DataHolder {
@@ -54,10 +53,6 @@ public class DataHolder {
 
     public Character popChinese() {
         return chineseWordHistory.pop();
-    }
-
-    public String popEnglish() {
-        return englishWordHistory.pop();
     }
 
 
@@ -134,7 +129,6 @@ public class DataHolder {
         }
         return list;
     }
-
 
 
 

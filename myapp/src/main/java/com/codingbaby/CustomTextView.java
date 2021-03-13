@@ -68,9 +68,6 @@ public class CustomTextView extends View {
     private Character nextChineseWord;
 
     private List<String> showIdioms;
-    private List<String> shortEnglish;
-
-    private String englishWord;
 
     private static String time;
     private static String author;
@@ -85,13 +82,8 @@ public class CustomTextView extends View {
     private ButtonStatus buttonStatus;
 
 
-    final MediaPlayer mediaPlayer = new MediaPlayer();
     private float poemWordHeight;
     private List<String> poemRows = new ArrayList<>();
-
-
-    private float englishFirstY = 0;
-    private float englishEndY = 0;
 
 
     public CustomTextView(Context context, AttributeSet attrs) {
@@ -221,8 +213,6 @@ public class CustomTextView extends View {
             drawIdiom(canvas);
         }
 
-
-
         super.draw(canvas);
 
     }
@@ -300,8 +290,6 @@ public class CustomTextView extends View {
             if (buttonStatus.selectIdiom) {
                 showIdioms = dataHolder.randIdiom(buttonStatus.selectIdiomStudent);
             }
-
-
 
 
             invalidate();

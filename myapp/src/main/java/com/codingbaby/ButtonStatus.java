@@ -37,7 +37,6 @@ public class ButtonStatus {
     public boolean selectIdiomForAll = true;
 
 
-
     private boolean longPress = false;
 
 
@@ -412,8 +411,6 @@ public class ButtonStatus {
             return true;
 
         }
-
-
 
         return false;
 
