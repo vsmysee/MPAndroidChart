@@ -1,13 +1,11 @@
 package com.codingbaby;
 
-import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
-import android.media.MediaPlayer;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.KeyEvent;
@@ -53,10 +51,6 @@ public class CustomTextView extends View {
     }
 
 
-    //汉字动画
-    private ValueAnimator wordAnimator;
-
-
     private List<LinePoint> drawLinePoint = new ArrayList<>();
 
 
@@ -64,10 +58,6 @@ public class CustomTextView extends View {
     private static List<String> cache = new ArrayList<>();
     private static int cursor = 0;
 
-    private Character chineseWord;
-    private Character nextChineseWord;
-
-    private List<String> showIdioms;
 
     private static String time;
     private static String author;
@@ -96,7 +86,7 @@ public class CustomTextView extends View {
         buttonStatus = new ButtonStatus(context, this);
 
 
-        poem = dataHolder.randomPoem(buttonStatus.selectPoemForStudent, buttonStatus.selectPoemForPrimary, buttonStatus.selectPoemForAll);
+        poem = dataHolder.randomPoem();
         buildRows();
 
 
@@ -128,37 +118,6 @@ public class CustomTextView extends View {
     @Override
     public void draw(Canvas canvas) {
 
-        if (wordAnimator == null) {
-
-            wordAnimator = ValueAnimator.ofInt(0, getWidth());
-            wordAnimator.setDuration(600);
-            wordAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                    invalidate();
-                }
-            });
-            wordAnimator.addListener(new Animator.AnimatorListener() {
-                @Override
-                public void onAnimationStart(Animator animation) {
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    chineseWord = nextChineseWord;
-                }
-
-                @Override
-                public void onAnimationCancel(Animator animation) {
-
-                }
-
-                @Override
-                public void onAnimationRepeat(Animator animation) {
-
-                }
-            });
-        }
 
         setFocusable(true);
         setFocusableInTouchMode(true);
@@ -176,42 +135,31 @@ public class CustomTextView extends View {
 
         initPint();
 
-        buttonStatus.drawBottomButton(canvas, paint, getHeight());
 
         canvas.translate(getWidth() / 2, getHeight() / 2);
 
-        if (buttonStatus.selectPoem) {
 
-            //渲染动画
-            if (animatorMeta.isOpen()) {
-                for (AnimatorMeta.ValuePair v : animatorMeta.current) {
-                    ValueAnimator valueAnimator = v.getValueAnimator();
-                    if (valueAnimator.isRunning()) {
-                        int value = (int) valueAnimator.getAnimatedValue();
-                        animatorMeta.action(v.getKey()).draw(valueAnimator, canvas, paint, getHeight(), getWidth(), value);
-                    }
+        //渲染动画
+        if (animatorMeta.isOpen()) {
+            for (AnimatorMeta.ValuePair v : animatorMeta.current) {
+                ValueAnimator valueAnimator = v.getValueAnimator();
+                if (valueAnimator.isRunning()) {
+                    int value = (int) valueAnimator.getAnimatedValue();
+                    animatorMeta.action(v.getKey()).draw(valueAnimator, canvas, paint, getHeight(), getWidth(), value);
                 }
             }
+        }
 
 
-            if (drawLinePoint.size() > 0) {
-                for (LinePoint linePoint : drawLinePoint) {
-                    canvas.drawLine(linePoint.sx, linePoint.sy, linePoint.ex, linePoint.ey, virtualLine);
-                }
-                drawPoem(canvas, true);
-            } else {
-                drawPoem(canvas, animatorMeta.isOpen());
+        if (drawLinePoint.size() > 0) {
+            for (LinePoint linePoint : drawLinePoint) {
+                canvas.drawLine(linePoint.sx, linePoint.sy, linePoint.ex, linePoint.ey, virtualLine);
             }
-
+            drawPoem(canvas, true);
+        } else {
+            drawPoem(canvas, animatorMeta.isOpen());
         }
 
-        if (buttonStatus.selectWord) {
-            drawWord(canvas);
-        }
-
-        if (buttonStatus.selectIdiom) {
-            drawIdiom(canvas);
-        }
 
         super.draw(canvas);
 
@@ -228,69 +176,45 @@ public class CustomTextView extends View {
             float x = event.getX();
 
 
-            if (buttonStatus.selectPoem) {
+            animatorMeta.stop();
 
-                animatorMeta.stop();
+            int centerX = getWidth() / 2;
+            int centerY = getHeight() / 2;
+            float clickX = x - centerX;
 
-                int centerX = getWidth() / 2;
-                int centerY = getHeight() / 2;
-                float clickX = x - centerX;
+            boolean touchPoemItem = false;
 
-                boolean touchPoemItem = false;
-
-                for (LinePoint linePoint : linePoints) {
-                    if (clickX > linePoint.sx && clickX < linePoint.ex) {
-                        if (linePoint.ey + centerY - poemWordHeight < y && y < linePoint.ey + centerY) {
-                            if (drawLinePoint.contains(linePoint)) {
-                                drawLinePoint.remove(linePoint);
-                            } else {
-                                drawLinePoint.add(linePoint);
-                            }
-                            touchPoemItem = true;
-                            break;
+            for (LinePoint linePoint : linePoints) {
+                if (clickX > linePoint.sx && clickX < linePoint.ex) {
+                    if (linePoint.ey + centerY - poemWordHeight < y && y < linePoint.ey + centerY) {
+                        if (drawLinePoint.contains(linePoint)) {
+                            drawLinePoint.remove(linePoint);
+                        } else {
+                            drawLinePoint.add(linePoint);
                         }
+                        touchPoemItem = true;
+                        break;
                     }
                 }
+            }
 
-                if (touchPoemItem) {
-                    invalidate();
-                    return super.onTouchEvent(event);
-                }
-
-
-                drawLinePoint.clear();
-
-                if (cursor == 0) {
-                    poem = dataHolder.randomPoem(buttonStatus.selectPoemForStudent, buttonStatus.selectPoemForPrimary, buttonStatus.selectPoemForAll);
-                    buildRows();
-
-                    animatorMeta.start(poem);
-                }
+            if (touchPoemItem) {
+                invalidate();
+                return super.onTouchEvent(event);
             }
 
 
-            if (buttonStatus.checkFuncTouch(y, x)) {
-                buttonStatus.startAnimation();
+            drawLinePoint.clear();
+
+            if (cursor == 0) {
+                poem = dataHolder.randomPoem();
+                buildRows();
+
+                animatorMeta.start(poem);
             }
 
-            if (buttonStatus.checkBottomTouch(y, x, getHeight())) {
-                buttonStatus.startAnimation();
-            }
 
-
-            if (buttonStatus.selectWord) {
-
-                nextChineseWord = dataHolder.randChineseWord(buttonStatus.selectWordForStudent, buttonStatus.selectWordForPrimary, buttonStatus.selectWordForSenior);
-
-                if (!wordAnimator.isStarted()) {
-                    wordAnimator.start();
-                }
-            }
-
-            if (buttonStatus.selectIdiom) {
-                showIdioms = dataHolder.randIdiom(buttonStatus.selectIdiomStudent);
-            }
-
+            buttonStatus.checkFuncTouch(y, x);
 
             invalidate();
 
@@ -309,51 +233,28 @@ public class CustomTextView extends View {
 
                 animatorMeta.stop();
 
-                if (buttonStatus.selectPoem) {
 
-                    cache.clear();
-                    cursor = 0;
+                cache.clear();
+                cursor = 0;
 
-                    drawLinePoint.clear();
+                drawLinePoint.clear();
 
-                    try {
-                        String pop = dataHolder.popPoem();
-                        if (pop.equals(poem)) {
-                            poem = dataHolder.popPoem();
-                        } else {
-                            poem = pop;
-                        }
-                    } catch (Exception e) {
-                        poem = dataHolder.randomPoem(buttonStatus.selectPoemForStudent, buttonStatus.selectPoemForPrimary, buttonStatus.selectPoemForAll);
+                try {
+                    String pop = dataHolder.popPoem();
+                    if (pop.equals(poem)) {
+                        poem = dataHolder.popPoem();
+                    } else {
+                        poem = pop;
                     }
-
-
-                    buildRows();
-                    animatorMeta.start(poem);
-
-                    invalidate();
-
+                } catch (Exception e) {
+                    poem = dataHolder.randomPoem();
                 }
 
-                if (buttonStatus.selectWord) {
 
-                    try {
-                        nextChineseWord = dataHolder.popChinese();
-                        if (nextChineseWord.equals(chineseWord)) {
-                            nextChineseWord = dataHolder.popChinese();
-                        }
-                    } catch (Exception e) {
-                        nextChineseWord = dataHolder.randChineseWord(buttonStatus.selectWordForStudent, buttonStatus.selectWordForPrimary, buttonStatus.selectWordForSenior);
-                    }
+                buildRows();
+                animatorMeta.start(poem);
 
-                    if (!wordAnimator.isStarted()) {
-                        wordAnimator.start();
-                    }
-
-                    invalidate();
-
-                }
-
+                invalidate();
 
 
                 return true;
@@ -364,9 +265,9 @@ public class CustomTextView extends View {
                 animatorMeta.stop();
                 drawLinePoint.clear();
 
-                if (buttonStatus.selectPoem && cursor == 0) {
+                if (cursor == 0) {
 
-                    poem = dataHolder.randomPoem(buttonStatus.selectPoemForStudent, buttonStatus.selectPoemForPrimary, buttonStatus.selectPoemForAll);
+                    poem = dataHolder.randomPoem();
 
                     buildRows();
 
@@ -374,16 +275,6 @@ public class CustomTextView extends View {
 
                 }
 
-                if (buttonStatus.selectWord) {
-                    if (!wordAnimator.isStarted()) {
-                        wordAnimator.start();
-                    }
-                }
-
-
-                if (buttonStatus.selectIdiom) {
-                    showIdioms = dataHolder.randIdiom(buttonStatus.selectIdiomStudent);
-                }
 
                 invalidate();
                 return true;
@@ -404,123 +295,6 @@ public class CustomTextView extends View {
 
         for (int i = 3; i < textsSplit.length; i++) {
             poemRows.add(textsSplit[i]);
-        }
-    }
-
-
-
-
-    private void drawIdiom(Canvas canvas) {
-
-        if (showIdioms == null) {
-            showIdioms = dataHolder.randIdiom(buttonStatus.selectIdiomStudent);
-        }
-
-        paint.setColor(DEFAULT_COLOR);
-
-        paint.setTextSize(sp2px(35));
-
-        Paint.FontMetrics fontMetrics = paint.getFontMetrics();
-
-        // 文本高度
-        float textHeight = fontMetrics.bottom - fontMetrics.top;
-
-        List<String> rows = new ArrayList<>();
-
-        for (String item : showIdioms) {
-            rows.add(item);
-        }
-
-        int textLines = rows.size();
-
-        // 中间文本的baseline
-        float ascent = paint.ascent();
-        float descent = paint.descent();
-
-        float abs = Math.abs(ascent + descent);
-        float centerBaselineY = abs / 2;
-
-        for (int i = 0; i < textLines; i++) {
-
-            float baseY = centerBaselineY + (i - (textLines - 1) / 2.0f) * textHeight;
-
-            String content = rows.get(i);
-            float textWidth = paint.measureText(content);
-
-            canvas.drawText(content, -textWidth / 2, baseY, paint);
-            canvas.drawLine(-textWidth / 2, baseY + descent, textWidth / 2, baseY + descent, paint);
-        }
-
-
-    }
-
-
-    private void drawWord(Canvas canvas) {
-
-        if (chineseWord == null) {
-            chineseWord = dataHolder.randChineseWord(buttonStatus.selectWordForStudent, buttonStatus.selectWordForPrimary, buttonStatus.selectWordForSenior);
-        }
-
-        paint.setColor(DEFAULT_COLOR);
-        paint.setTextSize(sp2px(80));
-
-        Paint.FontMetrics fontMetrics = paint.getFontMetrics();
-
-        // 文本高度
-        float textHeight = fontMetrics.bottom - fontMetrics.top;
-
-        // 中间文本的baseline
-        float ascent = paint.ascent();
-        float descent = paint.descent();
-
-        float abs = Math.abs(ascent + descent);
-        float centerBaselineY = abs / 2;
-
-
-        if (!wordAnimator.isStarted()) {
-            drawWord(canvas, textHeight, descent, centerBaselineY, chineseWord, 0);
-        } else {
-            int offset = (int) wordAnimator.getAnimatedValue();
-            drawWord(canvas, textHeight, descent, centerBaselineY, chineseWord, -offset);
-        }
-
-    }
-
-
-    private void drawWord(Canvas canvas, float textHeight, float descent, float centerBaselineY, Character wordParam, int offset) {
-        List<String> rows = new ArrayList<>();
-
-        rows.add(dataHolder.wordPinMap.get(wordParam));
-        String w = String.valueOf(wordParam);
-        rows.add(w);
-        if (!w.equals(dataHolder.oldWord.get(w))) {
-            rows.add(dataHolder.oldWord.get(w));
-        }
-
-
-        int textLines = rows.size();
-
-
-        float max = 0;
-        for (int i = 0; i < textLines; i++) {
-
-            float baseY = centerBaselineY + (i - (textLines - 1) / 2.0f) * textHeight;
-
-            String content = rows.get(i);
-
-            float textWidth = paint.measureText(content);
-            if (textWidth > max) {
-                max = textWidth;
-            }
-
-            if (i == 0) {
-                paint.setColor(Color.BLUE);
-            } else {
-                paint.setColor(DEFAULT_COLOR);
-            }
-
-            canvas.drawText(content, -textWidth / 2 + offset, baseY, paint);
-            canvas.drawLine(-max + offset, baseY + descent, max + offset, baseY + descent, paint);
         }
     }
 

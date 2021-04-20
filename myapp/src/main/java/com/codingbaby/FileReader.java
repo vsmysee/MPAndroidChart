@@ -2,7 +2,6 @@ package com.codingbaby;
 
 import android.content.res.AssetManager;
 
-import com.github.promeg.pinyinhelper.Pinyin;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -31,23 +30,6 @@ public class FileReader {
     }
 
 
-    public static List<String> loadIdiom(AssetManager assets, String file) {
-
-        List<String> list = new ArrayList<>();
-
-        try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open(file)))) {
-            String line;
-            while ((line = bf.readLine()) != null) {
-                if (!isBlank(line)) {
-                    list.add(line);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return list;
-    }
 
 
     public static List<String> loadPoem(AssetManager assets, String file) {
@@ -70,85 +52,8 @@ public class FileReader {
     }
 
 
-    public static List<String> freqEnglish(AssetManager assets, String file) {
-
-        List<String> list = new ArrayList<>();
-
-        try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open(file)))) {
-            String line;
-            while ((line = bf.readLine()) != null) {
-                if (!isBlank(line)) {
-                    list.add(line);
-                }
-
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return list;
-    }
 
 
-    public static List<String> loadCet4Short(AssetManager assets) {
-
-        List<String> list = new ArrayList<>();
-
-        try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("cet4/short.txt")))) {
-            String line;
-            while ((line = bf.readLine()) != null) {
-                if (!isBlank(line)) {
-                    list.add(line);
-                }
-
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return list;
-    }
-
-
-    public static List<Character> freqChinese(AssetManager assets, String file) {
-
-        List<Character> list = new ArrayList<>();
-
-        try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open(file)))) {
-            String line;
-            while ((line = bf.readLine()) != null) {
-                if (!isBlank(line)) {
-                    for (char c : line.toCharArray()) {
-                        if (Pinyin.isChinese(c)) {
-                            list.add(c);
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return list;
-    }
-
-    public static Map<Character, List<String>> loadEnglishWord(AssetManager assets) {
-        Map<Character, List<String>> english = new HashMap<>();
-        for (char ch = 'A'; ch <= 'Z'; ch++) {
-            english.put(ch, new ArrayList<String>());
-            try (BufferedReader bf = new BufferedReader(new InputStreamReader(assets.open("cet4/" + ch + ".md")))) {
-                String line;
-                while ((line = bf.readLine()) != null) {
-                    if (!isBlank(line)) {
-                        english.get(ch).add(line);
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return english;
-    }
 
 
 }
